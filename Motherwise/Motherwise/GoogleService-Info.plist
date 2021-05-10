@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CLIENT_ID</key>
+	<string>805720875706-m3vnc47gfquf8eem79gsp508hhpcsb38.apps.googleusercontent.com</string>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>com.googleusercontent.apps.805720875706-m3vnc47gfquf8eem79gsp508hhpcsb38</string>
+	<key>API_KEY</key>
+	<string>AIzaSyBB3GloMXFAXNPXvEYqlK1CTaq21G3YM4M</string>
+	<key>GCM_SENDER_ID</key>
+	<string>805720875706</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>com.app.motherwise</string>
+	<key>PROJECT_ID</key>
+	<string>motherwise-1585202524394</string>
+	<key>STORAGE_BUCKET</key>
+	<string>motherwise-1585202524394.appspot.com</string>
+	<key>IS_ADS_ENABLED</key>
+	<false/>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false/>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true/>
+	<key>IS_GCM_ENABLED</key>
+	<true/>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true/>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:805720875706:ios:9b0224bb1dcb8ce6f69883</string>
+	<key>DATABASE_URL</key>
+	<string>https://motherwise-1585202524394.firebaseio.com</string>
+</dict>
+</plist>
