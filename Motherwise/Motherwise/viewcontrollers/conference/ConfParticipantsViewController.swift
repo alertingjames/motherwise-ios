@@ -38,8 +38,9 @@ class ConfParticipantsViewController: BaseViewController, UITableViewDataSource,
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        lbl_title.text = "participants".localized().uppercased()
         view_searchbar.isHidden = true
-        edt_search.attributedPlaceholder = NSAttributedString(string: "Search...",
+        edt_search.attributedPlaceholder = NSAttributedString(string: "search_".localized(),
             attributes: attrs)
         
         view_searchbar.layer.cornerRadius = view_searchbar.frame.height / 2
@@ -210,7 +211,7 @@ class ConfParticipantsViewController: BaseViewController, UITableViewDataSource,
         let user = self.users[index]
             
         dropDown.anchorView = cell.btn_menu
-        dropDown.dataSource = ["  Message"]
+        dropDown.dataSource = ["  " + "message".localized()]
         // Action triggered on selection
         dropDown.selectionAction = { [unowned self] (idx: Int, item: String) in
             print("Selected item: \(item) at index: \(idx)")

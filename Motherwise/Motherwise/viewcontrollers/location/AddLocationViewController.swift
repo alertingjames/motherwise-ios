@@ -50,6 +50,11 @@ class AddLocationViewController: BaseViewController, CLLocationManagerDelegate, 
         setRoundShadowView(view: view_search, corner: 5)
         edt_search.underlined()
         edt_search.returnKeyType = .search
+        edt_search.attributedPlaceholder = NSAttributedString(
+            string: "type_address_".localized(),
+            attributes: [NSAttributedString.Key.foregroundColor: UIColor.lightGray]
+        )
+        btn_ok.setTitle("confirm".localized(), for: .normal)
         
         // User Location
         manager.delegate = self
@@ -64,8 +69,8 @@ class AddLocationViewController: BaseViewController, CLLocationManagerDelegate, 
     }
     
     func showHint(){
-        let alert = UIAlertController(title: "HINT", message: "Please select correct location.\nYou can type the address to search or your can click on the map to select correct location.", preferredStyle: .alert)
-        let okAction = UIAlertAction(title: "OK", style: .cancel){(ACTION) in
+        let alert = UIAlertController(title: "hint".localized().uppercased(), message: "map_hint".localized(), preferredStyle: .alert)
+        let okAction = UIAlertAction(title: "ok".localized(), style: .cancel){(ACTION) in
             
         }
         alert.addAction(okAction)
@@ -249,7 +254,7 @@ class AddLocationViewController: BaseViewController, CLLocationManagerDelegate, 
     @IBAction func ok_loc(_ sender: Any) {
         
         if self.selectedLocation == nil{
-            showToast(msg: "Please pick your location.")
+            showToast(msg: "pick_your_location".localized())
             return
         }
         
@@ -328,10 +333,10 @@ class AddLocationViewController: BaseViewController, CLLocationManagerDelegate, 
     }
     
     func showAlertDialog(addressStr:String, address:String, city:String, lat:String, lng:String){
-        let alert = UIAlertController(title: "Location Info", message: addressStr, preferredStyle: .alert)
-        let cancelAction = UIAlertAction(title: "Cancel", style: .cancel, handler: {
+        let alert = UIAlertController(title: "location_info".localized(), message: addressStr, preferredStyle: .alert)
+        let cancelAction = UIAlertAction(title: "cancel".localized(), style: .cancel, handler: {
             (action : UIAlertAction!) -> Void in })
-        let regAction = UIAlertAction(title: "Register", style: .destructive, handler: { alert -> Void in
+        let regAction = UIAlertAction(title: "register".localized(), style: .destructive, handler: { alert -> Void in
             self.addLocation(member_id: thisUser.idx, address: address, city: city, lat: lat, lng: lng)
         })
         
@@ -352,14 +357,14 @@ class AddLocationViewController: BaseViewController, CLLocationManagerDelegate, 
                 thisUser = user!
                 UserDefaults.standard.set(thisUser.email, forKey: "email")
                 UserDefaults.standard.set(thisUser.password, forKey: "password")
-                let vc = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "HomeViewController")
+                let vc = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "NewHomeViewController")
                 vc.modalPresentationStyle = .fullScreen
                 self.transitionVc(vc: vc, duration: 0.3, type: .fromRight)
             }else if result_code == "1" {
                 thisUser.idx = 0
-                self.showToast(msg: "This user doesn'\t exist.")
+                self.showToast(msg: "user_not_exist".localized())
             }else{
-                self.showToast(msg: "Something wrong")
+                self.showToast(msg: "something_wrong".localized())
             }
         })
     }

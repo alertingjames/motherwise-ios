@@ -74,7 +74,7 @@ var gWeatherViewController:WeatherViewController!
 var gNearbyViewController:MainVC!
 
 var gLiveVideoConf2ViewController:LiveVideoConf2ViewController!
-
+var gNewHomeVC:NewHomeViewController!
 
 
 

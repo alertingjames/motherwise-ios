@@ -39,6 +39,10 @@ class PostsViewController: BaseViewController, UITableViewDataSource, UITableVie
         .foregroundColor: UIColor.white,
     //   .underlineStyle: NSUnderlineStyle.single.rawValue
     ]
+    
+    var linkpreviews = [PostPreview]()
+    
+    
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -48,13 +52,16 @@ class PostsViewController: BaseViewController, UITableViewDataSource, UITableVie
         gPostViewController = self
         gRecentViewController = self
         
+        lbl_title.text = "posts".localized().uppercased()
+        noResult.text = "no_result_found_".localized()
+        
         if gPostOpt == "user" {
             btn_new_post.visibilityh = .gone
         }
         
         btn_new_post.setImageTintColor(.white)
         view_searchbar.isHidden = true
-        edt_search.attributedPlaceholder = NSAttributedString(string: "Search...",
+        edt_search.attributedPlaceholder = NSAttributedString(string: "search_".localized(),
             attributes: attrs)
         
         edt_search.addTarget(self, action: #selector(textFieldDidChange), for: .editingChanged)
@@ -79,9 +86,7 @@ class PostsViewController: BaseViewController, UITableViewDataSource, UITableVie
     }
     
     override func viewWillAppear(_ animated: Bool) {
-        
-        self.getPosts(member_id: thisUser.idx)
-        
+        self.getUserPosts(me_id: thisUser.idx, member_id: gUser.idx)
     }
     
     @IBAction func tap_search(_ sender: Any) {
@@ -129,7 +134,7 @@ class PostsViewController: BaseViewController, UITableViewDataSource, UITableVie
     
     
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        
+    var kkk = 0
         
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return posts.count
@@ -150,17 +155,22 @@ class PostsViewController: BaseViewController, UITableViewDataSource, UITableVie
         let post = self.posts[index]
                 
         if posts.indices.contains(index) {
-            
+            kkk += 1
+                    
             if post.picture_url != ""{
-//                loadPicture(imageView: cell.img_post_picture, url: URL(string: post.picture_url)!)
                 cell.postImageHeight.constant = 250
                 cell.img_post_picture.visibility = .visible
-                cell.img_post_picture.sd_setImage(with: URL(string: post.picture_url)!, placeholderImage: nil, options: [], completed: { (downloadedImage, error, cache, url) in
-                    print(downloadedImage?.size.width)//prints width of image
-                    print(downloadedImage?.size.height)//prints height of image
-//                    cell.postImageHeight.constant = cell.img_post_picture.frame.width * (downloadedImage?.size.height)! / (downloadedImage?.size.width)!
-//                    cell.img_post_picture.visibility = .visible
-                })
+                if kkk > 1 {
+                    cell.img_post_picture.sd_setImage(with: URL(string: post.picture_url)!, placeholderImage: nil, options: [], completed: { (downloadedImage, error, cache, url) in
+                        print(downloadedImage?.size.width)//prints width of image
+                        print(downloadedImage?.size.height)//prints height of image
+                        do {
+                            cell.postImageHeight.constant = try! cell.img_post_picture.frame.size.width * (downloadedImage?.size.height)! / (downloadedImage?.size.width)!
+                        }catch {}
+                    })
+                }else {
+                    loadPicture(imageView: cell.img_post_picture, url: URL(string: post.picture_url)!)
+                }
             }else{
                 cell.postImageHeight.constant = 0
                 cell.img_post_picture.visibility = .gone
@@ -186,12 +196,49 @@ class PostsViewController: BaseViewController, UITableViewDataSource, UITableVie
             cell.lbl_category.text = post.category
             cell.lbl_posted_time.text = post.posted_time
             if posts[index].status == "updated" {
-                cell.lbl_posted_time.text = "Updated at " + post.posted_time
+                cell.lbl_posted_time.text = "updated_at".localized() + " " + post.posted_time
             }
             
             cell.txv_desc.text = post.content.decodeEmoji
             cell.txv_desc.textContainerInset = UIEdgeInsets(top: 8, left: 5, bottom: 8, right: 5)
-            cell.txv_desc.isScrollEnabled = false
+            cell.txv_desc.isScrollEnabled = false            
+            
+            if post.previews.count > 0 {
+                cell.linkView.visibility = .visible
+                cell.stackView.arrangedSubviews
+                    .filter({ $0 is LinkView})
+                    .forEach({ $0.removeFromSuperview() })
+                for prev in post.previews {
+                    self.linkpreviews.append(prev)
+                    let linkView = (Bundle.main.loadNibNamed("LinkView", owner: self, options: nil))?[0] as! LinkView
+                    if prev.image_url.count > 0{
+                        linkView.linkImageBox.visibilityh = .visible
+                        loadPicture(imageView: linkView.linkImageBox, url: URL(string: prev.image_url)!)
+                    }else {
+                        linkView.linkImageBox.visibilityh = .gone
+                    }
+                    linkView.linkTitleBox.text = prev.title
+                    if prev.icon_url.count > 0{
+                        linkView.linkiconBox.visibilityh = .visible
+                        loadPicture(imageView: linkView.linkiconBox, url: URL(string: prev.icon_url)!)
+                    }else {
+                        linkView.linkiconBox.visibilityh = .gone
+                    }
+                    linkView.linkUrlBox.text = prev.site_url
+                    linkView.frame.size.height = 60
+                    linkView.linkImageW.constant = CGFloat(linkView.frame.size.height * 1.2)
+                    linkView.tag = Int(prev.idx)
+                    let tap = UITapGestureRecognizer(target: self, action: #selector(self.tappedLinkPreview(gesture:)))
+                    linkView.addGestureRecognizer(tap)
+                    cell.stackView.addArrangedSubview(linkView)
+                    cell.linkView.layoutIfNeeded()
+                }
+                cell.linkViewH.constant = CGFloat(60 * post.previews.count)
+            }else {
+                cell.linkView.visibility = .gone
+//                cell.linkViewH.constant = 0
+            }
+            cell.linkView.sizeToFit()
             
             cell.lbl_likes.text = String(post.likes)
 
@@ -289,14 +336,14 @@ class PostsViewController: BaseViewController, UITableViewDataSource, UITableVie
                 likeslabel.text = likes
                 button.setImageTintColor(.white)
             }else if result_code == "1"{
-                self.showToast(msg:"Your account doesn\'t exist")
+                self.showToast(msg:"account_not_exist".localized())
                 self.logout()
             }else if result_code == "2"{
-                self.showToast(msg:"This post doesn\'t exist")
-                self.getPosts(member_id: thisUser.idx)
+                self.showToast(msg:"post_not_exist".localized())
+                self.getUserPosts(me_id: thisUser.idx, member_id: gUser.idx)
             }else {
-                self.showToast(msg:"Something wrong")
-                self.getPosts(member_id: thisUser.idx)
+                self.showToast(msg:"something_wrong".localized())
+                self.getUserPosts(me_id: thisUser.idx, member_id: gUser.idx)
             }
         })
     }
@@ -319,7 +366,7 @@ class PostsViewController: BaseViewController, UITableViewDataSource, UITableVie
         
         dropDown.anchorView = cell.menuButton
         if posts[index].user.idx == thisUser.idx{
-            dropDown.dataSource = ["  Edit", "  Delete"]
+            dropDown.dataSource = ["  " + "edit".localized(), "  " + "delete".localized()]
             // Action triggered on selection
             dropDown.selectionAction = { [unowned self] (idx: Int, item: String) in
                 print("Selected item: \(item) at index: \(idx)")
@@ -329,10 +376,10 @@ class PostsViewController: BaseViewController, UITableViewDataSource, UITableVie
                     let vc = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(identifier: "EditPostViewController")
                     self.present(vc, animated: true, completion: nil)
                 }else if idx == 1{
-                    let alert = UIAlertController(title: "Delete", message: "Are you sure you want to delete this post?", preferredStyle: .alert)
-                    let noAction = UIAlertAction(title: "No", style: .cancel, handler: {
+                    let alert = UIAlertController(title: "delete".localized(), message: "sure_delete_post".localized(), preferredStyle: .alert)
+                    let noAction = UIAlertAction(title: "no".localized(), style: .cancel, handler: {
                         (action : UIAlertAction!) -> Void in })
-                    let yesAction = UIAlertAction(title: "Yes", style: .destructive, handler: { alert -> Void in
+                    let yesAction = UIAlertAction(title: "yes".localized(), style: .destructive, handler: { alert -> Void in
                         self.deletePost(post_id: self.posts[index].idx)
                     })
                     
@@ -343,7 +390,7 @@ class PostsViewController: BaseViewController, UITableViewDataSource, UITableVie
                 }
             }
         }else{
-            dropDown.dataSource = ["  Message", "  Report User"]
+            dropDown.dataSource = ["  " + "message".localized(), "  " + "report_user".localized()]
             // Action triggered on selection
             dropDown.selectionAction = { [unowned self] (idx: Int, item: String) in
                 print("Selected item: \(item) at index: \(idx)")
@@ -425,41 +472,33 @@ class PostsViewController: BaseViewController, UITableViewDataSource, UITableVie
         return filteredPosts
     }
     
-    func getPosts(member_id:Int64){
+    func getUserPosts(me_id:Int64, member_id:Int64){
         self.showLoadingView()
-        APIs.getPosts(member_id: member_id, handleCallback: {
-            posts, users, result_code in
+        APIs.getUserPosts(me_id: me_id, member_id: member_id, handleCallback: {
+            cnt, posts, users, result_code in
             self.dismissLoadingView()
             print(result_code)
             if result_code == "0"{
                 
-                if gPostOpt == "user" {
-                    self.posts = posts!.filter {
-                        post in return post.user.idx == gUser.idx
-                    }
-                    self.searchPosts = posts!.filter {
-                        post in return post.user.idx == gUser.idx
-                    }
-                }else {
-                    self.posts = posts!
-                    self.searchPosts = posts!
-                    self.users = users!
-                    
-                    gUsers = users!
-                }
+                self.posts = posts!
+                self.searchPosts = posts!
+                self.users = users!
+                
+                gUsers = users!
                 
                 if self.posts.count == 0 {
                     self.noResult.isHidden = false
                 }
                 
-                self.postList.reloadData()
+                let section = 0
+                self.postList.reloadSections([section], with: .automatic)
 
             }
             else{
                 if result_code == "1" {
                     self.logout()
                 } else {
-                    self.showToast(msg: "Something wrong!")
+                    self.showToast(msg: "something_wrong".localized())
                 }
             }
         })
@@ -472,13 +511,13 @@ class PostsViewController: BaseViewController, UITableViewDataSource, UITableVie
             result_code in
             self.dismissLoadingView()
             if result_code == "0"{
-                self.showToast2(msg: "Deleted")
-                self.getPosts(member_id: thisUser.idx)
+                self.showToast2(msg: "deleted".localized())
+                self.getUserPosts(me_id: thisUser.idx, member_id: gUser.idx)
             }else if result_code == "1"{
-                self.showToast(msg: "This post doesn\'t exist")
-                self.getPosts(member_id: thisUser.idx)
+                self.showToast(msg: "post_not_exist".localized())
+                self.getUserPosts(me_id: thisUser.idx, member_id: gUser.idx)
             }else {
-                self.showToast(msg:"Something wrong")
+                self.showToast(msg:"something_wrong".localized())
             }
         })
     }
@@ -514,6 +553,48 @@ class PostsViewController: BaseViewController, UITableViewDataSource, UITableVie
             
     }
     
+    var eee = false
+    
+    func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        let height = scrollView.frame.size.height
+        let contentYoffset = scrollView.contentOffset.y
+        let distanceFromBottom = scrollView.contentSize.height - contentYoffset
+        if distanceFromBottom < height {
+            print(" you reached end of the table")
+            print("SeaR COUNT////// \(self.searchPosts.count)")
+            if !self.loadingView.isAnimating && !self.eee {
+                refreshPosts(me_id: thisUser.idx, member_id: gUser.idx, num: Int64(self.searchPosts.count))
+            }
+        }
+    }
+    
+    
+    func refreshPosts(me_id:Int64, member_id:Int64, num:Int64){
+        self.showLoadingView()
+        APIs.refreshUserPosts(me_id: me_id, member_id: member_id, num: num, handleCallback: {
+            posts, result_code in
+            print(result_code)
+            if result_code == "0"{
+                print("ReFFFFFF \(posts!.count)")
+                if posts!.count > 0 {
+                    self.posts = self.posts + posts!
+                    self.searchPosts = self.searchPosts + posts!
+                }
+                
+                if posts!.count < 10 { self.eee = true }
+                
+                self.dismissLoadingView()
+                
+                self.postList.reloadData()
+
+            }
+        })
+    }
+    
+    
+    
+    
+    
     @objc func openDetail(sender:UIButton){
         let index = sender.tag
         gPost = posts[index]
@@ -535,6 +616,15 @@ class PostsViewController: BaseViewController, UITableViewDataSource, UITableVie
             result_code in
             self.dismissLoadingView()
         })
+    }
+    
+    @objc func tappedLinkPreview(gesture:UITapGestureRecognizer) {
+        let linkprevs = linkpreviews.filter({prev in return prev.idx == gesture.view!.tag})
+        if linkprevs.count > 0 {
+            if let url = URL(string: linkprevs[0].site_url) {
+                UIApplication.shared.open(url)
+            }
+        }
     }
     
 }

@@ -24,6 +24,7 @@ import AudioToolbox
 class ConfCommentFrame: BaseViewController, UITableViewDataSource, UITableViewDelegate {
 
     @IBOutlet weak var navBar: UIView!
+    @IBOutlet weak var lbl_title: UILabel!
     @IBOutlet weak var commentList: UITableView!
     @IBOutlet weak var attachButton: UIButton!
     @IBOutlet weak var sendButton: UIButton!
@@ -70,6 +71,8 @@ class ConfCommentFrame: BaseViewController, UITableViewDataSource, UITableViewDe
 
         addShadowToBar(view: navBar)
         
+        lbl_title.text = "add_comments".localized().uppercased()
+        
         sendButton.setImageTintColor(primaryDarkColor)
         btn_image_upload.layer.cornerRadius = btn_image_upload.frame.height / 2
         btn_image_cancel.layer.cornerRadius = btn_image_cancel.frame.height / 2
@@ -92,7 +95,7 @@ class ConfCommentFrame: BaseViewController, UITableViewDataSource, UITableViewDe
         
         self.view_image_form.isHidden = true
         
-        commentBox.setPlaceholder(string: "Write something ...")
+        commentBox.setPlaceholder(string: "write_something_".localized())
         commentBox.textContainerInset = UIEdgeInsets(top: commentBox.textContainerInset.top, left: 8, bottom: commentBox.textContainerInset.bottom, right: 5)
         commentBox.becomeFirstResponder()
         
@@ -102,10 +105,10 @@ class ConfCommentFrame: BaseViewController, UITableViewDataSource, UITableViewDe
         self.commentList.estimatedRowHeight = 170.0
         self.commentList.rowHeight = UITableView.automaticDimension
         
-        UITextView.appearance().linkTextAttributes = [ .foregroundColor: UIColor.yellow ]
+        UITextView.appearance().linkTextAttributes = [ .foregroundColor: UIColor.blue ]
         
         emojiButtons = [lbl_emoji0, lbl_emoji1, lbl_emoji2, lbl_emoji3, lbl_emoji4, lbl_emoji5, lbl_emoji6, lbl_emoji7, lbl_emoji8, lbl_emoji9]
-        emojiStrings = ["Close", "💖","👍","😊","😄","😍","🙁","😂","😠","😛"]
+        emojiStrings = ["close".localized(), "💖","👍","😊","😄","😍","🙁","😂","😠","😛"]
         
         for emjButton in emojiButtons {
             let index = emojiButtons.firstIndex(of: emjButton)!
@@ -225,14 +228,14 @@ class ConfCommentFrame: BaseViewController, UITableViewDataSource, UITableViewDe
                     cell.myCommentBox.text = comment.comment.decodeEmoji
                     cell.myCommentBox.visibility = .visible
                     
-                    cell.myCommentBoxWidth.constant = UIFont.systemFont(ofSize: 14.0).textWidth(s: cell.myCommentBox.text) + 40
+                    cell.myCommentBoxWidth.constant = UIFont.systemFont(ofSize: 16.0).textWidth(s: cell.myCommentBox.text) + 120
                     if cell.myCommentBoxWidth.constant < 80 {cell.myCommentBoxWidth.constant = 80}
-                    else if cell.myCommentBoxWidth.constant > self.view.frame.width * 4/5 { cell.myCommentBoxWidth.constant = self.view.frame.width * 4/5 }
+                    else if cell.myCommentBoxWidth.constant > self.screenWidth * 5/6 { cell.myCommentBoxWidth.constant = self.screenWidth * 5/6 }
                 }else{
                     cell.myCommentBox.visibility = .gone
                 }
 
-                cell.myCommentBox.textContainerInset = UIEdgeInsets(top: 8, left: 12, bottom: 8, right: 12)
+                cell.myCommentBox.textContainerInset = UIEdgeInsets(top: 12, left: 16, bottom: 12, right: 16)
 
                 cell.myCommentedTimeBox.text = comment.commented_time
                 
@@ -287,14 +290,14 @@ class ConfCommentFrame: BaseViewController, UITableViewDataSource, UITableViewDe
                     cell.commentBox.text = comment.comment.decodeEmoji
                     cell.commentBox.visibility = .visible
                     
-                    cell.commentBoxWidth.constant = UIFont.systemFont(ofSize: 14.0).textWidth(s: cell.commentBox.text) + 40
+                    cell.commentBoxWidth.constant = UIFont.systemFont(ofSize: 16.0).textWidth(s: cell.commentBox.text) + 120
                     if cell.commentBoxWidth.constant < 80 {cell.commentBoxWidth.constant = 80}
-                    else if cell.commentBoxWidth.constant > self.view.frame.width * 4/5 { cell.commentBoxWidth.constant = self.view.frame.width * 4/5 }
+                    else if cell.commentBoxWidth.constant > self.view.frame.width * 5/6 { cell.commentBoxWidth.constant = self.view.frame.width * 5/6 }
                 }else{
                     cell.commentBox.visibility = .gone
                 }
                 
-                cell.commentBox.textContainerInset = UIEdgeInsets(top: 8, left: 12, bottom: 8, right: 12)
+                cell.commentBox.textContainerInset = UIEdgeInsets(top: 12, left: 16, bottom: 12, right: 16)
                 
                 cell.commentedTimeBox.text = comment.commented_time
                 
@@ -352,7 +355,7 @@ class ConfCommentFrame: BaseViewController, UITableViewDataSource, UITableViewDe
         
         if comment.user.idx == thisUser.idx{
             dropDown.anchorView = cell.myMenuButton
-            dropDown.dataSource = ["  Edit", "  Delete"]
+            dropDown.dataSource = ["  " + "edit".localized(), "  " + "delete".localized()]
             // Action triggered on selection
             dropDown.selectionAction = { [unowned self] (idx: Int, item: String) in
                 print("Selected item: \(item) at index: \(idx)")
@@ -363,10 +366,10 @@ class ConfCommentFrame: BaseViewController, UITableViewDataSource, UITableViewDe
                     self.editF = true
                     self.indx = index
                 }else if idx == 1{
-                    let alert = UIAlertController(title: "Delete", message: "Are you sure you want to delete this message?", preferredStyle: .alert)
-                    let noAction = UIAlertAction(title: "No", style: .cancel, handler: {
+                    let alert = UIAlertController(title: "delete".localized().firstUppercased, message: "sure_delete_message".localized().firstUppercased, preferredStyle: .alert)
+                    let noAction = UIAlertAction(title: "no".localized().firstUppercased, style: .cancel, handler: {
                         (action : UIAlertAction!) -> Void in })
-                    let yesAction = UIAlertAction(title: "Yes", style: .destructive, handler: { alert -> Void in
+                    let yesAction = UIAlertAction(title: "yes".localized().firstUppercased, style: .destructive, handler: { alert -> Void in
                         var ref:DatabaseReference!
                         ref = Database.database().reference(fromURL: ReqConst.FIREBASE_URL + "gmmsg" + self.CHAT_ID).child(comment.key)
                         ref.removeValue()
@@ -380,7 +383,7 @@ class ConfCommentFrame: BaseViewController, UITableViewDataSource, UITableViewDe
             }
         }else{
             dropDown.anchorView = cell.menuButton
-            dropDown.dataSource = ["  Message"]
+            dropDown.dataSource = ["  " + "message".localized()]
             // Action triggered on selection
             dropDown.selectionAction = { [unowned self] (idx: Int, item: String) in
                 print("Selected item: \(item) at index: \(idx)")
@@ -427,8 +430,8 @@ class ConfCommentFrame: BaseViewController, UITableViewDataSource, UITableViewDe
             if idx == 0{
                 var picker:YPImagePicker!
                 var config = YPImagePickerConfiguration()
-                config.wordings.libraryTitle = "Gallery"
-                config.wordings.cameraTitle = "Camera"
+                config.wordings.libraryTitle = "gallary".localized().firstUppercased
+                config.wordings.cameraTitle = "camera".localized().firstUppercased
                 YPImagePickerConfiguration.shared = config
                 picker = YPImagePicker()
                 picker.didFinishPicking { [picker] items, _ in
@@ -462,7 +465,7 @@ class ConfCommentFrame: BaseViewController, UITableViewDataSource, UITableViewDe
     
     @IBAction func submitComment(_ sender: Any) {
         if commentBox.text.trimmingCharacters(in: .whitespacesAndNewlines) == "" {
-            showToast(msg: "Please type something...")
+            showToast(msg: "type_something_".localized().firstUppercased)
             return
         }
         

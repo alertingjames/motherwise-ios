@@ -18,11 +18,14 @@ class Post{
     var video_url:String = ""
     var link:String = ""
     var comments:Int64 = 0
+    var scheduled_time:String = ""
     var posted_time:String = ""
     var likes:Int64 = 0
     var isLiked:Bool = false
     var pictures:Int = 0
     var status:String = ""
+    var sch_status:String = ""
+    var previews = [PostPreview]()
 }
 
 var gPost:Post = Post()

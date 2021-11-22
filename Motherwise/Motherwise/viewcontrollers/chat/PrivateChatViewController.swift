@@ -121,7 +121,7 @@ class PrivateChatViewController: BaseViewController, UITableViewDataSource, UITa
         
         self.view_image_form.isHidden = true
         
-        commentBox.setPlaceholder(string: "Write something ...")
+        commentBox.setPlaceholder(string: "write_something_".localized())
         commentBox.textContainerInset = UIEdgeInsets(top: commentBox.textContainerInset.top, left: 8, bottom: commentBox.textContainerInset.bottom, right: 5)
 //        commentBox.becomeFirstResponder()
         
@@ -131,10 +131,10 @@ class PrivateChatViewController: BaseViewController, UITableViewDataSource, UITa
         self.commentList.estimatedRowHeight = 170.0
         self.commentList.rowHeight = UITableView.automaticDimension
         
-        UITextView.appearance().linkTextAttributes = [ .foregroundColor: UIColor.yellow ]
+        UITextView.appearance().linkTextAttributes = [ .foregroundColor: UIColor.blue ]
         
         emojiButtons = [lbl_emoji0, lbl_emoji1, lbl_emoji2, lbl_emoji3, lbl_emoji4, lbl_emoji5, lbl_emoji6, lbl_emoji7, lbl_emoji8, lbl_emoji9]
-        emojiStrings = ["Close", "💖","👍","😊","😄","😍","🙁","😂","😠","😛"]
+        emojiStrings = ["close".localized().firstUppercased, "💖","👍","😊","😄","😍","🙁","😂","😠","😛"]
         
         for emjButton in emojiButtons {
             let index = emojiButtons.firstIndex(of: emjButton)!
@@ -319,15 +319,16 @@ class PrivateChatViewController: BaseViewController, UITableViewDataSource, UITa
                 cell.myImageBox.addGestureRecognizer(tapGesture)
                 cell.myImageBox.isUserInteractionEnabled = true
                 
-                cell.myCommentBox.textContainerInset = UIEdgeInsets(top: 8, left: 12, bottom: 8, right: 12)
+                cell.myCommentBox.textContainerInset = UIEdgeInsets(top: 12, left: 16, bottom: 12, right: 16)
 
                 if comment.comment != ""{
                     cell.myCommentBox.text = comment.comment.decodeEmoji
                     cell.myCommentBox.visibility = .visible
                     
-                    cell.myCommentBoxWidth.constant = UIFont.systemFont(ofSize: 14.0).textWidth(s: cell.myCommentBox.text) + 40
+                    cell.myCommentBoxWidth.constant = UIFont.systemFont(ofSize: 16.0).textWidth(s: cell.myCommentBox.text) + 150
                     if cell.myCommentBoxWidth.constant < 80 {cell.myCommentBoxWidth.constant = 80}
-                    if cell.myCommentBoxWidth.constant > self.view.frame.width * 4/5 { cell.myCommentBoxWidth.constant = self.view.frame.width * 4/5 }
+                    if cell.myCommentBoxWidth.constant > self.screenWidth * 5/6 { cell.myCommentBoxWidth.constant = self.screenWidth * 5/6
+                    }
                 }else{
                     cell.myCommentBox.visibility = .gone
                 }
@@ -396,15 +397,15 @@ class PrivateChatViewController: BaseViewController, UITableViewDataSource, UITa
                 
                 cell.userPicture.layer.cornerRadius = cell.userPicture.frame.width / 2
                 
-                cell.commentBox.textContainerInset = UIEdgeInsets(top: 8, left: 12, bottom: 8, right: 12)
+                cell.commentBox.textContainerInset = UIEdgeInsets(top: 12, left: 16, bottom: 12, right: 16)
                 
                 if comment.comment != ""{
                     cell.commentBox.text = comment.comment.decodeEmoji
                     cell.commentBox.visibility = .visible
                     
-                    cell.commentBoxWidth.constant = UIFont.systemFont(ofSize: 14.0).textWidth(s: cell.commentBox.text) + 40
+                    cell.commentBoxWidth.constant = UIFont.systemFont(ofSize: 16.0).textWidth(s: cell.commentBox.text) + 150
                     if cell.commentBoxWidth.constant < 80 {cell.commentBoxWidth.constant = 80}
-                    if cell.commentBoxWidth.constant > self.view.frame.width * 4/5 { cell.commentBoxWidth.constant = self.view.frame.width * 4/5 }
+                    if cell.commentBoxWidth.constant > self.screenWidth * 5/6 { cell.commentBoxWidth.constant = self.screenWidth * 5/6 }
                 }else{
                     cell.commentBox.visibility = .gone
                 }
@@ -451,7 +452,7 @@ class PrivateChatViewController: BaseViewController, UITableViewDataSource, UITa
                 if comment.video_url != "" {
                     gComment = comment
                     let vc = self.storyboard?.instantiateViewController(identifier: "VideoPlayViewController")
-                    self.modalPresentationStyle = .fullScreen
+                    vc!.modalPresentationStyle = .fullScreen
                     self.present(vc!, animated: false, completion: nil)
                 }
             }
@@ -473,7 +474,7 @@ class PrivateChatViewController: BaseViewController, UITableViewDataSource, UITa
         
         if comment.user.idx == thisUser.idx{
             dropDown.anchorView = cell.myMenuButton
-            dropDown.dataSource = ["  Edit", "  Delete"]
+            dropDown.dataSource = ["  " + "edit".localized(), "  " + "delete".localized()]
             // Action triggered on selection
             dropDown.selectionAction = { [unowned self] (idx: Int, item: String) in
                 print("Selected item: \(item) at index: \(idx)")
@@ -484,10 +485,10 @@ class PrivateChatViewController: BaseViewController, UITableViewDataSource, UITa
                     self.editF = true
                     self.indx = index
                 }else if idx == 1{
-                    let alert = UIAlertController(title: "Delete", message: "Are you sure you want to delete this message?", preferredStyle: .alert)
-                    let noAction = UIAlertAction(title: "No", style: .cancel, handler: {
+                    let alert = UIAlertController(title: "delete".localized(), message: "sure_delete_message".localized().firstUppercased, preferredStyle: .alert)
+                    let noAction = UIAlertAction(title: "no".localized().firstUppercased, style: .cancel, handler: {
                         (action : UIAlertAction!) -> Void in })
-                    let yesAction = UIAlertAction(title: "Yes", style: .destructive, handler: { alert -> Void in
+                    let yesAction = UIAlertAction(title: "yes".localized().firstUppercased, style: .destructive, handler: { alert -> Void in
                         var ref:DatabaseReference!
                         ref = Database.database().reference(fromURL: ReqConst.FIREBASE_URL + "messages").child(self.CHAT_ID).child(comment.key)
                         ref.removeValue()
@@ -504,7 +505,7 @@ class PrivateChatViewController: BaseViewController, UITableViewDataSource, UITa
             }
         }else{
             dropDown.anchorView = cell.menuButton
-            dropDown.dataSource = ["  Message"]
+            dropDown.dataSource = ["  " + "message".localized()]
             // Action triggered on selection
             dropDown.selectionAction = { [unowned self] (idx: Int, item: String) in
                 print("Selected item: \(item) at index: \(idx)")
@@ -552,8 +553,8 @@ class PrivateChatViewController: BaseViewController, UITableViewDataSource, UITa
             if idx == 0{
                 var picker:YPImagePicker!
                 var config = YPImagePickerConfiguration()
-                config.wordings.libraryTitle = "Gallery"
-                config.wordings.cameraTitle = "Camera"
+                config.wordings.libraryTitle = "gallery".localized().firstUppercased
+                config.wordings.cameraTitle = "camera".localized().firstUppercased
                 YPImagePickerConfiguration.shared = config
                 picker = YPImagePicker()
                 picker.didFinishPicking { [picker] items, _ in
@@ -587,7 +588,7 @@ class PrivateChatViewController: BaseViewController, UITableViewDataSource, UITa
     
     @IBAction func submitComment(_ sender: Any) {
         if commentBox.text.trimmingCharacters(in: .whitespacesAndNewlines) == "" {
-            showToast(msg: "Please type something...")
+            showToast(msg: "type_something_".localized())
             return
         }
         
@@ -706,8 +707,8 @@ class PrivateChatViewController: BaseViewController, UITableViewDataSource, UITa
             
             let comment = Comment()
             var user = User()
-            if gHomeViewController.users.contains(where: {$0.email == sender_email}){
-                user = gHomeViewController.users.filter{ user in
+            if gNewHomeVC.users.contains(where: {$0.email == sender_email}){
+                user = gNewHomeVC.users.filter{ user in
                     return user.email == sender_email
                 }[0]
             }else if sender_email == thisUser.email {
@@ -809,15 +810,15 @@ class PrivateChatViewController: BaseViewController, UITableViewDataSource, UITa
             self.lbl_status2.isHidden = true
 
             if status == "offline" {
-                self.lbl_status.text = "Last seen at " + time
+                self.lbl_status.text = "last_seen_at".localized() + " " + time
                 self.isUserOnline = false
             }else if status == "online" {
-                self.lbl_status.text = "Online"
+                self.lbl_status.text = "online".localized()
                 self.isUserOnline = true
             }else {
                 self.lbl_status.text = status
                 if status.starts(with: "is typing"){
-                    self.lbl_status2.text = gUser.name + " " + status
+                    self.lbl_status2.text = gUser.name + " " + "is_typing_".localized()
                     self.lbl_status2.isHidden = false
                     self.isUserOnline = true
                 }
@@ -1004,8 +1005,8 @@ class PrivateChatViewController: BaseViewController, UITableViewDataSource, UITa
             self.userImages[1].isHidden = true
             self.userImages[0].isHidden = true
             self.lbl_notified.visibilityh = .gone
-            if gSelectedUsers.count == 0 && gRecentViewController == gHomeViewController {
-                gHomeViewController.getHomeData(member_id: thisUser.idx)
+            if gSelectedUsers.count == 0 && gRecentViewController == gNewHomeVC {
+                gNewHomeVC.getHomeData(member_id: thisUser.idx)
             }
             return
         }else {
@@ -1189,9 +1190,9 @@ class PrivateChatViewController: BaseViewController, UITableViewDataSource, UITa
         
         dropDown.anchorView = self.btn_menu
         if self.blocked_user {
-            dropDown.dataSource = ["  Unblock", "  Report User"]
+            dropDown.dataSource = ["  " + "unblock".localized(), "  " + "report_user".localized()]
         }else {
-            dropDown.dataSource = ["  Block", "  Report User"]
+            dropDown.dataSource = ["  " + "block".localized(), "  " + "report_user".localized()]
         }
         // Action triggered on selection
         dropDown.selectionAction = { [unowned self] (idx: Int, item: String) in
@@ -1246,7 +1247,7 @@ class PrivateChatViewController: BaseViewController, UITableViewDataSource, UITa
             self.commentBox.isEditable = false
             self.commentBox.isSelectable = false
             self.attachButton.isEnabled = false
-            self.commentBox.text = "You can\'t chat with this user."
+            self.commentBox.text = "cant_chat".localized()
             self.commentBox.checkPlaceholder()
             self.commentBox.resignFirstResponder()
             self.sendButton.visibilityh = .gone
@@ -1271,7 +1272,7 @@ class PrivateChatViewController: BaseViewController, UITableViewDataSource, UITa
             self.commentBox.isEditable = false
             self.commentBox.isSelectable = false
             self.attachButton.isEnabled = false
-            self.commentBox.text = "You can\'t chat with this user."
+            self.commentBox.text = "cant_chat".localized()
             self.commentBox.checkPlaceholder()
             self.commentBox.resignFirstResponder()
             self.sendButton.visibilityh = .gone

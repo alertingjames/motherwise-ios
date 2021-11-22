@@ -17,6 +17,7 @@ import VoxeetUXKit
 
 class YouTubeConfViewController: BaseViewController, UITableViewDataSource, UITableViewDelegate {
     
+    @IBOutlet weak var lbl_title: UILabel!
     @IBOutlet weak var lbl_confname: UILabel!
     @IBOutlet weak var lbl_groupname: UILabel!
     @IBOutlet weak var btn_users: UIButton!
@@ -39,6 +40,8 @@ class YouTubeConfViewController: BaseViewController, UITableViewDataSource, UITa
         
         gYouTubeConfViewController = self
         gRecentViewController = self
+        
+        lbl_title.text = "conference".localized().uppercased()
         
         conferenceAlias = gConference.name
         adminParticipantID = String(gAdmin.idx) + String(gAdmin.idx)
@@ -221,8 +224,8 @@ class YouTubeConfViewController: BaseViewController, UITableViewDataSource, UITa
             if comment.user.idx == thisUser.idx {
                 cell.userCohortBox.text = thisUser.cohort
             }else{
-                if gHomeViewController.users.contains(where: {$0.idx == comment.user.idx}){
-                    cell.userCohortBox.text = gHomeViewController.users.filter{
+                if gNewHomeVC.users.contains(where: {$0.idx == comment.user.idx}){
+                    cell.userCohortBox.text = gNewHomeVC.users.filter{
                         user in user.idx == comment.user.idx
                         }[0].cohort
                 }
@@ -291,7 +294,7 @@ class YouTubeConfViewController: BaseViewController, UITableViewDataSource, UITa
             users, result in
             self.dismissLoadingView()
             gConfUsers = users!
-            self.lbl_groupname.text = self.lbl_groupname.text! + " Participants: " + String(users!.count)
+            self.lbl_groupname.text = self.lbl_groupname.text! + " " + "participants".localized() + ": " + String(users!.count)
             self.getComments(chatID: self.CHAT_ID)
         })
     }
@@ -434,7 +437,7 @@ class YouTubeConfViewController: BaseViewController, UITableViewDataSource, UITa
         DispatchQueue.main.async {
             // Error message.
             let alert = UIAlertController(title: "Error", message: error.localizedDescription, preferredStyle: UIAlertController.Style.alert)
-            alert.addAction(UIAlertAction(title: "OK", style: UIAlertAction.Style.cancel, handler: nil))
+            alert.addAction(UIAlertAction(title: "ok".localized().uppercased(), style: UIAlertAction.Style.cancel, handler: nil))
             self.present(alert, animated: true, completion: nil)
         }
     }
@@ -484,40 +487,40 @@ extension YouTubeConfViewController: YoutubePlayerViewDelegate {
  *  MARK: - Conference delegate
  */
 
+
+
 extension YouTubeConfViewController: VTConferenceDelegate {
     func statusUpdated(status: VTConferenceStatus) {}
     
-    func participantAdded(participant: VTParticipant) {
-        // refresh
-    }
+    func permissionsUpdated(permissions: [Int]) {}
     
-    func participantUpdated(participant: VTParticipant) {
-        // refresh
-    }
+    func participantAdded(participant: VTParticipant) {}
+    
+    func participantUpdated(participant: VTParticipant) {}
     
     func streamAdded(participant: VTParticipant, stream: MediaStream) {
         switch stream.type {
-        case .Camera:
-            print("Participant ID: \(participant.id)")
-            if participant.id == VoxeetSDK.shared.session.participant?.id {
-                // Attaching own participant's video stream to the renderer.
-                if !stream.videoTracks.isEmpty {
-                    print("My Stream added: \(participant.id)")
-//                    ownCameraView.attach(participant: participant, stream: stream)
-//                    ownCameraView.isHidden = false
+            case .Camera:
+                print("Participant ID: \(participant.id)")
+                if participant.id == VoxeetSDK.shared.session.participant?.id {
+                    // Attaching own participant's video stream to the renderer.
+                    if !stream.videoTracks.isEmpty {
+                        print("My Stream added: \(participant.id)")
+    //                    ownCameraView.attach(participant: participant, stream: stream)
+    //                    ownCameraView.isHidden = false
+                    }
+                } else if participant.info.externalID == self.adminParticipantID {
+                    //refresh
+                    print("admin stream added")
+                }else {
+                    //refresh
+                    print("stream added")
                 }
-            } else if participant.info.externalID == self.adminParticipantID {
-                //refresh
-                print("admin stream added")
-            }else {
-                //refresh
+            case .ScreenShare:
+                // Attaching a video stream to a renderer.
                 print("stream added")
-            }
-        case .ScreenShare:
-            // Attaching a video stream to a renderer.
-            print("stream added")
-        default:
-            break
+            default:
+                break
         }
     }
     
@@ -542,14 +545,19 @@ extension YouTubeConfViewController: VTConferenceDelegate {
     
     func streamRemoved(participant: VTParticipant, stream: MediaStream) {
         switch stream.type {
-        case .Camera:
-            //refresh
-            print("stream removed")
-        case .ScreenShare:
-            // screenshareview alpha = 0
-            print("stream removed")
-        default:
-            break
+            case .Camera:
+                //refresh
+                print("stream removed")
+            case .ScreenShare:
+                // screenshareview alpha = 0
+                print("stream removed")
+            default:
+                break
         }
     }
+    
+    
 }
+
+
+

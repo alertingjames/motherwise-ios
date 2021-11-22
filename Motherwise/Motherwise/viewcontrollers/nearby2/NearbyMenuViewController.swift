@@ -32,9 +32,11 @@ class NearbyMenuViewController: BaseViewController, CLLocationManagerDelegate, U
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        lbl_title.text = "nearby".localized().uppercased()
 
         view_searchbar.isHidden = true
-        edt_search.attributedPlaceholder = NSAttributedString(string: "Search for nearby places...",
+        edt_search.attributedPlaceholder = NSAttributedString(string: "search_nearby_",
             attributes: attrs)
         
         edt_search.textColor = .white
@@ -256,7 +258,7 @@ class NearbyMenuViewController: BaseViewController, CLLocationManagerDelegate, U
             
             let vc:NearbyMapViewController = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(identifier: "NearbyMapViewController")
             vc.matchingItems = self.matchingItems
-            vc.ttl = "Nearby " + keyword
+            vc.ttl = "nearby".localized().firstUppercased + " " + keyword
             self.transitionVc(vc: vc, duration: 0.3, type: .fromRight)
             
         }

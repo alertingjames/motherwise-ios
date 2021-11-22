@@ -23,7 +23,6 @@ class HomeGroupViewController: BaseViewController, UIPickerViewDelegate, UIPicke
     @IBOutlet weak var ic_community: UIImageView!
     
     let thePicker = UIPickerView()
-    
     var selectedCommunityId:Int64 = 0
     
     class Community{
@@ -33,28 +32,28 @@ class HomeGroupViewController: BaseViewController, UIPickerViewDelegate, UIPicke
     
     var communities = [Community]()
     
+    
+    @IBOutlet weak var lbl_title: UILabel!
+    @IBOutlet weak var lbl_members: UILabel!
+    @IBOutlet weak var lbl_video: UILabel!    
+    @IBOutlet weak var lbl_group_chat: UILabel!
+    
+    
     override func viewDidLoad() {
         super.viewDidLoad()
 
         membersButton.layer.cornerRadius = 23
-        
         conferenceButton.layer.cornerRadius = 23
-        
         groupChatButton.layer.cornerRadius = 23
-        
         view_community.layer.borderColor = UIColor.lightGray.cgColor
-        
         view_community.layer.borderWidth = 1.0
-        
         view_community.layer.cornerRadius = view_community.frame.height / 2
-        
         setIconTintColor(imageView: ic_members, color: UIColor.white)
-        
         setIconTintColor(imageView: ic_conference, color: UIColor.white)
-        
         setIconTintColor(imageView: ic_groupchat, color: UIColor.white)
-        
         setIconTintColor(imageView: ic_community, color: UIColor.lightGray)
+        
+        lbl_title.text = "connect_with_community".localized().uppercased()
         
         var tap = UITapGestureRecognizer(target: self, action: #selector(self.getGroupMembers(_:)))
         membersButton.addGestureRecognizer(tap)
@@ -72,7 +71,7 @@ class HomeGroupViewController: BaseViewController, UIPickerViewDelegate, UIPicke
         
         let community = Community()
         community.idx = 0
-        community.name = "- Choose a Community -"
+        community.name = "- " + "choose_community".localized() + " -"
         communities.append(community)
         
         for group in gGroups{
@@ -86,11 +85,13 @@ class HomeGroupViewController: BaseViewController, UIPickerViewDelegate, UIPicke
             $0.name < $1.name
         }
         
+        
+        
     }
     
     @objc func getGroupMembers(_ sender: UITapGestureRecognizer? = nil) {
         if communtiyBox.text?.count == 0 {
-            showToast(msg: "Please choose a community.")
+            showToast(msg: "choose_community".localized().firstUppercased)
             return
         }
         self.getGroupMembers(member_id: thisUser.idx, group_id: self.selectedCommunityId, option: "group_members")
@@ -98,7 +99,7 @@ class HomeGroupViewController: BaseViewController, UIPickerViewDelegate, UIPicke
     
     @objc func getCohortConferences(_ sender: UITapGestureRecognizer? = nil) {
         if communtiyBox.text?.count == 0 {
-            showToast(msg: "Please choose a community.")
+            showToast(msg: "choose_community".localized())
             return
         }
         gSelectedGroupId = self.selectedCommunityId
@@ -110,7 +111,7 @@ class HomeGroupViewController: BaseViewController, UIPickerViewDelegate, UIPicke
     
     @objc func cohortGroupChat(_ sender: UITapGestureRecognizer? = nil) {
         if communtiyBox.text?.count == 0 {
-            showToast(msg: "Please choose a community.")
+            showToast(msg: "choose_community".localized())
             return
         }
         gSelectedGroupId = self.selectedCommunityId
@@ -183,7 +184,7 @@ class HomeGroupViewController: BaseViewController, UIPickerViewDelegate, UIPicke
         toolbar.sizeToFit()
         toolbar.tintColor = primaryDarkColor
         toolbar.backgroundColor = UIColor.lightGray
-        let doneButton = UIBarButtonItem(title: "Done", style: .plain, target: self, action: #selector(SignupViewController.closePickerView))
+        let doneButton = UIBarButtonItem(title: "done".localized(), style: .plain, target: self, action: #selector(SignupViewController.closePickerView))
         toolbar.setItems([doneButton], animated: false)
         toolbar.isUserInteractionEnabled = true
         communtiyBox.inputAccessoryView = toolbar

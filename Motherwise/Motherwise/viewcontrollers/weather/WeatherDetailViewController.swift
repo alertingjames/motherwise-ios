@@ -32,8 +32,29 @@ class WeatherDetailViewController: BaseViewController {
     @IBOutlet weak var ic_alert_wind: UIImageView!
     @IBOutlet weak var ic_alert_pressure: UIImageView!
     
+    
+    @IBOutlet weak var sunrise_lbl: UILabel!
+    @IBOutlet weak var sunset_lbl: UILabel!
+    @IBOutlet weak var cloudcoverage: UILabel!
+    @IBOutlet weak var humidity_lbl: UILabel!
+    @IBOutlet weak var pressure_lbl: UILabel!
+    @IBOutlet weak var windspeed_lbl: UILabel!
+    @IBOutlet weak var winddirection_lbl: UILabel!
+    @IBOutlet weak var temperature_lbl: UILabel!
+    
+    
+    
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        sunrise_lbl.text = "sunrise".localized().firstUppercased
+        sunset_lbl.text = "sunset".localized().firstUppercased
+        cloudcoverage.text = "cloud_coverage".localized().firstUppercased
+        humidity_lbl.text = "humidity".localized().firstUppercased
+        pressure_lbl.text = "pressure".localized().firstUppercased
+        windspeed_lbl.text = "wind_speed".localized().firstUppercased
+        winddirection_lbl.text = "wind_direction".localized().firstUppercased
+        temperature_lbl.text = "temperature".localized().firstUppercased
         
         ic_alert.image = ic_alert.image?.imageWithColor(color1: UIColor.orange)
         ic_alert.visibilityh = .gone
@@ -52,7 +73,7 @@ class WeatherDetailViewController: BaseViewController {
         if gForecastWeatherData != nil {
             lbl_city.text = gWeatherViewController.headerController.lbl_location.text
             lbl_weekday.text = gWeatherViewController.getWeekday(timeStamp: Double(gForecastWeatherData.dt))
-            lbl_time.text = "Day-Time " + gWeatherViewController.getTimeFromTimeStamp(timeStamp: Double(gForecastWeatherData.dt))
+            lbl_time.text = "day_time".localized() + " " + gWeatherViewController.getTimeFromTimeStamp(timeStamp: Double(gForecastWeatherData.dt))
             lbl_main_desc.text = gForecastWeatherData.weather[0].main.capitalized
             lbl_desc.text = gForecastWeatherData.weather[0].description.capitalized
             lbl_temp.text = String(gForecastWeatherData.main.temp) + " \(gWeatherViewController.hourlyForecastController.scale.symbolForScale())"
@@ -85,7 +106,7 @@ class WeatherDetailViewController: BaseViewController {
         } else if gDailyForecastWeatherData != nil {
             lbl_city.text = gWeatherViewController.headerController.lbl_location.text
             lbl_weekday.text = gWeatherViewController.getWeekday(timeStamp: Double(gDailyForecastWeatherData.dt))
-            lbl_time.text = "Day-Time " + gWeatherViewController.getTimeFromTimeStamp(timeStamp: Double(gDailyForecastWeatherData.dt))
+            lbl_time.text = "day_time".localized() + " " + gWeatherViewController.getTimeFromTimeStamp(timeStamp: Double(gDailyForecastWeatherData.dt))
             lbl_main_desc.text = gDailyForecastWeatherData.weather[0].main.capitalized
             lbl_desc.text = gDailyForecastWeatherData.weather[0].description.capitalized
             lbl_temp.text = String(gDailyForecastWeatherData.temp.day) + " \(gWeatherViewController.dailyForecastController.scale.symbolForScale())"

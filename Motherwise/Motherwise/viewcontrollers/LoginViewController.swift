@@ -28,7 +28,9 @@ class LoginViewController: BaseViewController {
         .font: UIFont(name: "Comfortaa-Medium", size: 17.0)!,
         .foregroundColor: primaryColor,
         .underlineStyle: NSUnderlineStyle.single.rawValue
-    ]
+    ]    
+    
+    @IBOutlet weak var welcome: UILabel!
     
 
     override func viewDidLoad() {
@@ -36,7 +38,7 @@ class LoginViewController: BaseViewController {
 
         logo.layer.cornerRadius = 0
         
-        let attributeString = NSMutableAttributedString(string: "Forgot Password",
+        let attributeString = NSMutableAttributedString(string: "forgot_password".localized(),
                                                         attributes: attrs)
         forgotPasswordButton.setAttributedTitle(attributeString, for: .normal)
         
@@ -47,7 +49,19 @@ class LoginViewController: BaseViewController {
         
         emailBox.keyboardType = UIKeyboardType.emailAddress
         
+        emailBox.attributedPlaceholder = NSAttributedString(
+            string: "email".localized(),
+            attributes: [NSAttributedString.Key.foregroundColor: UIColor.lightGray]
+        )
+        passwordBox.attributedPlaceholder = NSAttributedString(
+            string: "password".localized(),
+            attributes: [NSAttributedString.Key.foregroundColor: UIColor.lightGray]
+        )
+        
         signupButton.visibility = .gone
+        
+        loginButton.setTitle("log_in".localized(), for: .normal)
+        signupButton.setTitle("sign_up".localized(), for: .normal)
         
     }
     
@@ -72,17 +86,17 @@ class LoginViewController: BaseViewController {
     
     @IBAction func login(_ sender: Any) {
         if emailBox.text?.trimmingCharacters(in: .whitespacesAndNewlines) == ""{
-            showToast(msg: "Enter your email")
+            showToast(msg: "enter_email".localized())
             return
         }
         
         if isValidEmail(testStr: (emailBox.text?.trimmingCharacters(in: .whitespacesAndNewlines))!) == false{
-            showToast(msg: "Please enter a valid email.")
+            showToast(msg: "invalid_email".localized())
             return
         }
         
         if passwordBox.text?.trimmingCharacters(in: .whitespacesAndNewlines) == ""{
-            showToast(msg: "Enter your password")
+            showToast(msg: "enter_password".localized())
             return
         }
         
@@ -103,19 +117,19 @@ class LoginViewController: BaseViewController {
                 UserDefaults.standard.set(thisUser.email, forKey: "email")
                 UserDefaults.standard.set(thisUser.password, forKey: "password")
                 if thisUser.status2.count == 0 {
-                    gNote = "Please read the Terms & Conditions."
+                    gNote = "read_terms".localized()
                     let vc = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "TermsViewController")
                     vc.modalPresentationStyle = .fullScreen
                     self.transitionVc(vc: vc, duration: 0.3, type: .fromRight)
                 }else{
-                    gNote = "Successfully logged in"
-                    let vc = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "HomeViewController")
+                    gNote = "login_success".localized()
+                    let vc = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "NewHomeViewController")
                     vc.modalPresentationStyle = .fullScreen
                     self.transitionVc(vc: vc, duration: 0.3, type: .fromRight)
                 }
             }else if result_code == "1" {
                 thisUser = user!
-                gNote = "Please add your location"
+                gNote = "add_location".localized()
                 UserDefaults.standard.set(thisUser.email, forKey: "email")
                 UserDefaults.standard.set(thisUser.password, forKey: "password")
                 let vc = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "AddLocationViewController")
@@ -126,12 +140,12 @@ class LoginViewController: BaseViewController {
                 UserDefaults.standard.set(thisUser.email, forKey: "email")
                 UserDefaults.standard.set(thisUser.password, forKey: "password")
                 if thisUser.status2.count == 0 {
-                    gNote = "Please read the Terms & Conditions."
+                    gNote = "read_terms".localized()
                     let vc = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "TermsViewController")
                     vc.modalPresentationStyle = .fullScreen
                     self.transitionVc(vc: vc, duration: 0.3, type: .fromRight)
                 }else{
-                    gNote = "Please register your profile"
+                    gNote = "register_profile".localized()
                     let vc = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "SignupViewController")
                     vc.modalPresentationStyle = .fullScreen
                     self.transitionVc(vc: vc, duration: 0.3, type: .fromRight)
@@ -139,13 +153,13 @@ class LoginViewController: BaseViewController {
             }else{
                 if result_code == "3" {
                     thisUser.idx = 0
-                    self.showToast(msg: "Your password is incorrect.")
+                    self.showToast(msg: "password_incorrect".localized())
                 }else if result_code == "4" {
                     thisUser.idx = 0
-                    self.showToast(msg: "This user doen\'t exist.")
+                    self.showToast(msg: "user_not_exist".localized())
                 }else {
                     thisUser.idx = 0
-                    self.showToast(msg: "Something is wrong!")
+                    self.showToast(msg: "something_wrong".localized())
                 }
             }
         })

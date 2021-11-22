@@ -13,6 +13,7 @@ import AddressBookUI
 
 class PickLocationViewController: BaseViewController, CLLocationManagerDelegate, GMSMapViewDelegate{
     
+    @IBOutlet weak var lbl_title: UILabel!
     var manager = CLLocationManager()
     var map = GMSMapView()
     @IBOutlet weak var viewForGMap: UIView!
@@ -32,11 +33,17 @@ class PickLocationViewController: BaseViewController, CLLocationManagerDelegate,
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        lbl_title.text = "pick_location".localized().uppercased()
+        
         setRoundShadowButton(button: btn_location, corner: 3)
         setRoundShadowButton(button: btn_ok, corner: 25)
         setRoundShadowView(view: view_search, corner: 5)
         edt_search.underlined()
         edt_search.returnKeyType = .search
+        edt_search.attributedPlaceholder = NSAttributedString(
+            string: "type_address_".localized(),
+            attributes: [NSAttributedString.Key.foregroundColor: UIColor.lightGray]
+        )
         
         // User Location
         manager.delegate = self
@@ -51,8 +58,8 @@ class PickLocationViewController: BaseViewController, CLLocationManagerDelegate,
     }
     
     func showHint(){
-        let alert = UIAlertController(title: "HINT", message: "Please select correct location.\nYou can type the address to search or your can click on the map to select correct location.", preferredStyle: .alert)
-        let okAction = UIAlertAction(title: "OK", style: .cancel){(ACTION) in
+        let alert = UIAlertController(title: "hint".localized().uppercased(), message: "map_hint".localized(), preferredStyle: .alert)
+        let okAction = UIAlertAction(title: "ok".localized().uppercased(), style: .cancel){(ACTION) in
             
         }
         alert.addAction(okAction)
@@ -236,7 +243,7 @@ class PickLocationViewController: BaseViewController, CLLocationManagerDelegate,
     @IBAction func ok_loc(_ sender: Any) {
         
         if self.selectedLocation == nil{
-            showToast(msg: "Please pick your location.")
+            showToast(msg: "pick_your_location".localized())
             return
         }
         
@@ -315,10 +322,10 @@ class PickLocationViewController: BaseViewController, CLLocationManagerDelegate,
     }
     
     func showAlertDialog(addressStr:String, address:String, city:String, lat:String, lng:String){
-        let alert = UIAlertController(title: "Location Info", message: addressStr, preferredStyle: .alert)
-        let cancelAction = UIAlertAction(title: "Cancel", style: .cancel, handler: {
+        let alert = UIAlertController(title: "location_info".localized(), message: addressStr, preferredStyle: .alert)
+        let cancelAction = UIAlertAction(title: "cancel".localized(), style: .cancel, handler: {
             (action : UIAlertAction!) -> Void in })
-        let regAction = UIAlertAction(title: "Select", style: .destructive, handler: { alert -> Void in
+        let regAction = UIAlertAction(title: "select".localized(), style: .destructive, handler: { alert -> Void in
             if address != "" {
                 gProfileViewController.edt_address.text = address
                 gProfileViewController.city = city

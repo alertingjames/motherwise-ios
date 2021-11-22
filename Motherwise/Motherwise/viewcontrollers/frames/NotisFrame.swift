@@ -34,7 +34,7 @@ class NotisFrame: BaseViewController, UITableViewDataSource, UITableViewDelegate
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        edt_search.attributedPlaceholder = NSAttributedString(string: "Search...",
+        edt_search.attributedPlaceholder = NSAttributedString(string: "search_".localized(),
             attributes: attrs)
         
         edt_search.textColor = .white
@@ -152,7 +152,7 @@ class NotisFrame: BaseViewController, UITableViewDataSource, UITableViewDelegate
         if message.status == "pchat"{
             gUser = message.sender
             let vc = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(identifier: "PrivateChatViewController")
-            self.modalPresentationStyle = .fullScreen
+            vc.modalPresentationStyle = .fullScreen
             self.present(vc, animated: true, completion: nil)
         }else {
             if !message.status.starts(with: "call"){
@@ -164,26 +164,26 @@ class NotisFrame: BaseViewController, UITableViewDataSource, UITableViewDelegate
                 gSelectedGroupId = Int64(message.id)!
                 gSelectedCohort = ""
                 let vc = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(identifier: "GroupChatViewController")
-                self.modalPresentationStyle = .fullScreen
+                vc.modalPresentationStyle = .fullScreen
                 self.present(vc, animated: true, completion: nil)
             }else if message.status == "cchat"{
                 gSelectedGroupId = 0
                 gSelectedCohort = message.id
                 let vc = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(identifier: "GroupChatViewController")
-                self.modalPresentationStyle = .fullScreen
+                vc.modalPresentationStyle = .fullScreen
                 self.present(vc, animated: true, completion: nil)
             }else if message.status == "post"{
                 gId = Int64(message.id)!
                 let vc = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(identifier: "PostsViewController")
-                self.modalPresentationStyle = .fullScreen
+                vc.modalPresentationStyle = .fullScreen
                 self.transitionVc(vc: vc, duration: 0.3, type: .fromRight)
             }else if message.status == "conf"{
                 gId = Int64(message.id)!
                 let vc = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(identifier: "ConferencesViewController")
-                self.modalPresentationStyle = .fullScreen
+                vc.modalPresentationStyle = .fullScreen
                 self.transitionVc(vc: vc, duration: 0.3, type: .fromRight)
             }else if message.status == "ginvite"{
-                gUsers = gHomeViewController.users
+                gUsers = gNewHomeVC.users
                 let vc = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(identifier: "HomeGroupViewController")
                 self.present(vc, animated: true, completion: nil)
             }else if message.status.starts(with: "call"){
@@ -194,7 +194,7 @@ class NotisFrame: BaseViewController, UITableViewDataSource, UITableViewDelegate
             }else {
                 gId = message.mes_id
                 let vc = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(identifier: "MessageViewController")
-                self.modalPresentationStyle = .fullScreen
+                vc.modalPresentationStyle = .fullScreen
                 self.transitionVc(vc: vc, duration: 0.3, type: .fromRight)
             }
         }
@@ -253,7 +253,7 @@ class NotisFrame: BaseViewController, UITableViewDataSource, UITableViewDelegate
         let message = self.messages[index]
             
         dropDown.anchorView = cell.btn_menu
-        dropDown.dataSource = ["  Read", "  Progress", "  Contact"]
+        dropDown.dataSource = ["  " + "read".localized(), "  " + "progress".localized(), "  " + "contact".localized()]
         // Action triggered on selection
         dropDown.selectionAction = { [unowned self] (idx: Int, item: String) in
             print("Selected item: \(item) at index: \(idx)")
@@ -261,7 +261,7 @@ class NotisFrame: BaseViewController, UITableViewDataSource, UITableViewDelegate
                 if message.status == "pchat"{
                     gUser = message.sender
                     let vc = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(identifier: "PrivateChatViewController")
-                    self.modalPresentationStyle = .fullScreen
+                    vc.modalPresentationStyle = .fullScreen
                     self.present(vc, animated: true, completion: nil)
                 }else {
                     if !message.status.starts(with: "call"){
@@ -279,7 +279,7 @@ class NotisFrame: BaseViewController, UITableViewDataSource, UITableViewDelegate
                 if message.status == "pchat"{
                     gUser = message.sender
                     let vc = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(identifier: "PrivateChatViewController")
-                    self.modalPresentationStyle = .fullScreen
+                    vc.modalPresentationStyle = .fullScreen
                     self.present(vc, animated: true, completion: nil)
                 }else{
                     if !message.status.starts(with: "call"){
@@ -291,26 +291,26 @@ class NotisFrame: BaseViewController, UITableViewDataSource, UITableViewDelegate
                         gSelectedGroupId = Int64(message.id)!
                         gSelectedCohort = ""
                         let vc = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(identifier: "GroupChatViewController")
-                        self.modalPresentationStyle = .fullScreen
+                        vc.modalPresentationStyle = .fullScreen
                         self.present(vc, animated: true, completion: nil)
                     }else if message.status == "cchat"{
                         gSelectedGroupId = 0
                         gSelectedCohort = message.id
                         let vc = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(identifier: "GroupChatViewController")
-                        self.modalPresentationStyle = .fullScreen
+                        vc.modalPresentationStyle = .fullScreen
                         self.present(vc, animated: true, completion: nil)
                     }else if message.status == "post"{
                         gId = Int64(message.id)!
                         let vc = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(identifier: "PostsViewController")
-                        self.modalPresentationStyle = .fullScreen
+                        vc.modalPresentationStyle = .fullScreen
                         self.transitionVc(vc: vc, duration: 0.3, type: .fromRight)
                     }else if message.status == "conf"{
                         gId = Int64(message.id)!
                         let vc = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(identifier: "ConferencesViewController")
-                        self.modalPresentationStyle = .fullScreen
+                        vc.modalPresentationStyle = .fullScreen
                         self.transitionVc(vc: vc, duration: 0.3, type: .fromRight)
                     }else if message.status == "ginvite"{
-                        gUsers = gHomeViewController.searchUsers
+                        gUsers = gNewHomeVC.users
                         let vc = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(identifier: "HomeGroupViewController")
                         self.present(vc, animated: true, completion: nil)
                     }else if message.status.starts(with: "call"){
@@ -321,7 +321,7 @@ class NotisFrame: BaseViewController, UITableViewDataSource, UITableViewDelegate
                     }else {
                         gId = message.mes_id
                         let vc = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(identifier: "MessageViewController")
-                        self.modalPresentationStyle = .fullScreen
+                        vc.modalPresentationStyle = .fullScreen
                         self.transitionVc(vc: vc, duration: 0.3, type: .fromRight)
                     }
                 }
@@ -397,8 +397,8 @@ class NotisFrame: BaseViewController, UITableViewDataSource, UITableViewDelegate
                 user.idx = Int64(sender_id)!
                 user.name = sender_name
                 user.email = sender_email
-                if gHomeViewController.users.contains(where: {$0.email == sender_email}){
-                    user.cohort = gHomeViewController.users.filter{user in return user.email == sender_email}[0].cohort
+                if gNewHomeVC.users.contains(where: {$0.email == sender_email}){
+                    user.cohort = gNewHomeVC.users.filter{user in return user.email == sender_email}[0].cohort
                 }
                 user.photo_url = sender_photo
                 
@@ -459,8 +459,8 @@ class NotisFrame: BaseViewController, UITableViewDataSource, UITableViewDelegate
             user.idx = Int64(sender_id)!
             user.name = sender_name
             user.email = sender_email
-            if gHomeViewController.users.contains(where: {$0.email == sender_email}){
-                user.cohort = gHomeViewController.users.filter{user in return user.email == sender_email}[0].cohort
+            if gNewHomeVC.users.contains(where: {$0.email == sender_email}){
+                user.cohort = gNewHomeVC.users.filter{user in return user.email == sender_email}[0].cohort
             }
             user.photo_url = sender_photo
             
@@ -533,8 +533,8 @@ class NotisFrame: BaseViewController, UITableViewDataSource, UITableViewDelegate
                 user.idx = Int64(sender_id)!
                 user.name = sender_name
                 user.email = sender_email
-                if gHomeViewController.users.contains(where: {$0.email == sender_email}){
-                    user.cohort = gHomeViewController.users.filter{user in return user.email == sender_email}[0].cohort
+                if gNewHomeVC.users.contains(where: {$0.email == sender_email}){
+                    user.cohort = gNewHomeVC.users.filter{user in return user.email == sender_email}[0].cohort
                 }
                 user.photo_url = sender_photo
                 

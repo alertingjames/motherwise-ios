@@ -38,10 +38,12 @@ class MessageDetailViewController: BaseViewController, UITableViewDataSource, UI
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        noResult.text = "no_result_found_".localized()
+        
         self.loadPicture(imageView: img_sender, url: URL(string: gMessage.sender.photo_url)!)
         img_sender.layer.cornerRadius = img_sender.frame.height / 2
 
-        edt_search.attributedPlaceholder = NSAttributedString(string: "Search...",
+        edt_search.attributedPlaceholder = NSAttributedString(string: "search_".localized(),
             attributes: attrs)
         
         edt_search.addTarget(self, action: #selector(textFieldDidChange), for: .editingChanged)
@@ -161,6 +163,7 @@ class MessageDetailViewController: BaseViewController, UITableViewDataSource, UI
      //       cell.detailButton.addTarget(self, action: #selector(self.openDetail), for: .touchUpInside)
      //       cell.detailButton.visibility = .gone
             
+            cell.btn_new.setTitle("new_".localized(), for: .normal)
             cell.btn_new.tag = index
             cell.btn_new.addTarget(self, action: #selector(self.processNewMessage), for: .touchUpInside)
                     
@@ -205,20 +208,20 @@ class MessageDetailViewController: BaseViewController, UITableViewDataSource, UI
         let dropDown = DropDown()
             
         dropDown.anchorView = cell.menuButton
-        dropDown.dataSource = ["  Chat", "  Delete"]
+        dropDown.dataSource = ["  " + "chat".localized(), "  " + "delete".localized()]
         // Action triggered on selection
         dropDown.selectionAction = { [unowned self] (idx: Int, item: String) in
             print("Selected item: \(item) at index: \(idx)")
             if idx == 0{
                 gUser = self.messages[index].sender
                 let vc = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(identifier: "PrivateChatViewController")
-                self.modalPresentationStyle = .fullScreen
+                vc.modalPresentationStyle = .fullScreen
                 self.present(vc, animated: true, completion: nil)
             }else if idx == 1{
-                let alert = UIAlertController(title: "Delete", message: "Are you sure you want to delete this message?", preferredStyle: .alert)
-                let noAction = UIAlertAction(title: "No", style: .cancel, handler: {
+                let alert = UIAlertController(title: "delete".localized(), message: "sure_delete_message".localized(), preferredStyle: .alert)
+                let noAction = UIAlertAction(title: "no".localized(), style: .cancel, handler: {
                         (action : UIAlertAction!) -> Void in })
-                let yesAction = UIAlertAction(title: "Yes", style: .destructive, handler: { alert -> Void in
+                let yesAction = UIAlertAction(title: "yes".localized(), style: .destructive, handler: { alert -> Void in
                     let message = self.messages[index]
                     self.deleteMessage(message_id: message.idx, option: "sent")
                 })
@@ -304,7 +307,7 @@ class MessageDetailViewController: BaseViewController, UITableViewDataSource, UI
 
             }
             else{
-                self.showToast(msg: "Something wrong!")
+                self.showToast(msg: "something_wrong".localized())
             }
         })
     }
@@ -316,10 +319,10 @@ class MessageDetailViewController: BaseViewController, UITableViewDataSource, UI
             result_code in
             self.dismissLoadingView()
             if result_code == "0"{
-                self.showToast2(msg: "Deleted")
+                self.showToast2(msg: "deleted".localized())
                 self.getMessageHistory(message_id: gMessage.idx)
             }else {
-                self.showToast(msg:"Something wrong")
+                self.showToast(msg:"something_wrong".localized())
             }
         })
     }
@@ -332,7 +335,7 @@ class MessageDetailViewController: BaseViewController, UITableViewDataSource, UI
             if result_code == "0"{
                 self.getMessageHistory(message_id: gMessage.idx)
             }else {
-                self.showToast(msg:"Something wrong")
+                self.showToast(msg:"something_wrong".localized())
             }
         })
     }

@@ -30,6 +30,10 @@ class PostCell: UITableViewCell {
     @IBOutlet weak var postImageHeight: NSLayoutConstraint!
     @IBOutlet weak var postDescHeight: UITextView!
     
+    @IBOutlet weak var linkView: UIView!
+    @IBOutlet weak var stackView: UIStackView!
+    @IBOutlet weak var linkViewH: NSLayoutConstraint!
+    
     override func awakeFromNib() {
         super.awakeFromNib()
         // Initialization code

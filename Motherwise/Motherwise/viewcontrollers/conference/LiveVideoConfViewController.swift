@@ -16,6 +16,7 @@ import VoxeetUXKit
 
 class LiveVideoConfViewController: BaseViewController, UICollectionViewDelegate, UICollectionViewDataSource {
     
+    @IBOutlet weak var lbl_title: UILabel!
     @IBOutlet weak var btn_users: UIButton!
     @IBOutlet weak var btn_video: UIButton!
     @IBOutlet weak var btn_comment: UIButton!
@@ -48,6 +49,8 @@ class LiveVideoConfViewController: BaseViewController, UICollectionViewDelegate,
 
         gLiveVideoConfViewController = self
         gRecentViewController = self
+        
+        lbl_title.text = "conference".localized().uppercased()
         
         conferenceAlias = gConference.name
         adminParticipantID = String(gAdmin.idx) + String(gAdmin.idx)
@@ -234,7 +237,7 @@ class LiveVideoConfViewController: BaseViewController, UICollectionViewDelegate,
             users, result in
             self.dismissLoadingView()
             gConfUsers = users!
-            self.lbl_group.text = self.lbl_group.text! + " Participants: " + String(users!.count)
+            self.lbl_group.text = self.lbl_group.text! + " " +  "participants".localized() + ": " + String(users!.count)
             self.getComments(chatID: self.CHAT_ID)
         })
     }
@@ -323,8 +326,11 @@ class LiveVideoConfViewController: BaseViewController, UICollectionViewDelegate,
             return
             VoxeetSDK.shared.conference.join(conference: conference, options: nil, success: { conference in
                 if self.loadingView.isAnimating { self.dismissLoadingView() }
-                VoxeetSDK.shared.conference.startVideo() { _ in
-                    print("Started video!!!")
+                DispatchQueue.main.asyncAfter(deadline: .now() + 5) {
+                    if self.loadingView.isAnimating { self.dismissLoadingView() }
+                    VoxeetSDK.shared.conference.startVideo() { _ in
+                        print("Started video!!!")
+                    }
                 }
             }, fail: { error in
                 if self.loadingView.isAnimating { self.dismissLoadingView() }
@@ -430,54 +436,54 @@ class LiveVideoConfViewController: BaseViewController, UICollectionViewDelegate,
  *  MARK: - Conference delegate
  */
 
+
+
 extension LiveVideoConfViewController: VTConferenceDelegate {
     func statusUpdated(status: VTConferenceStatus) {}
     
-    func participantAdded(participant: VTParticipant) {
-        // refresh
-    }
+    func permissionsUpdated(permissions: [Int]) {}
     
-    func participantUpdated(participant: VTParticipant) {
-        // refresh
-    }
+    func participantAdded(participant: VTParticipant) {}
+    
+    func participantUpdated(participant: VTParticipant) {}
     
     func streamAdded(participant: VTParticipant, stream: MediaStream) {
         switch stream.type {
-        case .Camera:
-            print("Participant ID: \(participant.id)")
-            if participant.id == VoxeetSDK.shared.session.participant?.id {
-                // Attaching own participant's video stream to the renderer.
-                if !stream.videoTracks.isEmpty {
+            case .Camera:
+                print("Participant ID: \(participant.id)")
+                if participant.id == VoxeetSDK.shared.session.participant?.id {
+                    // Attaching own participant's video stream to the renderer.
+                    if !stream.videoTracks.isEmpty {
+                        //refresh
+                        print("my stream added")
+                        self.ownVideoView.attach(participant: participant, stream: stream)
+                        self.ownVideoView.isHidden = false
+    //                    self.ic_live.isHidden = true
+                        self.ownParticipant = participant
+                    }
+                } else if participant.info.externalID == self.adminParticipantID {
+                    // Attaching admin participant's video stream to the renderer.
+                    if !stream.videoTracks.isEmpty {
+                        //refresh
+                        print("admin stream added")
+                        self.videoView.attach(participant: participant, stream: stream)
+                        self.videoView.isHidden = false
+                        self.ic_live.isHidden = true
+                        self.adminParticipant = participant
+                    }
+                }else if activeParticipants().contains(where: { $0.id == participant.id }) {
+                    participantList.reloadData()
+                    print("user stream updated")
+                }else {
                     //refresh
-                    print("my stream added")
-                    self.ownVideoView.attach(participant: participant, stream: stream)
-                    self.ownVideoView.isHidden = false
-//                    self.ic_live.isHidden = true
-                    self.ownParticipant = participant
+                    print("user stream added")
+                    participantList.reloadData()
                 }
-            } else if participant.info.externalID == self.adminParticipantID {
-                // Attaching admin participant's video stream to the renderer.
-                if !stream.videoTracks.isEmpty {
-                    //refresh
-                    print("admin stream added")
-                    self.videoView.attach(participant: participant, stream: stream)
-                    self.videoView.isHidden = false
-                    self.ic_live.isHidden = true
-                    self.adminParticipant = participant
-                }
-            }else if activeParticipants().contains(where: { $0.id == participant.id }) {
-                participantList.reloadData()
-                print("user stream updated")
-            }else {
-                //refresh
-                print("user stream added")
-                participantList.reloadData()
-            }
-        case .ScreenShare:
-            // Attaching a video stream to a renderer.
-            print("stream added")
-        default:
-            break
+            case .ScreenShare:
+                // Attaching a video stream to a renderer.
+                print("stream added")
+            default:
+                break
         }
     }
     
@@ -518,25 +524,28 @@ extension LiveVideoConfViewController: VTConferenceDelegate {
     
     func streamRemoved(participant: VTParticipant, stream: MediaStream) {
         switch stream.type {
-        case .Camera:
-            //refresh
-            if participant.info.externalID == self.adminParticipantID {
+            case .Camera:
                 //refresh
-                print("admin stream removed")
-                self.videoView.unattach()
-                self.videoView.isHidden = true
-                self.ic_live.isHidden = false
-            }
-            print("stream removed")
-            participantList.reloadData()
-        case .ScreenShare:
-            // screenshareview alpha = 0
-            print("stream removed")
-        default:
-            break
+                if participant.info.externalID == self.adminParticipantID {
+                    //refresh
+                    print("admin stream removed")
+                    self.videoView.unattach()
+                    self.videoView.isHidden = true
+                    self.ic_live.isHidden = false
+                }
+                print("stream removed")
+                participantList.reloadData()
+            case .ScreenShare:
+                // screenshareview alpha = 0
+                print("stream removed")
+            default:
+                break
         }
     }
+    
+    
 }
+
 
 
 /*

@@ -14,6 +14,7 @@ import SwiftyJSON
 
 class ProfileViewController: BaseViewController, UIPickerViewDelegate, UIPickerViewDataSource {
     
+    @IBOutlet weak var lbl_title: UILabel!
     @IBOutlet weak var btn_pwd_reset: UIButton!
     @IBOutlet weak var btn_save: UIButton!
     @IBOutlet weak var img_picture: UIImageView!
@@ -36,7 +37,7 @@ class ProfileViewController: BaseViewController, UIPickerViewDelegate, UIPickerV
     
     let thePicker = UIPickerView()
     let groups = [String](arrayLiteral:
-        "- Choose a group -",
+        "- " + "choose_group".localized() + " -",
         "E81",
         "E83",
         "E84",
@@ -73,6 +74,18 @@ class ProfileViewController: BaseViewController, UIPickerViewDelegate, UIPickerV
         "E(v)114",
         "E(v)115",
         "S(v)116",
+        "E(v)117",
+        "E(v)118",
+        "S(v)119",
+        "E(v)120",
+        "E(v)121",
+        "S(v)122",
+        "E(v)123",
+        "E(v)124",
+        "S(v)125",
+        "E(v)126",
+        "E(v)127",
+        "S(v)128",
         "Love Notes E(v)1",
         "Love Notes E(v)2",
         "Love Notes E(v)3",
@@ -93,6 +106,8 @@ class ProfileViewController: BaseViewController, UIPickerViewDelegate, UIPickerV
         
         gProfileViewController = self
         gRecentViewController = self
+        
+        lbl_title.text = "my_profile".localized().uppercased()
 
         img_picture.layer.cornerRadius = img_picture.frame.height / 2
         self.loadPicture(imageView: img_picture, url: URL(string: thisUser.photo_url)!)
@@ -121,9 +136,30 @@ class ProfileViewController: BaseViewController, UIPickerViewDelegate, UIPickerV
         
         edt_email.keyboardType = UIKeyboardType.emailAddress
         
+        edt_name.attributedPlaceholder = NSAttributedString(
+            string: "user_name".localized(),
+            attributes: [NSAttributedString.Key.foregroundColor: UIColor.lightGray]
+        )
+        edt_email.attributedPlaceholder = NSAttributedString(
+            string: "email".localized(),
+            attributes: [NSAttributedString.Key.foregroundColor: UIColor.lightGray]
+        )
+        edt_phone.attributedPlaceholder = NSAttributedString(
+            string: "phone_number".localized(),
+            attributes: [NSAttributedString.Key.foregroundColor: UIColor.lightGray]
+        )
+        edt_group.attributedPlaceholder = NSAttributedString(
+            string: "choose_group".localized(),
+            attributes: [NSAttributedString.Key.foregroundColor: UIColor.lightGray]
+        )
+        edt_address.attributedPlaceholder = NSAttributedString(
+            string: "address".localized(),
+            attributes: [NSAttributedString.Key.foregroundColor: UIColor.lightGray]
+        )
+        
         var config = YPImagePickerConfiguration()
-        config.wordings.libraryTitle = "Gallery"
-        config.wordings.cameraTitle = "Camera"
+        config.wordings.libraryTitle = "callery".localized()
+        config.wordings.cameraTitle = "camera".localized()
         YPImagePickerConfiguration.shared = config
         picker = YPImagePicker()
         
@@ -249,7 +285,7 @@ class ProfileViewController: BaseViewController, UIPickerViewDelegate, UIPickerV
         toolbar.sizeToFit()
         toolbar.tintColor = primaryDarkColor
         toolbar.backgroundColor = UIColor.lightGray
-        let doneButton = UIBarButtonItem(title: "Done", style: .plain, target: self, action: #selector(ProfileViewController.closePickerView))
+        let doneButton = UIBarButtonItem(title: "done".localized(), style: .plain, target: self, action: #selector(ProfileViewController.closePickerView))
         toolbar.setItems([doneButton], animated: false)
         toolbar.isUserInteractionEnabled = true
         edt_group.inputAccessoryView = toolbar
@@ -284,32 +320,32 @@ class ProfileViewController: BaseViewController, UIPickerViewDelegate, UIPickerV
             isEditable = true
         }else{
             if edt_name.text?.trimmingCharacters(in: .whitespacesAndNewlines) == ""{
-                showToast(msg: "Enter your full name")
+                showToast(msg: "enter_name".localized())
                 return
             }
                 
             if edt_email.text?.trimmingCharacters(in: .whitespacesAndNewlines) == ""{
-                showToast(msg: "Enter your email")
+                showToast(msg: "enter_email".localized())
                 return
             }
                 
             if isValidEmail(testStr: (edt_email.text?.trimmingCharacters(in: .whitespacesAndNewlines))!) == false{
-                showToast(msg: "Please enter a valid email.")
+                showToast(msg: "invalid_email_".localized())
                 return
             }
             
             if edt_phone.text?.trimmingCharacters(in: .whitespacesAndNewlines) == ""{
-                showToast(msg: "Enter your full phone number.")
+                showToast(msg: "enter_phone".localized())
                 return
             }
                 
             if isValidPhone(phone: (edt_phone.text?.trimmingCharacters(in: .whitespacesAndNewlines))!) == false{
-                showToast(msg: "Please enter a valid phone number.")
+                showToast(msg: "invalid_phone".localized())
                 return
             }
             
             if edt_group.text?.trimmingCharacters(in: .whitespacesAndNewlines) == ""{
-                showToast(msg: "Choose a group.")
+                showToast(msg: "choose_group".localized())
                 return
             }
             
@@ -346,14 +382,15 @@ class ProfileViewController: BaseViewController, UIPickerViewDelegate, UIPickerV
                             
                         }else if result_code as! String == "1"{
                             thisUser.idx = 0
-                            self.showToast(msg: "This user doesn\'t exist.")
+                            self.showToast(msg: "user_not_exist".localized())
                             self.logout()
                         }else {
-                            self.showToast(msg: "Something wrong")
+                            self.showToast(msg: "something_wrong".localized())
                         }
                     }else{
-                        let message = "File size: " + String(response.fileSize()) + "\n" + "Description: " + response.description
-                        self.showToast(msg: "Issue: \n" + message)
+                        self.showToast(msg: "something_wrong".localized())
+//                        let message = "File size: " + String(response.fileSize()) + "\n" + "Description: " + response.description
+//                        self.showToast(msg: "Issue: \n" + message)
                     }
                 }
             }else{
@@ -370,14 +407,15 @@ class ProfileViewController: BaseViewController, UIPickerViewDelegate, UIPickerV
                             
                         }else if result_code as! String == "1"{
                             thisUser.idx = 0
-                            self.showToast(msg: "This user doesn\'t exist.")
+                            self.showToast(msg: "user_not_exist")
                             self.logout()
                         }else {
-                            self.showToast(msg: "Something wrong")
+                            self.showToast(msg: "something_wrong".localized())
                         }
                     }else{
-                        let message = "File size: " + String(response.fileSize()) + "\n" + "Description: " + response.description
-                        self.showToast(msg: "Issue: \n" + message)
+                        self.showToast(msg: "something_wrong".localized())
+//                        let message = "File size: " + String(response.fileSize()) + "\n" + "Description: " + response.description
+//                        self.showToast(msg: "Issue: \n" + message)
                     }
                 }
             }
@@ -434,7 +472,7 @@ class ProfileViewController: BaseViewController, UIPickerViewDelegate, UIPickerV
         UserDefaults.standard.set(thisUser.email, forKey: "email")
         UserDefaults.standard.set(thisUser.password, forKey: "password")
         
-        showToast2(msg: "Successfully updated")
+        showToast2(msg: "successfully_updated".localized())
         
         self.updateUI()
     }
@@ -460,35 +498,23 @@ class ProfileViewController: BaseViewController, UIPickerViewDelegate, UIPickerV
         
         if self.imageFile != nil {
             self.imageFile = nil
-            gHomeViewController.loadPicture(imageView:gHomeViewController.menu_vc.logo, url:URL(string: thisUser.photo_url)!)
+            gNewHomeVC.loadPicture(imageView:gNewHomeVC.menu_vc.logo, url:URL(string: thisUser.photo_url)!)
         }
 
     }
     
     func getMyPosts(member_id:Int64){
         self.showLoadingView()
-        APIs.getPosts(member_id: member_id, handleCallback: {
-            posts, users, result_code in
+        APIs.getUserPosts(me_id: member_id, member_id: member_id, handleCallback: {
+            cnt, posts, users, result_code in
             self.dismissLoadingView()
             print(result_code)
             if result_code == "0"{
-                
-                var myPosts = [Post]()
-                
-                for post in posts!{
-                    if post.user.idx == thisUser.idx {
-                        myPosts.append(post)
-                    }
-                }
-                
-                self.btn_posts.setTitle("Posts: " + String(myPosts.count), for: .normal)
-
+                self.btn_posts.setTitle("posts".localized().firstUppercased + ": " + String(cnt), for: .normal)
             }
             else{
                 if result_code == "1" {
                     self.logout()
-                } else {
-                    self.showToast(msg: "Something wrong!")
                 }
             }
         })
@@ -496,7 +522,7 @@ class ProfileViewController: BaseViewController, UIPickerViewDelegate, UIPickerV
     
     @IBAction func showMyPosts(_ sender: Any) {
         let vc = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(identifier: "MyPostsViewController")
-        self.modalPresentationStyle = .fullScreen
+        vc.modalPresentationStyle = .fullScreen
         self.transitionVc(vc: vc, duration: 0.3, type: .fromRight)
     }
 }

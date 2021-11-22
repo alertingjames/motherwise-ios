@@ -57,12 +57,12 @@ class InputDialog: BaseViewController {
             }
             
             if inputBox.text?.trimmingCharacters(in: .whitespacesAndNewlines) != gConference.code {
-                self.showToast(msg: "Your code is incorrect. Please try another one.")
+                self.showToast(msg: "code_incorrect".localized().firstUppercased)
                 return
             }
             
             let vc = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(identifier: "LiveVideoConfViewController")
-            self.modalPresentationStyle = .fullScreen
+            vc.modalPresentationStyle = .fullScreen
             self.transitionVc(vc: vc, duration: 0.3, type: .fromRight)
             
         }else if index == 1{

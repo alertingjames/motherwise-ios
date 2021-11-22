@@ -29,8 +29,10 @@ class LikesViewController: BaseViewController, UITableViewDataSource, UITableVie
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        noResult.text = "no_member_found".localized()
 
-        edt_search.attributedPlaceholder = NSAttributedString(string: "Search...",
+        edt_search.attributedPlaceholder = NSAttributedString(string: "search_".localized(),
             attributes: attrs)
         
         view_searchbar.layer.cornerRadius = view_searchbar.frame.height / 2
@@ -165,7 +167,7 @@ class LikesViewController: BaseViewController, UITableViewDataSource, UITableVie
             
         dropDown.anchorView = cell.menuButton
         if user.idx != thisUser.idx{
-            dropDown.dataSource = ["  Message"]
+            dropDown.dataSource = ["  " + "message".localized()]
             // Action triggered on selection
             dropDown.selectionAction = { [unowned self] (idx: Int, item: String) in
                 print("Selected item: \(item) at index: \(idx)")
@@ -176,7 +178,7 @@ class LikesViewController: BaseViewController, UITableViewDataSource, UITableVie
                 }
             }
         }else{
-            dropDown.dataSource = ["  Unlike"]
+            dropDown.dataSource = ["  " + "unlike".localized()]
             // Action triggered on selection
             dropDown.selectionAction = { [unowned self] (idx: Int, item: String) in
                 print("Selected item: \(item) at index: \(idx)")
@@ -221,9 +223,9 @@ class LikesViewController: BaseViewController, UITableViewDataSource, UITableVie
             }
             else{
                 if result_code == "1" {
-                    self.showToast(msg: "The post doesn\'t exist.")
+                    self.showToast(msg: "post_not_exist".localized())
                 } else {
-                    self.showToast(msg: "Something wrong!")
+                    self.showToast(msg: "something_wrong".localized())
                 }
             }
         })
@@ -239,13 +241,13 @@ class LikesViewController: BaseViewController, UITableViewDataSource, UITableVie
                 gPostDetailViewController.likesLabel.text = likes
                 self.getLikes(post_id: post.idx)
             }else if result_code == "1"{
-                self.showToast(msg:"Your account doesn\'t exist")
+                self.showToast(msg:"account_not_exist".localized())
                 self.logout()
             }else if result_code == "2"{
-                self.showToast(msg:"This post doesn\'t exist")
+                self.showToast(msg:"post_not_exist".localized())
                 self.dismiss(animated: true, completion: nil)
             }else {
-                self.showToast(msg:"Something wrong")
+                self.showToast(msg:"something_wrong".localized())
                 self.dismiss(animated: true, completion: nil)
             }
         })

@@ -13,6 +13,7 @@ import AddressBookUI
 
 class PickWeatherLocationViewController: BaseViewController, CLLocationManagerDelegate, GMSMapViewDelegate{
     
+    @IBOutlet weak var lbl_title: UILabel!
     var manager = CLLocationManager()
     var map = GMSMapView()
     @IBOutlet weak var viewForGMap: UIView!
@@ -31,6 +32,8 @@ class PickWeatherLocationViewController: BaseViewController, CLLocationManagerDe
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        lbl_title.text = "pick_location".localized().firstUppercased
         
         setRoundShadowButton(button: btn_location, corner: 3)
         setRoundShadowButton(button: btn_ok, corner: 25)
@@ -51,8 +54,8 @@ class PickWeatherLocationViewController: BaseViewController, CLLocationManagerDe
     }
     
     func showHint(){
-        let alert = UIAlertController(title: "HINT", message: "Please select correct location.\nYou can type the address to search or your can click on the map to select correct location.", preferredStyle: .alert)
-        let okAction = UIAlertAction(title: "OK", style: .cancel){(ACTION) in
+        let alert = UIAlertController(title: "hint".localized().uppercased(), message: "map_hint".localized(), preferredStyle: .alert)
+        let okAction = UIAlertAction(title: "ok".localized().uppercased(), style: .cancel){(ACTION) in
             
         }
         alert.addAction(okAction)
@@ -236,7 +239,7 @@ class PickWeatherLocationViewController: BaseViewController, CLLocationManagerDe
     @IBAction func ok_loc(_ sender: Any) {
         
         if self.selectedLocation == nil{
-            showToast(msg: "Please select a location.")
+            showToast(msg: "select_location".localized().firstUppercased)
             return
         }
         
@@ -320,10 +323,10 @@ class PickWeatherLocationViewController: BaseViewController, CLLocationManagerDe
     }
     
     func showAlertDialog(addressStr:String, address:String, city:String, lat:String, lng:String){
-        let alert = UIAlertController(title: "Location Info", message: addressStr, preferredStyle: .alert)
-        let cancelAction = UIAlertAction(title: "Cancel", style: .cancel, handler: {
+        let alert = UIAlertController(title: "location_info".localized().firstUppercased, message: addressStr, preferredStyle: .alert)
+        let cancelAction = UIAlertAction(title: "cancel".localized().firstUppercased, style: .cancel, handler: {
             (action : UIAlertAction!) -> Void in })
-        let regAction = UIAlertAction(title: "Select", style: .destructive, handler: { alert -> Void in
+        let regAction = UIAlertAction(title: "select".localized().firstUppercased, style: .destructive, handler: { alert -> Void in
             if gWeatherViewController != nil {
                 isWeatherLocationChanged = true
                 gWeatherViewController.showLoadingView()

@@ -38,8 +38,9 @@ class PChatMembersViewController: BaseViewController, UITableViewDataSource, UIT
         super.viewDidLoad()
 
         view_searchbar.isHidden = true
-        edt_search.attributedPlaceholder = NSAttributedString(string: "Search...",
+        edt_search.attributedPlaceholder = NSAttributedString(string: "search_".localized(),
             attributes: attrs)
+        noResult.text = "no_user_online_".localized()
         
         view_searchbar.layer.cornerRadius = view_searchbar.frame.height / 2
         
@@ -167,7 +168,7 @@ class PChatMembersViewController: BaseViewController, UITableViewDataSource, UIT
         let index = gesture.view?.tag
         gUser = gSelectedUsers[index!]
         let vc = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(identifier: "PrivateChatViewController")
-        self.modalPresentationStyle = .fullScreen
+        vc.modalPresentationStyle = .fullScreen
         self.present(vc, animated: true, completion: nil)
     }
     
@@ -221,14 +222,14 @@ class PChatMembersViewController: BaseViewController, UITableViewDataSource, UIT
         let user = self.users[index]
             
         dropDown.anchorView = cell.btn_menu
-        dropDown.dataSource = ["  Chat with...", "  Message"]
+        dropDown.dataSource = ["  " + "chat_with".localized(), "  " + "message".localized()]
         // Action triggered on selection
         dropDown.selectionAction = { [unowned self] (idx: Int, item: String) in
             print("Selected item: \(item) at index: \(idx)")
             if idx == 0{
                 gUser = user
                 let vc = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(identifier: "PrivateChatViewController")
-                self.modalPresentationStyle = .fullScreen
+                vc.modalPresentationStyle = .fullScreen
                 self.present(vc, animated: true, completion: nil)
             }else if idx == 1 {
                 gUser = user

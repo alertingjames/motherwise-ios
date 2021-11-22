@@ -25,8 +25,13 @@ class HomeUserMenu: BaseViewController {
     @IBOutlet weak var ic_facetime: UIImageView!
     
     @IBOutlet weak var image: UIImageView!
-    
     @IBOutlet weak var buttonView: UIView!
+    
+    @IBOutlet weak var lbl_posts: UILabel!
+    @IBOutlet weak var lbl_chats: UILabel!
+    @IBOutlet weak var lbl_video: UILabel!    
+    @IBOutlet weak var lbl_message: UILabel!
+    
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -125,7 +130,7 @@ class HomeUserMenu: BaseViewController {
     func toChat(){
         gSelectedUsers.removeAll()
         let vc = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(identifier: "PrivateChatViewController")
-        self.modalPresentationStyle = .fullScreen
+        vc.modalPresentationStyle = .fullScreen
         self.present(vc, animated: true, completion: nil)
     }
     

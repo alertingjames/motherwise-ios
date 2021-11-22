@@ -104,7 +104,7 @@ class DailyForecastViewController: UIViewController, UITableViewDelegate, UITabl
         gDailyForecastWeatherData = weather
         gForecastWeatherData = nil
         let vc = self.storyboard?.instantiateViewController(withIdentifier: "WeatherDetailViewController")
-        self.modalPresentationStyle = .fullScreen
+        vc!.modalPresentationStyle = .fullScreen
         self.present(vc!, animated: true, completion: nil)
     }
     
@@ -125,7 +125,20 @@ class DailyForecastViewController: UIViewController, UITableViewDelegate, UITabl
     
     func getTimeFromTimeStamp(timeStamp : Double) -> String {
             
-        let months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
+        let months = [
+            "jan".localized().firstUppercased,
+            "feb".localized().firstUppercased,
+            "mar".localized().firstUppercased,
+            "apr".localized().firstUppercased,
+            "may".localized().firstUppercased,
+            "jun".localized().firstUppercased,
+            "jul".localized().firstUppercased,
+            "aug".localized().firstUppercased,
+            "sep".localized().firstUppercased,
+            "oct".localized().firstUppercased,
+            "nov".localized().firstUppercased,
+            "dec".localized().firstUppercased
+        ]
         
         let date = NSDate(timeIntervalSince1970: timeStamp)
             
@@ -138,13 +151,13 @@ class DailyForecastViewController: UIViewController, UITableViewDelegate, UITabl
         let minute = calendar.component(.minute, from: date as Date)
         let second = calendar.component(.second, from: date as Date)
             
-        var timeStr = convert(number: hour) + ":" + convert(number: minute) + " AM"
+        var timeStr = convert(number: hour) + ":" + convert(number: minute) + " " + "am".localized().uppercased()
             
         if hour >= 12 {
             if hour > 12 {
-                timeStr = convert(number: hour - 12) + ":" + convert(number: minute) + " PM"
+                timeStr = convert(number: hour - 12) + ":" + convert(number: minute) + " " + "pm".localized().uppercased()
             }else {
-                timeStr = convert(number: hour) + ":" + convert(number: minute) + " PM"
+                timeStr = convert(number: hour) + ":" + convert(number: minute) + " " + "pm".localized().uppercased()
             }
         }
             
@@ -164,6 +177,8 @@ class DailyForecastViewController: UIViewController, UITableViewDelegate, UITabl
         let date = NSDate(timeIntervalSince1970: timeStamp)
         
         let dayTimePeriodFormatter = DateFormatter()
+        let lang = UserDefaults.standard.string(forKey: "app_lang") ?? "en"
+        if lang == "es" { dayTimePeriodFormatter.locale = .init(identifier: "es_ES") }
         dayTimePeriodFormatter.dateFormat = "E dd MMM YY"
         // UnComment below to get only time
         //  dayTimePeriodFormatter.dateFormat = "hh:mm a"

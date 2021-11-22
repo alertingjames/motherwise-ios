@@ -14,17 +14,18 @@ class ReportViewController: BaseViewController {
     @IBOutlet weak var userPicture: UIImageView!
     @IBOutlet weak var sendButton: UIButton!
     @IBOutlet weak var textBox: UITextView!
-
+    @IBOutlet weak var lbl_title: UILabel!
+    
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        lbl_title.text = "report_user_".localized().uppercased()
         userPicture.layer.cornerRadius = 35 / 2
-        
         loadPicture(imageView: userPicture, url: URL(string: gUser.photo_url)!)
         
         sendButton.roundCorners(corners: [.topLeft], radius: 35 / 2)
 
-        textBox.setPlaceholder(string: "Write your report here...")
+        textBox.setPlaceholder(string: "type_report_".localized())
         textBox.textContainerInset = UIEdgeInsets(top: textBox.textContainerInset.top, left: 8, bottom: textBox.textContainerInset.bottom, right: textBox.textContainerInset.right)
         
     }
@@ -69,7 +70,7 @@ class ReportViewController: BaseViewController {
     
     @IBAction func submitReport(_ sender: Any) {
         if textBox.text.trimmingCharacters(in: .whitespacesAndNewlines) == ""{
-            showToast(msg: "Please write your report here...")
+            showToast(msg: "type_report_".localized())
             return
         }
         
@@ -83,14 +84,14 @@ class ReportViewController: BaseViewController {
             result_code in
             self.dismissLoadingView()
             if result_code == "0"{
-                self.showToast2(msg: "Your report submitted!")
+                self.showToast2(msg: "report_submited".localized())
                 self.textBox.text = ""
                 self.textBox.checkPlaceholder()
                 self.sendButton.isHidden = true
             }else if result_code == "1"{
-                self.showToast(msg: "This member doesn\'t exist")
+                self.showToast(msg: "user_not_exist".localized())
             }else{
-                self.showToast(msg: "Something wrong")
+                self.showToast(msg: "something_wrong".localized())
                 
             }
         })

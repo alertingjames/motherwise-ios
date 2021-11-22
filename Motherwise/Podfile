@@ -44,9 +44,8 @@ pod 'DropDown'
 pod 'MarqueeLabel'
 pod 'YoutubePlayerView'
 pod 'ASPVideoPlayer'
-pod 'SDWebImage'
-pod 'VoxeetSDK'
-pod 'VoxeetUXKit'
+pod 'SDWebImage', '~> 5.0'
 pod 'SJSegmentedScrollView'
+pod 'VoxeetUXKit', '~> 1.0'
 
 end

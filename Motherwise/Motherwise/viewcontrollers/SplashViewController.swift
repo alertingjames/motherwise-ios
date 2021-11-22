@@ -54,12 +54,12 @@ class SplashViewController: BaseViewController {
                 UserDefaults.standard.set(thisUser.email, forKey: "email")
                 UserDefaults.standard.set(thisUser.password, forKey: "password")
                 if thisUser.status2.count == 0 {
-                    gNote = "Please read the Terms & Conditions."
+                    gNote = "read_terms".localized()
                     let vc = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "TermsViewController")
                     vc.modalPresentationStyle = .fullScreen
                     self.transitionVc(vc: vc, duration: 0.3, type: .fromRight)
                 }else{
-                    let vc = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "HomeViewController")
+                    let vc = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "NewHomeViewController")
                     vc.modalPresentationStyle = .fullScreen
                     self.transitionVc(vc: vc, duration: 0.3, type: .fromRight)
                 }
@@ -71,12 +71,12 @@ class SplashViewController: BaseViewController {
             }else if result_code == "2" {
                 thisUser = user!
                 if thisUser.status2.count == 0 {
-                    gNote = "Please read the Terms & Conditions."
+                    gNote = "read_terms".localized()
                     let vc = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "TermsViewController")
                     vc.modalPresentationStyle = .fullScreen
                     self.transitionVc(vc: vc, duration: 0.3, type: .fromRight)
                 }else{
-                    gNote = "Please register your profile"
+                    gNote = "register_profile".localized()
                     let vc = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "SignupViewController")
                     vc.modalPresentationStyle = .fullScreen
                     self.transitionVc(vc: vc, duration: 0.3, type: .fromRight)
@@ -85,13 +85,13 @@ class SplashViewController: BaseViewController {
                 let loginVC = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "LoginViewController")
                 if result_code == "3" {
                     thisUser.idx = 0
-                    self.showToast(msg: "Your password is incorrect.")
+                    self.showToast(msg: "password_incorrect".localized())
                 }else if result_code == "4" {
                     thisUser.idx = 0
-                    self.showToast(msg: "This user doen\'t exist.")
+                    self.showToast(msg: "user_not_exist".localized())
                 }else {
                     thisUser.idx = 0
-                    self.showToast(msg: "Something wrong!")
+                    self.showToast(msg: "something_wrong".localized())
                 }
                 if let currentVC = UIApplication.getTopViewController() {
                     if currentVC != loginVC {

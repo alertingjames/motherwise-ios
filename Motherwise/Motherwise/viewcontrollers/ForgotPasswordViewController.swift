@@ -16,16 +16,23 @@ class ForgotPasswordViewController: BaseViewController {
     @IBOutlet weak var emailBox: UITextField!
     @IBOutlet weak var submitButton: UIButton!
 
+    @IBOutlet weak var fbtitle: UILabel!
+    @IBOutlet weak var fpdesc: UITextView!
+    @IBOutlet weak var log_in: UIButton!
+    
+    
     override func viewDidLoad() {
         super.viewDidLoad()
 
         logo.layer.cornerRadius = 0
         
+        fbtitle.text = "forgot_password".localized()
+        
         let paragraphStyle = NSMutableParagraphStyle()
         paragraphStyle.alignment = .center
         paragraphStyle.lineSpacing = 10
         
-        let text = "Please enter your email.\nWe will send password reset link to your email."
+        let text = "fp_text".localized()
 
         let attributes: [NSAttributedString.Key: Any] = [
             .paragraphStyle: paragraphStyle,
@@ -40,6 +47,10 @@ class ForgotPasswordViewController: BaseViewController {
         setRoundShadowButton(button: submitButton, corner: 25)
         
         emailBox.keyboardType = UIKeyboardType.emailAddress
+        emailBox.attributedPlaceholder = NSAttributedString(
+            string: "email".localized().firstUppercased,
+            attributes: [NSAttributedString.Key.foregroundColor: UIColor.lightGray]
+        )
         
     }
     
@@ -49,12 +60,12 @@ class ForgotPasswordViewController: BaseViewController {
 
     @IBAction func submit(_ sender: Any) {
         if emailBox.text?.trimmingCharacters(in: .whitespacesAndNewlines) == ""{
-            showToast(msg: "Enter your email")
+            showToast(msg: "enter_email".localized())
             return
         }
         
         if isValidEmail(testStr: (emailBox.text?.trimmingCharacters(in: .whitespacesAndNewlines))!) == false{
-            showToast(msg: "Please enter a valid email.")
+            showToast(msg: "invalid_email".localized())
             return
         }
         
@@ -69,12 +80,12 @@ class ForgotPasswordViewController: BaseViewController {
             self.dismissLoadingView()
             print(result_code)
             if result_code == "0"{
-                self.showToast2(msg: "We've sent a password reset link to your email. Please check...")
+                self.showToast2(msg: "sent_link_to_email".localized())
                 self.openMailBox(email: email)
             }else if result_code == "1"{
-                self.showToast(msg: "Sorry, but we don\'t know your email.")
+                self.showToast(msg: "sorry_dont_know_email".localized())
             }else {
-                self.showToast(msg: "Something wrong")
+                self.showToast(msg: "something_wrong".localized())
             }
         })
     }

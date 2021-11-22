@@ -7,6 +7,18 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		1A5FB0862746E8D400A3BAD7 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 1A5FB0882746E8D400A3BAD7 /* Localizable.strings */; };
+		1A9E24D927444CC90037EAF1 /* PostPreview.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A9E24D827444CC90037EAF1 /* PostPreview.swift */; };
+		1A9E24DB27445AE70037EAF1 /* TimeSelector.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A9E24DA27445AE70037EAF1 /* TimeSelector.swift */; };
+		1A9E24E227445D040037EAF1 /* PickerStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A9E24DD27445CFF0037EAF1 /* PickerStyle.swift */; };
+		1A9E24E327445D040037EAF1 /* PresentedViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A9E24DE27445D010037EAF1 /* PresentedViewController.swift */; };
+		1A9E24E427445D040037EAF1 /* CustomPresentationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A9E24DF27445D020037EAF1 /* CustomPresentationController.swift */; };
+		1A9E24E527445D040037EAF1 /* CustomPresentationAnimationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A9E24E027445D030037EAF1 /* CustomPresentationAnimationController.swift */; };
+		1A9E24E627445D040037EAF1 /* SJDatePicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A9E24E127445D040037EAF1 /* SJDatePicker.swift */; };
+		1A9E24F32745613C0037EAF1 /* LinkView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 1A9E24F22745613C0037EAF1 /* LinkView.xib */; };
+		1A9E24F5274561680037EAF1 /* LinkView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A9E24F4274561680037EAF1 /* LinkView.swift */; };
+		1AA313622742C7B800120B0C /* NewHomeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1AA313612742C7B800120B0C /* NewHomeViewController.swift */; };
+		1AA313642742E3B700120B0C /* SettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1AA313632742E3B700120B0C /* SettingsViewController.swift */; };
 		3DEF143F34633C1D3352C0FE /* Pods_MotherwiseTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9251E8F686F4C21B16174A99 /* Pods_MotherwiseTests.framework */; };
 		590FA5C14D0E80792EBEFB20 /* Pods_Motherwise.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AA4BA8CA3BAE1ABECA47DD01 /* Pods_Motherwise.framework */; };
 		654E3B802524D11300C76C20 /* LiveVideoConf2ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 654E3B7F2524D11300C76C20 /* LiveVideoConf2ViewController.swift */; };
@@ -162,6 +174,20 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		1A5FB0852746E80600A3BAD7 /* es */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = es; path = es.lproj/Main.strings; sourceTree = "<group>"; };
+		1A5FB0892746E8D800A3BAD7 /* es */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = es; path = es.lproj/Localizable.strings; sourceTree = "<group>"; };
+		1A5FB08A274700CF00A3BAD7 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
+		1A9E24D827444CC90037EAF1 /* PostPreview.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostPreview.swift; sourceTree = "<group>"; };
+		1A9E24DA27445AE70037EAF1 /* TimeSelector.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TimeSelector.swift; sourceTree = "<group>"; };
+		1A9E24DD27445CFF0037EAF1 /* PickerStyle.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PickerStyle.swift; sourceTree = "<group>"; };
+		1A9E24DE27445D010037EAF1 /* PresentedViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PresentedViewController.swift; sourceTree = "<group>"; };
+		1A9E24DF27445D020037EAF1 /* CustomPresentationController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CustomPresentationController.swift; sourceTree = "<group>"; };
+		1A9E24E027445D030037EAF1 /* CustomPresentationAnimationController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CustomPresentationAnimationController.swift; sourceTree = "<group>"; };
+		1A9E24E127445D040037EAF1 /* SJDatePicker.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SJDatePicker.swift; sourceTree = "<group>"; };
+		1A9E24F22745613C0037EAF1 /* LinkView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = LinkView.xib; sourceTree = "<group>"; };
+		1A9E24F4274561680037EAF1 /* LinkView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LinkView.swift; sourceTree = "<group>"; };
+		1AA313612742C7B800120B0C /* NewHomeViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewHomeViewController.swift; sourceTree = "<group>"; };
+		1AA313632742E3B700120B0C /* SettingsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsViewController.swift; sourceTree = "<group>"; };
 		2575D5F857A81F34CB8C9508 /* Pods-Motherwise.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Motherwise.debug.xcconfig"; path = "Target Support Files/Pods-Motherwise/Pods-Motherwise.debug.xcconfig"; sourceTree = "<group>"; };
 		33A5104E9B1E9CDD71C46E59 /* Pods-MotherwiseTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MotherwiseTests.debug.xcconfig"; path = "Target Support Files/Pods-MotherwiseTests/Pods-MotherwiseTests.debug.xcconfig"; sourceTree = "<group>"; };
 		56EB977A124331178699A41B /* Pods-Motherwise-MotherwiseUITests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Motherwise-MotherwiseUITests.debug.xcconfig"; path = "Target Support Files/Pods-Motherwise-MotherwiseUITests/Pods-Motherwise-MotherwiseUITests.debug.xcconfig"; sourceTree = "<group>"; };
@@ -341,6 +367,27 @@
 			path = Pods;
 			sourceTree = "<group>";
 		};
+		1A9E24DC27445CE40037EAF1 /* DatePicker */ = {
+			isa = PBXGroup;
+			children = (
+				1A9E24E027445D030037EAF1 /* CustomPresentationAnimationController.swift */,
+				1A9E24DF27445D020037EAF1 /* CustomPresentationController.swift */,
+				1A9E24DD27445CFF0037EAF1 /* PickerStyle.swift */,
+				1A9E24DE27445D010037EAF1 /* PresentedViewController.swift */,
+				1A9E24E127445D040037EAF1 /* SJDatePicker.swift */,
+			);
+			path = DatePicker;
+			sourceTree = "<group>";
+		};
+		1A9E24E7274550DE0037EAF1 /* views */ = {
+			isa = PBXGroup;
+			children = (
+				1A9E24F22745613C0037EAF1 /* LinkView.xib */,
+				1A9E24F4274561680037EAF1 /* LinkView.swift */,
+			);
+			path = views;
+			sourceTree = "<group>";
+		};
 		2BF5A19A0220F4AE7FFBAA8F /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
@@ -383,6 +430,7 @@
 				655D753D2503BEB100E1AE23 /* classes */,
 				655D75402503BEDD00E1AE23 /* models */,
 				655D75412503BEE700E1AE23 /* cells */,
+				1A9E24E7274550DE0037EAF1 /* views */,
 				655D75422503BF1F00E1AE23 /* viewcontrollers */,
 				655D75142503BADC00E1AE23 /* Assets.xcassets */,
 				655D763E2503F06C00E1AE23 /* GoogleService-Info.plist */,
@@ -390,6 +438,7 @@
 				655D75112503BADB00E1AE23 /* Motherwise.xcdatamodeld */,
 				655D75162503BADC00E1AE23 /* LaunchScreen.storyboard */,
 				655D750E2503BADB00E1AE23 /* Main.storyboard */,
+				1A5FB0882746E8D400A3BAD7 /* Localizable.strings */,
 			);
 			path = Motherwise;
 			sourceTree = "<group>";
@@ -439,6 +488,8 @@
 		655D753D2503BEB100E1AE23 /* classes */ = {
 			isa = PBXGroup;
 			children = (
+				1A9E24DC27445CE40037EAF1 /* DatePicker */,
+				1A9E24DA27445AE70037EAF1 /* TimeSelector.swift */,
 				655D75832503C24F00E1AE23 /* CachingPlayerItem.swift */,
 				655D75882503C25300E1AE23 /* Places.swift */,
 				655D758A2503C25400E1AE23 /* TemperatureScale.swift */,
@@ -474,6 +525,7 @@
 				655D75752503C0EC00E1AE23 /* User.swift */,
 				655D756E2503C0E800E1AE23 /* WeatherData.swift */,
 				655D756B2503C0E600E1AE23 /* WeatherIcon.swift */,
+				1A9E24D827444CC90037EAF1 /* PostPreview.swift */,
 			);
 			path = models;
 			sourceTree = "<group>";
@@ -503,7 +555,6 @@
 		655D75422503BF1F00E1AE23 /* viewcontrollers */ = {
 			isa = PBXGroup;
 			children = (
-				655D75472503BF8000E1AE23 /* base */,
 				655D754E2503BFCF00E1AE23 /* home */,
 				655D754D2503BFC900E1AE23 /* chat */,
 				655D754C2503BFC200E1AE23 /* conference */,
@@ -511,6 +562,7 @@
 				655D754A2503BFA300E1AE23 /* message */,
 				655D75492503BF9D00E1AE23 /* location */,
 				655D75482503BF8800E1AE23 /* profile */,
+				655D75472503BF8000E1AE23 /* base */,
 				655D75462503BF7800E1AE23 /* frames */,
 				655D75452503BF6400E1AE23 /* weather */,
 				655D75442503BF5B00E1AE23 /* nearby2 */,
@@ -522,8 +574,10 @@
 				655D75EB2503C97E00E1AE23 /* MainViewController.swift */,
 				655D76032503C9BE00E1AE23 /* NotificationsViewController.swift */,
 				655D75E72503C96200E1AE23 /* HomeViewController.swift */,
+				1AA313612742C7B800120B0C /* NewHomeViewController.swift */,
 				6589B2E0250C8DDD00EBDF9A /* TermsViewController.swift */,
 				65CA4381252992DD001A5323 /* ViewController.swift */,
+				1AA313632742E3B700120B0C /* SettingsViewController.swift */,
 			);
 			path = viewcontrollers;
 			sourceTree = "<group>";
@@ -745,6 +799,7 @@
 				TargetAttributes = {
 					655D75042503BADB00E1AE23 = {
 						CreatedOnToolsVersion = 11.6;
+						LastSwiftMigration = 1310;
 					};
 					655D751D2503BADC00E1AE23 = {
 						CreatedOnToolsVersion = 11.6;
@@ -763,6 +818,7 @@
 			knownRegions = (
 				en,
 				Base,
+				es,
 			);
 			mainGroup = 655D74FC2503BADB00E1AE23;
 			productRefGroup = 655D75062503BADB00E1AE23 /* Products */;
@@ -782,6 +838,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				655D75572503C09700E1AE23 /* Comfortaa-Bold.ttf in Resources */,
+				1A5FB0862746E8D400A3BAD7 /* Localizable.strings in Resources */,
 				655D75182503BADC00E1AE23 /* LaunchScreen.storyboard in Resources */,
 				655D75632503C0B500E1AE23 /* Comfortaa-SemiBold.ttf in Resources */,
 				655D75152503BADC00E1AE23 /* Assets.xcassets in Resources */,
@@ -791,6 +848,7 @@
 				655D763F2503F06D00E1AE23 /* GoogleService-Info.plist in Resources */,
 				655D755D2503C0AD00E1AE23 /* Comfortaa-Medium.ttf in Resources */,
 				655D755A2503C09D00E1AE23 /* Comfortaa-Light.ttf in Resources */,
+				1A9E24F32745613C0037EAF1 /* LinkView.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -968,12 +1026,15 @@
 				655D76152503C9D400E1AE23 /* PostDetailViewController.swift in Sources */,
 				655D758C2503C25500E1AE23 /* CachingPlayerItem.swift in Sources */,
 				655D75AD2503C51200E1AE23 /* NearbyMenuCell.swift in Sources */,
+				1A9E24D927444CC90037EAF1 /* PostPreview.swift in Sources */,
 				655D75FC2503C9A700E1AE23 /* LocationSearchTable.swift in Sources */,
 				655D761C2503C9E600E1AE23 /* ProfileViewController.swift in Sources */,
 				655D75AE2503C51200E1AE23 /* NotiCell.swift in Sources */,
 				655D75A72503C51200E1AE23 /* NearbyCell.swift in Sources */,
+				1A9E24E527445D040037EAF1 /* CustomPresentationAnimationController.swift in Sources */,
 				65CA4382252992DD001A5323 /* ViewController.swift in Sources */,
 				655D75E82503C96300E1AE23 /* HomeViewController.swift in Sources */,
+				1A9E24E427445D040037EAF1 /* CustomPresentationController.swift in Sources */,
 				655D75D92503C94200E1AE23 /* CohortBox.swift in Sources */,
 				655D75F72503C99000E1AE23 /* FilteredMessagesViewController.swift in Sources */,
 				655D75A82503C51200E1AE23 /* LiveParticipantCell.swift in Sources */,
@@ -996,6 +1057,7 @@
 				655D75A42503C51200E1AE23 /* CommentCell.swift in Sources */,
 				655D75AF2503C51200E1AE23 /* PostCell.swift in Sources */,
 				655D761E2503C9E600E1AE23 /* ResetPasswordViewController.swift in Sources */,
+				1AA313622742C7B800120B0C /* NewHomeViewController.swift in Sources */,
 				655D761D2503C9E600E1AE23 /* MyPostsViewController.swift in Sources */,
 				655D75932503C25500E1AE23 /* TemperatureScale.swift in Sources */,
 				655D76112503C9D400E1AE23 /* NotifiedUsersViewController.swift in Sources */,
@@ -1018,6 +1080,7 @@
 				655D758D2503C25500E1AE23 /* WeatherAPI.swift in Sources */,
 				655D75A52503C51200E1AE23 /* ConfUserCell.swift in Sources */,
 				655D75F42503C99000E1AE23 /* SentMessagesViewController.swift in Sources */,
+				1A9E24E227445D040037EAF1 /* PickerStyle.swift in Sources */,
 				655D762B2503CA0400E1AE23 /* DailyForecastViewController.swift in Sources */,
 				655D76382503CD0300E1AE23 /* ReqConst.swift in Sources */,
 				655D75DE2503C94200E1AE23 /* MainMenu.swift in Sources */,
@@ -1026,6 +1089,7 @@
 				655D75D62503C94200E1AE23 /* MessageBox.swift in Sources */,
 				655D757F2503C0EC00E1AE23 /* Post.swift in Sources */,
 				655D75C52503C90800E1AE23 /* LiveVideoConfViewController.swift in Sources */,
+				1A9E24E327445D040037EAF1 /* PresentedViewController.swift in Sources */,
 				655D75D72503C94200E1AE23 /* GroupBox.swift in Sources */,
 				655D75AA2503C51200E1AE23 /* MessageCell.swift in Sources */,
 				655D76392503CD0300E1AE23 /* APIs.swift in Sources */,
@@ -1045,6 +1109,7 @@
 				655D757C2503C0EC00E1AE23 /* PostPicture.swift in Sources */,
 				655D75802503C0EC00E1AE23 /* Comment.swift in Sources */,
 				654E3B802524D11300C76C20 /* LiveVideoConf2ViewController.swift in Sources */,
+				1A9E24DB27445AE70037EAF1 /* TimeSelector.swift in Sources */,
 				655D75E62503C95500E1AE23 /* GroupMembersViewController.swift in Sources */,
 				655D75912503C25500E1AE23 /* Places.swift in Sources */,
 				655D75F52503C99000E1AE23 /* MessageDetailViewController.swift in Sources */,
@@ -1067,9 +1132,12 @@
 				655D76132503C9D400E1AE23 /* LikesViewController.swift in Sources */,
 				655D761B2503C9E600E1AE23 /* PickLocationViewController.swift in Sources */,
 				655D75D82503C94200E1AE23 /* DarkBackground.swift in Sources */,
+				1A9E24F5274561680037EAF1 /* LinkView.swift in Sources */,
 				655D750B2503BADB00E1AE23 /* SceneDelegate.swift in Sources */,
 				655D75C92503C90800E1AE23 /* VideoFileConfViewController.swift in Sources */,
 				655D75FD2503C9A700E1AE23 /* MainVC.swift in Sources */,
+				1A9E24E627445D040037EAF1 /* SJDatePicker.swift in Sources */,
+				1AA313642742E3B700120B0C /* SettingsViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1107,10 +1175,20 @@
 /* End PBXTargetDependency section */
 
 /* Begin PBXVariantGroup section */
+		1A5FB0882746E8D400A3BAD7 /* Localizable.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				1A5FB0892746E8D800A3BAD7 /* es */,
+				1A5FB08A274700CF00A3BAD7 /* en */,
+			);
+			name = Localizable.strings;
+			sourceTree = "<group>";
+		};
 		655D750E2503BADB00E1AE23 /* Main.storyboard */ = {
 			isa = PBXVariantGroup;
 			children = (
 				655D750F2503BADB00E1AE23 /* Base */,
+				1A5FB0852746E80600A3BAD7 /* es */,
 			);
 			name = Main.storyboard;
 			sourceTree = "<group>";
@@ -1130,6 +1208,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
@@ -1160,6 +1239,7 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_BITCODE = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
@@ -1190,6 +1270,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
@@ -1220,6 +1301,7 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_BITCODE = NO;
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
@@ -1245,21 +1327,28 @@
 			baseConfigurationReference = 2575D5F857A81F34CB8C9508 /* Pods-Motherwise.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = Motherwise/Motherwise.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 6;
+				CURRENT_PROJECT_VERSION = 7;
 				DEVELOPMENT_TEAM = SA36QEKM63;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Motherwise",
+				);
 				INFOPLIST_FILE = Motherwise/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 13.3;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.5;
+				MARKETING_VERSION = 1.6;
 				PRODUCT_BUNDLE_IDENTIFIER = com.app.motherwise;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_WORKSPACE = NO;
 			};
 			name = Debug;
 		};
@@ -1268,21 +1357,27 @@
 			baseConfigurationReference = 5D73C968532113B71D424246 /* Pods-Motherwise.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = Motherwise/Motherwise.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 6;
+				CURRENT_PROJECT_VERSION = 7;
 				DEVELOPMENT_TEAM = SA36QEKM63;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Motherwise",
+				);
 				INFOPLIST_FILE = Motherwise/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 13.3;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.5;
+				MARKETING_VERSION = 1.6;
 				PRODUCT_BUNDLE_IDENTIFIER = com.app.motherwise;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_WORKSPACE = NO;
 			};
 			name = Release;
 		};

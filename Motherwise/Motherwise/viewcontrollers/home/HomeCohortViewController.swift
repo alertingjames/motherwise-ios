@@ -62,6 +62,18 @@ class HomeCohortViewController: BaseViewController, UIPickerViewDelegate, UIPick
         "E(v)114",
         "E(v)115",
         "S(v)116",
+        "E(v)117",
+        "E(v)118",
+        "S(v)119",
+        "E(v)120",
+        "E(v)121",
+        "S(v)122",
+        "E(v)123",
+        "E(v)124",
+        "S(v)125",
+        "E(v)126",
+        "E(v)127",
+        "S(v)128",
         "Love Notes E(v)1",
         "Love Notes E(v)2",
         "Love Notes E(v)3",
@@ -73,14 +85,24 @@ class HomeCohortViewController: BaseViewController, UIPickerViewDelegate, UIPick
         "MotherWise Alumni",
         "MotherWise Team")
 
+    @IBOutlet weak var lbl_title: UILabel!
+    @IBOutlet weak var lbl_members: UILabel!
+    @IBOutlet weak var lbl_video: UILabel!
+    @IBOutlet weak var lbl_group_chat: UILabel!
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        lbl_title.text = "connect_with_group".localized().uppercased()
+        lbl_members.text = "members".localized()
+        lbl_video.text = "video_conference".localized()
+        lbl_group_chat.text = "group_chat".localized()
+        groupBox.attributedPlaceholder = NSAttributedString(string: "choose_group".localized(),
+                                     attributes: [NSAttributedString.Key.foregroundColor: UIColor.lightGray])
+        
 
         membersButton.layer.cornerRadius = 23
-        
         conferenceButton.layer.cornerRadius = 23
-        
         groupChatButton.layer.cornerRadius = 23
         
         view_group.layer.borderColor = UIColor.lightGray.cgColor
@@ -114,10 +136,10 @@ class HomeCohortViewController: BaseViewController, UIPickerViewDelegate, UIPick
     
     @objc func getCohortMembers(_ sender: UITapGestureRecognizer? = nil) {
         if groupBox.text?.count == 0 {
-            showToast(msg: "Please choose a group.")
+            showToast(msg: "choose_group".localized())
             return
         }
-        gUsers = gUsers.filter{ user in
+        gUsers = gNewHomeVC.users.filter{ user in
             return user.cohort == groupBox.text || user.cohort == "admin"
         }
         gGroupName = groupBox.text!
@@ -129,7 +151,7 @@ class HomeCohortViewController: BaseViewController, UIPickerViewDelegate, UIPick
     
     @objc func getCohortConferences(_ sender: UITapGestureRecognizer? = nil) {
         if groupBox.text?.count == 0 {
-            showToast(msg: "Please choose a group.")
+            showToast(msg: "choose_group".localized())
             return
         }
         gSelectedGroupId = 0
@@ -141,12 +163,12 @@ class HomeCohortViewController: BaseViewController, UIPickerViewDelegate, UIPick
     
     @objc func cohortGroupChat(_ sender: UITapGestureRecognizer? = nil) {
         if groupBox.text?.count == 0 {
-            showToast(msg: "Please choose a group.")
+            showToast(msg: "choose_group".localized())
             return
         }
         gSelectedGroupId = 0
         gSelectedCohort = groupBox.text!
-        gUsers = gUsers.filter{ user in
+        gUsers = gNewHomeVC.users.filter{ user in
             return user.cohort == groupBox.text || user.cohort == "admin"
         }
         let vc = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(identifier: "GroupChatViewController")
@@ -218,7 +240,7 @@ class HomeCohortViewController: BaseViewController, UIPickerViewDelegate, UIPick
         toolbar.sizeToFit()
         toolbar.tintColor = primaryDarkColor
         toolbar.backgroundColor = UIColor.lightGray
-        let doneButton = UIBarButtonItem(title: "Done", style: .plain, target: self, action: #selector(SignupViewController.closePickerView))
+        let doneButton = UIBarButtonItem(title: "done".localized(), style: .plain, target: self, action: #selector(SignupViewController.closePickerView))
         toolbar.setItems([doneButton], animated: false)
         toolbar.isUserInteractionEnabled = true
         groupBox.inputAccessoryView = toolbar

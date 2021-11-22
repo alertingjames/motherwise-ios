@@ -18,7 +18,6 @@ import AudioToolbox
 
 class HomeViewController: BaseViewController, UITableViewDataSource, UITableViewDelegate {
     
-//    private var lastContentOffset: CGFloat = 0
     @IBOutlet weak var view_nav:UIView!
     @IBOutlet weak var view_noticount: UIView!
     @IBOutlet weak var lbl_noticount: UILabel!
@@ -26,7 +25,7 @@ class HomeViewController: BaseViewController, UITableViewDataSource, UITableView
     @IBOutlet weak var btn_search: UIButton!
     @IBOutlet weak var view_searchbar: UIView!
     @IBOutlet weak var edt_search: UITextField!
-    @IBOutlet weak var btn_nav: UIButton!
+    @IBOutlet weak var btn_back: UIButton!
     @IBOutlet weak var logo: UIImageView!
     @IBOutlet weak var lbl_title: UILabel!
     @IBOutlet weak var ic_notification: UIImageView!
@@ -37,16 +36,11 @@ class HomeViewController: BaseViewController, UITableViewDataSource, UITableView
     @IBOutlet weak var selCountBox: UILabel!
     @IBOutlet weak var noResult: UILabel!
     
+    @IBOutlet weak var lbl_selected: UILabel!
     @IBOutlet weak var descBox: MarqueeLabel!
-    
-    let icLeft = UIImage(named: "ic_left_w")
-    let icNavigation = UIImage(named: "ic_nav_menu_w")
     
     let icUnchecked = UIImage(named: "ic_add_user")
     let icChecked = UIImage(named: "ic_checked")
-    
-    var menu_vc:MainMenu!
-    var dark_background:DarkBackground!
     
     var user_buttons:HomeUserMenu!
     
@@ -88,41 +82,20 @@ class HomeViewController: BaseViewController, UITableViewDataSource, UITableView
         
         view_noticount.isHidden = true
         view_searchbar.isHidden = true
-        edt_search.attributedPlaceholder = NSAttributedString(string: "Search...",
+        edt_search.attributedPlaceholder = NSAttributedString(string: "search_".localized(),
             attributes: attrs)
         
         view_searchbar.layer.cornerRadius = view_searchbar.frame.height / 2
         view_searchbar.backgroundColor = UIColor(rgb: 0xffffff, alpha: 0.3)
         
-        gHomeButton = btn_nav
-        menu_vc = self.storyboard!.instantiateViewController(withIdentifier: "MainMenu") as? MainMenu
-        dark_background = self.storyboard!.instantiateViewController(withIdentifier: "DarkBackground") as? DarkBackground
         user_buttons = self.storyboard!.instantiateViewController(withIdentifier: "HomeUserMenu") as! HomeUserMenu
         
-        self.menu_vc.view.frame = CGRect(x: -UIScreen.main.bounds.width, y: 0, width: UIScreen.main.bounds.width, height: UIScreen.main.bounds.height)
-        self.dark_background.view.frame = CGRect(x: 0, y: 0, width: UIScreen.main.bounds.width, height: UIScreen.main.bounds.height)
-        
-        gMainMenu = menu_vc
-        
-        let swipeRight = UISwipeGestureRecognizer(target: self, action: #selector(self.respondToGesture(gesture:)))
-        swipeRight.direction = UISwipeGestureRecognizer.Direction.right
-        
-        let swipeLeft = UISwipeGestureRecognizer(target: self, action: #selector(self.respondToGesture(gesture:)))
-        swipeLeft.direction = UISwipeGestureRecognizer.Direction.left
-        
-        self.view.addGestureRecognizer(swipeRight)
-        self.view.addGestureRecognizer(swipeLeft)
-        
-        isMenuOpen = true
         
         self.userList.delegate = self
         self.userList.dataSource = self
         
         self.userList.estimatedRowHeight = 260.0
         self.userList.rowHeight = UITableView.automaticDimension
-        
-        let tap_menupanel = UITapGestureRecognizer(target: self, action: #selector(self.tapPanel(_:)))
-        menu_vc.view.addGestureRecognizer(tap_menupanel)
         
         edt_search.addTarget(self, action: #selector(self.textFieldDidChange(_:)),
                             for: UIControl.Event.editingChanged)
@@ -133,11 +106,6 @@ class HomeViewController: BaseViewController, UITableViewDataSource, UITableView
 //                print("FCMToken!!!", gFCMToken)
             }
         }
-        
-        if thisUser.photo_url != ""{
-            loadPicture(imageView:menu_vc.logo, url:URL(string: thisUser.photo_url)!)
-        }
-        menu_vc.profileNameBox.text = thisUser.name
         
         if gFCMToken.count > 0{
             registerFCMToken(member_id: thisUser.idx, token: gFCMToken)
@@ -152,6 +120,10 @@ class HomeViewController: BaseViewController, UITableViewDataSource, UITableView
         self.getCallNotifications()
         
         self.getHomeData(member_id: thisUser.idx)
+        
+        lbl_title.text = "meet".localized().uppercased()
+        lbl_selected.text = "selected".localized()
+        noResult.text = "no_member".localized()
         
     }
     
@@ -185,52 +157,6 @@ class HomeViewController: BaseViewController, UITableViewDataSource, UITableView
         
     }
     
-    @objc func tapPanel(_ sender: UITapGestureRecognizer? = nil) {
-        close_menu()
-    }
-    
-    @objc func respondToGesture(gesture: UISwipeGestureRecognizer){
-        switch gesture.direction{
-        case UISwipeGestureRecognizer.Direction.right:
-            show_menu()
-        case UISwipeGestureRecognizer.Direction.left:
-            close_on_swipe()
-        default:
-            break
-        }
-    }
-    
-    func close_on_swipe(){
-        if isMenuOpen{
-            // show_menu()
-        }else{
-            close_menu()
-        }
-    }
-    
-    func show_menu() {
-        UIView.animate(withDuration: 0.3){() -> Void in
-            self.addChild(self.dark_background)
-            self.view.addSubview(self.dark_background.view)
-            self.menu_vc.view.frame = CGRect(x: 0, y: 0, width: UIScreen.main.bounds.width, height: UIScreen.main.bounds.height)
-            self.addChild(self.menu_vc)
-            self.view.addSubview(self.menu_vc.view)
-            isMenuOpen = false
-            darkBackg = self.dark_background
-        }
-    }
-    
-    func close_menu() {
-        UIView.animate(withDuration: 0.3, animations: {() -> Void in
-            self.menu_vc.view.frame = CGRect(x: -UIScreen.main.bounds.width, y: 0, width: UIScreen.main.bounds.width, height: UIScreen.main.bounds.height)
-            self.dark_background.view.removeFromSuperview()
-        }){
-            (finished) in
-            self.menu_vc.view.removeFromSuperview()
-        }
-        isMenuOpen = true
-    }
-    
     
     @IBAction func tap_search(_ sender: Any) {
         if view_searchbar.isHidden{
@@ -251,17 +177,6 @@ class HomeViewController: BaseViewController, UITableViewDataSource, UITableView
         }
     }
     
-    @IBAction func tap_menu(_ sender: Any) {
-        if isMenuOpen{
-            isMenuOpen = false
-            btn_nav.setImage(icNavigation, for: .normal)
-            show_menu()
-        }else{
-            isMenuOpen = true
-            btn_nav.setImage(icLeft, for: .normal)
-            close_menu()
-        }
-    }
     
     func loadPicture(imageView:UIImageView, url:URL){
         let processor = DownsamplingImageProcessor(size: imageView.frame.size)
@@ -594,32 +509,23 @@ class HomeViewController: BaseViewController, UITableViewDataSource, UITableView
                 gGroups = groups!
                 
             }
-            else{
-                if result_code == "1" {
-                    self.menu_vc.logout()
-                }else if result_code == "2" {
-                    /// cohort is empty and update profile //////////////////////////////
-                }else {
-                    self.showToast(msg: "Something wrong!")
-                }
-            }
         })
     }
 
     @IBAction func toSelChat(_ sender: Any) {
         if gSelectedUsers.count == 0{
-            self.showToast(msg: "Please select members.")
+            self.showToast(msg: "select_members".localized())
             return
         }
 
         let vc = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(identifier: "PChatMembersViewController")
-        self.modalPresentationStyle = .fullScreen
+        vc.modalPresentationStyle = .fullScreen
         self.transitionVc(vc: vc, duration: 0.3, type: .fromRight)
     }
     
     @IBAction func toSelMessage(_ sender: Any) {
         if gSelectedUsers.count == 0{
-            self.showToast(msg: "Please select members.")
+            self.showToast(msg: "select_members".localized())
             return
         }
         gUser = User()
@@ -642,7 +548,7 @@ class HomeViewController: BaseViewController, UITableViewDataSource, UITableView
         
         dropDown.anchorView = view
         
-        dropDown.dataSource = ["  Posts", "  Chat", "  Message"]
+        dropDown.dataSource = ["  " + "posts".localized(), "  " + "chat".localized(), "  " + "message".localized()]
         // Action triggered on selection
         dropDown.selectionAction = { [unowned self] (idx: Int, item: String) in
             print("Selected item: \(item) at index: \(idx)")
@@ -824,7 +730,7 @@ class HomeViewController: BaseViewController, UITableViewDataSource, UITableView
                 noti.status = type
                     
                 if type == "call_request" {
-                    self.showCallAlertDialog(title: noti.sender.name, message: "Incoming call...", alias: noti.id, ref: ref.child(key))
+                    self.showCallAlertDialog(title: noti.sender.name, message: "incoming_call_".localized(), alias: noti.id, ref: ref.child(key))
                 }
                 
                 if !self.notifiedUsers.contains(where: {$0.idx == user.idx}) {
@@ -857,6 +763,14 @@ class HomeViewController: BaseViewController, UITableViewDataSource, UITableView
         })
             
     }
+    
+    
+    @IBAction func back(_ sender: Any) {
+        self.dismiss(animated: true, completion: nil)
+    }
+    
+    
+    
     
 }
 

@@ -31,7 +31,7 @@ class NotifiedUsersViewController: BaseViewController, UITableViewDataSource, UI
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        edt_search.attributedPlaceholder = NSAttributedString(string: "Search...",
+        edt_search.attributedPlaceholder = NSAttributedString(string: "search_".localized(),
             attributes: attrs)
         
         view_searchbar.layer.cornerRadius = view_searchbar.frame.height / 2
@@ -143,13 +143,13 @@ class NotifiedUsersViewController: BaseViewController, UITableViewDataSource, UI
         
         if gNewPostViewController != nil{
             if gSelectedUsers.count > 0{
-                gNewPostViewController.edt_notify.text = "Selected " + String(gSelectedUsers.count) + " users"
+                gNewPostViewController.edt_notify.text = "selected".localized() + " " + String(gSelectedUsers.count) + " " + "users".localized()
             }else{
                 gNewPostViewController.edt_notify.text = ""
             }
         }else if gEditPostViewController != nil{
             if gSelectedUsers.count > 0{
-                gEditPostViewController.edt_notify.text = "Selected " + String(gSelectedUsers.count) + " users"
+                gEditPostViewController.edt_notify.text = "selected".localized() + " " + String(gSelectedUsers.count) + " " + "users".localized()
             }else{
                 gEditPostViewController.edt_notify.text = ""
             }
@@ -213,9 +213,9 @@ class NotifiedUsersViewController: BaseViewController, UITableViewDataSource, UI
             gSelectedUsers = gUsers
             self.btn_all_add.setImage(icChecked, for: .normal)
             if gNewPostViewController != nil{
-                gNewPostViewController.edt_notify.text = "Selected all users"
+                gNewPostViewController.edt_notify.text = "selected_all_users".localized()
             }else if gEditPostViewController != nil{
-                gEditPostViewController.edt_notify.text = ""
+                gEditPostViewController.edt_notify.text = "selected_all_users".localized()
             }
         }
         self.userList.reloadData()

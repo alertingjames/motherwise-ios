@@ -26,7 +26,7 @@ class WeatherAPI: NSObject {
         }
         
         // Set up the URL request
-        let endpointString = "https://api.openweathermap.org/data/2.5/weather?q=\(sanitizedCityName),\(countryCode)&units=\(tempScale.rawValue)&APPID=\(key)"
+        let endpointString = "https://api.openweathermap.org/data/2.5/weather?q=\(sanitizedCityName),\(countryCode)" + "langxxx".localized() + "&units=\(tempScale.rawValue)&APPID=\(key)"
         
         print("final request string:", endpointString)
         
@@ -85,7 +85,7 @@ class WeatherAPI: NSObject {
         }
         
         // Set up the URL request
-        let endpointString = "https://api.openweathermap.org/data/2.5/weather?lat=\(lat)&lon=\(lon)&units=\(tempScale.rawValue)&APPID=\(key)"
+        let endpointString = "https://api.openweathermap.org/data/2.5/weather?lat=\(lat)&lon=\(lon)" + "langxxx".localized() + "&units=\(tempScale.rawValue)&APPID=\(key)"
         
         print("final request string:", endpointString)
         
@@ -151,7 +151,7 @@ class WeatherAPI: NSObject {
         }
             
         // Set up the URL request
-        let endpointString = "https://api.openweathermap.org/data/2.5/forecast?lat=\(lat)&lon=\(lon)&units=\(tempScale.rawValue)&APPID=\(key)"
+        let endpointString = "https://api.openweathermap.org/data/2.5/forecast?lat=\(lat)&lon=\(lon)" + "langxxx".localized() + "&units=\(tempScale.rawValue)&APPID=\(key)"
             
         print("final request string:", endpointString)
             
@@ -212,7 +212,7 @@ class WeatherAPI: NSObject {
         }
             
         // Set up the URL request
-        let endpointString = "https://api.openweathermap.org/data/2.5/forecast/daily?lat=\(lat)&lon=\(lon)&units=\(tempScale.rawValue)&cnt=16&APPID=\(key)"
+        let endpointString = "https://api.openweathermap.org/data/2.5/forecast/daily?lat=\(lat)&lon=\(lon)" + "langxxx".localized() + "&units=\(tempScale.rawValue)&cnt=16&APPID=\(key)"
             
         print("final request string:", endpointString)
             
@@ -278,7 +278,7 @@ class WeatherAPI: NSObject {
         }
         
         // Set up the URL request
-        let endpointString = "https://api.openweathermap.org/data/2.5/weather?q=\(sanitizedCityName)&units=\(tempScale.rawValue)&APPID=\(key)"
+        let endpointString = "https://api.openweathermap.org/data/2.5/weather?q=\(sanitizedCityName)" + "langxxx".localized() + "&units=\(tempScale.rawValue)&APPID=\(key)"
         
         print("final request string:", endpointString)
         
@@ -341,7 +341,7 @@ class WeatherAPI: NSObject {
         }
         
         // Set up the URL request
-        let endpointString = "https://api.openweathermap.org/data/2.5/forecast?q=\(sanitizedCityName)&units=\(tempScale.rawValue)&APPID=\(key)"
+        let endpointString = "https://api.openweathermap.org/data/2.5/forecast?q=\(sanitizedCityName)" + "langxxx".localized() + "&units=\(tempScale.rawValue)&APPID=\(key)"
         
         print("final request string:", endpointString)
         
@@ -404,7 +404,7 @@ class WeatherAPI: NSObject {
         }
         
         // Set up the URL request
-        let endpointString = "https://api.openweathermap.org/data/2.5/forecast/daily?q=\(sanitizedCityName)&units=\(tempScale.rawValue)&cnt=16&APPID=\(key)"
+        let endpointString = "https://api.openweathermap.org/data/2.5/forecast/daily?q=\(sanitizedCityName)" + "langxxx".localized() + "&units=\(tempScale.rawValue)&cnt=16&APPID=\(key)"
         
         print("final request string:", endpointString)
         

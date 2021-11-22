@@ -23,9 +23,13 @@ class HomeSendMessageViewController: BaseViewController {
     @IBOutlet weak var img4: UIImageView!
     @IBOutlet weak var img5: UIImageView!
     
+    @IBOutlet weak var lbl_send_message: UILabel!
+    @IBOutlet weak var lbl_selected: UILabel!
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        lbl_send_message.text = "send_message".localized().uppercased()
         
         img1.layer.cornerRadius = 15
         img2.layer.cornerRadius = 15
@@ -68,7 +72,7 @@ class HomeSendMessageViewController: BaseViewController {
                 loadPicture(imageView: img4, url: URL(string: gSelectedUsers[3].photo_url)!)
                 loadPicture(imageView: img5, url: URL(string: gSelectedUsers[4].photo_url)!)
             }
-            selectedCountBox.text = "Selected: " + String(gSelectedUsers.count)
+            selectedCountBox.text = "selected".localized() + ": " + String(gSelectedUsers.count)
         }else{
             loadPicture(imageView: userPicture, url: URL(string: gUser.photo_url)!)
             userPicture.isHidden = false
@@ -77,7 +81,7 @@ class HomeSendMessageViewController: BaseViewController {
         
         sendButton.roundCorners(corners: [.topLeft], radius: 35 / 2)
 
-        textBox.setPlaceholder(string: "Write something here...")
+        textBox.setPlaceholder(string: "type_something_here_".localized())
         textBox.textContainerInset = UIEdgeInsets(top: textBox.textContainerInset.top, left: 8, bottom: textBox.textContainerInset.bottom, right: textBox.textContainerInset.right)
         
         
@@ -123,7 +127,7 @@ class HomeSendMessageViewController: BaseViewController {
     
     @IBAction func sendMessage(_ sender: Any) {
         if textBox.text.trimmingCharacters(in: .whitespacesAndNewlines) == ""{
-            showToast(msg: "Please write your message...")
+            showToast(msg: "write_something_".localized())
             return
         }
         if gUser.idx > 0 {
@@ -139,18 +143,18 @@ class HomeSendMessageViewController: BaseViewController {
             result_code in
             self.dismissLoadingView()
             if result_code == "0"{
-                self.showToast2(msg: "Message sent!")
+                self.showToast2(msg: "message_sent".localized())
                 self.textBox.text = ""
                 self.textBox.checkPlaceholder()
                 self.sendButton.isHidden = true
             }else if result_code == "1"{
-                self.showToast(msg: "Your account doesn\'t exist")
+                self.showToast(msg: "account_not_exist".localized())
                 gMainMenu.logout()
             }else if result_code == "0"{
-                self.showToast(msg: "This user doesn\'t exist")
+                self.showToast(msg: "user_not_exist".localized())
                 self.dismissViewController()
             }else{
-                self.showToast(msg: "Somthing wrong")
+                self.showToast(msg: "something_wrong".localized())
                 
             }
         })
@@ -163,18 +167,18 @@ class HomeSendMessageViewController: BaseViewController {
             result_code in
             self.dismissLoadingView()
             if result_code == "0"{
-                self.showToast2(msg: "Message sent!")
+                self.showToast2(msg: "message_sent".localized())
                 self.textBox.text = ""
                 self.textBox.checkPlaceholder()
                 self.sendButton.isHidden = true
             }else if result_code == "1"{
-                self.showToast(msg: "Your account doesn\'t exist")
+                self.showToast(msg: "account_not_exist".localized())
                 self.logout()
             }else if result_code == "2"{
-                self.showToast(msg: "This user doesn\'t exist")
+                self.showToast(msg: "user_not_exist".localized())
                 self.dismiss(animated: true, completion: nil)
             }else{
-                self.showToast(msg: "Somthing wrong")
+                self.showToast(msg: "something_wrong".localized())
                 
             }
         })

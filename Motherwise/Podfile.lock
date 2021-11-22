@@ -129,10 +129,10 @@ PODS:
   - SwiftGifOrigin (1.7.0)
   - SwiftyJSON (5.0.0)
   - Toast-Swift (5.0.1)
-  - VoxeetSDK (2.4.0)
-  - VoxeetUXKit (1.3.4):
+  - VoxeetSDK (3.2.3)
+  - VoxeetUXKit (1.5.3):
     - SDWebImage (~> 5.0)
-    - VoxeetSDK (~> 2.0)
+    - VoxeetSDK (~> 3.0)
   - YoutubePlayerView (1.2.1)
   - YPImagePicker (4.2.1):
     - PryntTrimmerView (~> 4.0.0)
@@ -161,14 +161,13 @@ DEPENDENCIES:
   - MultiSlider
   - OneSignal (< 3.0, >= 2.9.3)
   - SCLAlertView
-  - SDWebImage
+  - SDWebImage (~> 5.0)
   - SJSegmentedScrollView
   - SQLite
   - SwiftGifOrigin
   - SwiftyJSON
   - Toast-Swift
-  - VoxeetSDK
-  - VoxeetUXKit
+  - VoxeetUXKit (~> 1.0)
   - YoutubePlayerView
   - YPImagePicker
 
@@ -268,11 +267,11 @@ SPEC CHECKSUMS:
   SwiftGifOrigin: fbd6cf37afcfcf97a5c3db996ddc0492e5c5c145
   SwiftyJSON: 36413e04c44ee145039d332b4f4e2d3e8d6c4db7
   Toast-Swift: 9b6a70f28b3bf0b96c40d46c0c4b9d6639846711
-  VoxeetSDK: 44b67623efdb5d681223482abc245c6a8ab9a9e9
-  VoxeetUXKit: 5d09d9518604fd30fbf376916060a709d8ad2ee8
+  VoxeetSDK: 1f3411c816f98e71732e42d9190bfe541876dd67
+  VoxeetUXKit: 1c35c5acfbc340732492b8667b8f0afce53c63ba
   YoutubePlayerView: 3870fc10f2db3f54156697757f44d304203bdc7e
   YPImagePicker: 3b88ca0c50134af2856c48c481572c98a8b8b65b
 
-PODFILE CHECKSUM: c11ec97deb3723dc263b36409bec6cdadec969c8
+PODFILE CHECKSUM: 633324240dd3e618d4157465a7ae7b8e450ec1ad
 
-COCOAPODS: 1.9.3
+COCOAPODS: 1.11.2

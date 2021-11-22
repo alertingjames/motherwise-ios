@@ -33,6 +33,9 @@ class PostDetailViewController: BaseViewController, UITableViewDataSource, UITab
     @IBOutlet weak var postImageScrollView: UIScrollView!
     
     @IBOutlet weak var postDesc: UITextView!
+    @IBOutlet weak var linkView: UIView!
+    @IBOutlet weak var stackView: UIStackView!
+    @IBOutlet weak var linkViewH: NSLayoutConstraint!
     
     @IBOutlet weak var likeButton: UIButton!
     @IBOutlet weak var commentButton: UIButton!
@@ -74,6 +77,8 @@ class PostDetailViewController: BaseViewController, UITableViewDataSource, UITab
     @IBOutlet weak var commentList: UITableView!
     @IBOutlet weak var tableViewHeight: NSLayoutConstraint!
     
+    var linkpreviews = [PostPreview]()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -84,8 +89,9 @@ class PostDetailViewController: BaseViewController, UITableViewDataSource, UITab
         commentBox.layer.cornerRadius = commentBox.frame.height / 2
         
         self.commentImageBox.isHidden = true
+        self.noResult.text = "no_comment_".localized()
         
-        commentBox.setPlaceholder(string: "Write something ...")
+        commentBox.setPlaceholder(string: "write_something_".localized())
         commentBox.textContainerInset = UIEdgeInsets(top: commentBox.textContainerInset.top, left: 8, bottom: commentBox.textContainerInset.bottom, right: 5)
         
         commentBox.delegate = self
@@ -94,8 +100,8 @@ class PostDetailViewController: BaseViewController, UITableViewDataSource, UITab
         self.commentList.dataSource = self
         
         var config = YPImagePickerConfiguration()
-        config.wordings.libraryTitle = "Gallery"
-        config.wordings.cameraTitle = "Camera"
+        config.wordings.libraryTitle = "gallery".localized()
+        config.wordings.cameraTitle = "camera".localized()
         YPImagePickerConfiguration.shared = config
         picker = YPImagePicker()
         
@@ -126,11 +132,54 @@ class PostDetailViewController: BaseViewController, UITableViewDataSource, UITab
         postCategory.text = gPost.category
         postDateTime.text = gPost.posted_time
         if gPost.status == "updated" {
-            postDateTime.text = "Updated at " + gPost.posted_time
+            postDateTime.text = "updated_at".localized() + " " + gPost.posted_time
         }
         
         UITextView.appearance().linkTextAttributes = [ .foregroundColor: UIColor(rgb: 0x0BFFFF, alpha: 1.0) ]
         postDesc.text = gPost.content.decodeEmoji
+        
+        linkpreviews = gPost.previews
+        if gPost.previews.count > 0 {
+            linkView.visibility = .visible
+            stackView.arrangedSubviews
+                .filter({ $0 is LinkView})
+                .forEach({ $0.removeFromSuperview() })
+            var i = 0
+            for prev in gPost.previews {
+                i += 1
+                let linkView = (Bundle.main.loadNibNamed("LinkView", owner: self, options: nil))?[0] as! LinkView
+                if prev.image_url.count > 0{
+                    linkView.linkImageBox.visibilityh = .visible
+                    loadPicture(imageView: linkView.linkImageBox, url: URL(string: prev.image_url)!)
+                }else {
+                    linkView.linkImageBox.visibilityh = .gone
+                }
+                linkView.linkTitleBox.text = prev.title
+                if prev.icon_url.count > 0{
+                    linkView.linkiconBox.visibilityh = .visible
+                    loadPicture(imageView: linkView.linkiconBox, url: URL(string: prev.icon_url)!)
+                }else {
+                    linkView.linkiconBox.visibilityh = .gone
+                }
+                linkView.linkUrlBox.text = prev.site_url
+                linkView.frame.size.height = 60
+                linkView.linkImageW.constant = CGFloat(linkView.frame.size.height * 1.2)
+                
+                linkView.tag = i
+                let tap = UITapGestureRecognizer(target: self, action: #selector(self.tappedLinkPreview(gesture:)))
+                linkView.addGestureRecognizer(tap)
+                
+                stackView.addArrangedSubview(linkView)
+                linkView.layoutIfNeeded()
+            }
+            linkViewH.constant = CGFloat(60 * gPost.previews.count)
+        }else {
+            linkView.visibility = .gone
+//                cell.linkViewH.constant = 0
+        }
+        linkView.sizeToFit()
+        
+        
         likesLabel.text = String(gPost.likes)
 
         commentsLabel.text = String(gPost.comments)
@@ -163,6 +212,13 @@ class PostDetailViewController: BaseViewController, UITableViewDataSource, UITab
         
         if gPost.pictures == 0{
             self.postImageContainer.visibility = .gone
+        }
+    }
+    
+    @objc func tappedLinkPreview(gesture:UITapGestureRecognizer) {
+        let linkprev = linkpreviews[gesture.view!.tag - 1]
+        if let url = URL(string: linkprev.site_url) {
+            UIApplication.shared.open(url)
         }
     }
     
@@ -278,7 +334,7 @@ class PostDetailViewController: BaseViewController, UITableViewDataSource, UITab
         
         dropDown.anchorView = self.menuButton
         if gPost.user.idx == thisUser.idx{
-            dropDown.dataSource = ["  Likes", "  Edit", "  Delete"]
+            dropDown.dataSource = ["  " + "likes".localized(), "  " + "edit".localized(), "  " + "delete".localized()]
             // Action triggered on selection
             dropDown.selectionAction = { [unowned self] (idx: Int, item: String) in
                 print("Selected item: \(item) at index: \(idx)")
@@ -290,10 +346,10 @@ class PostDetailViewController: BaseViewController, UITableViewDataSource, UITab
                     let vc = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(identifier: "EditPostViewController")
                     self.present(vc, animated: true, completion: nil)
                 }else if idx == 2{
-                    let alert = UIAlertController(title: "Delete", message: "Are you sure you want to delete this post?", preferredStyle: .alert)
-                    let noAction = UIAlertAction(title: "No", style: .cancel, handler: {
+                    let alert = UIAlertController(title: "delete".localized(), message: "sure_delete_post".localized(), preferredStyle: .alert)
+                    let noAction = UIAlertAction(title: "no".localized(), style: .cancel, handler: {
                         (action : UIAlertAction!) -> Void in })
-                    let yesAction = UIAlertAction(title: "Yes", style: .destructive, handler: { alert -> Void in
+                    let yesAction = UIAlertAction(title: "yes".localized(), style: .destructive, handler: { alert -> Void in
                         self.deletePost(post_id: gPost.idx)
                     })
                     
@@ -304,7 +360,7 @@ class PostDetailViewController: BaseViewController, UITableViewDataSource, UITab
                 }
             }
         }else{
-            dropDown.dataSource = ["  Likes", "  Message"]
+            dropDown.dataSource = ["  " + "likes".localized(), "  " + "message".localized()]
             // Action triggered on selection
             dropDown.selectionAction = { [unowned self] (idx: Int, item: String) in
                 print("Selected item: \(item) at index: \(idx)")
@@ -354,13 +410,13 @@ class PostDetailViewController: BaseViewController, UITableViewDataSource, UITab
                 self.likesLabel.text = likes
                 self.likeButton.setImageTintColor(.white)
             }else if result_code == "1"{
-                self.showToast(msg:"Your account doesn\'t exist")
+                self.showToast(msg:"account_not_exist".localized())
                 self.logout()
             }else if result_code == "2"{
-                self.showToast(msg:"This post doesn\'t exist")
+                self.showToast(msg:"post_not_exist".localized())
                 self.dismiss(animated: true, completion: nil)
             }else {
-                self.showToast(msg:"Something wrong")
+                self.showToast(msg:"something_wrong".localized())
                 self.dismiss(animated: true, completion: nil)
             }
         })
@@ -383,13 +439,13 @@ class PostDetailViewController: BaseViewController, UITableViewDataSource, UITab
             result_code in
             self.dismissLoadingView()
             if result_code == "0"{
-                self.showToast2(msg: "Deleted")
+                self.showToast2(msg: "deleted".localized())
                 self.dismiss(animated: true, completion: nil)
             }else if result_code == "1"{
-                self.showToast(msg: "This post doesn\'t exist")
+                self.showToast(msg: "post_not_exist".localized())
                 self.dismiss(animated: true, completion: nil)
             }else {
-                self.showToast(msg:"Something wrong")
+                self.showToast(msg:"something_wrong".localized())
                 self.dismiss(animated: true, completion: nil)
             }
         })
@@ -494,7 +550,7 @@ class PostDetailViewController: BaseViewController, UITableViewDataSource, UITab
             
         dropDown.anchorView = cell.menuButton
         if comments[index].user.idx == thisUser.idx{
-            dropDown.dataSource = ["  Edit", "  Delete"]
+            dropDown.dataSource = ["  " + "edit".localized(), "  " + "delete".localized()]
             // Action triggered on selection
             dropDown.selectionAction = { [unowned self] (idx: Int, item: String) in
                 print("Selected item: \(item) at index: \(idx)")
@@ -504,10 +560,10 @@ class PostDetailViewController: BaseViewController, UITableViewDataSource, UITab
                     self.commentBox.becomeFirstResponder()
                     self.commentLayout.isHidden = false
                 }else if idx == 1{
-                    let alert = UIAlertController(title: "Delete", message: "Are you sure you want to delete this comment?", preferredStyle: .alert)
-                    let noAction = UIAlertAction(title: "No", style: .cancel, handler: {
+                    let alert = UIAlertController(title: "delete".localized(), message: "sure_delete_comment".localized(), preferredStyle: .alert)
+                    let noAction = UIAlertAction(title: "no".localized(), style: .cancel, handler: {
                             (action : UIAlertAction!) -> Void in })
-                    let yesAction = UIAlertAction(title: "Yes", style: .destructive, handler: { alert -> Void in
+                    let yesAction = UIAlertAction(title: "yes".localized(), style: .destructive, handler: { alert -> Void in
                         self.deleteComment(comment_id: self.comments[index].idx)
                     })
                         
@@ -518,7 +574,7 @@ class PostDetailViewController: BaseViewController, UITableViewDataSource, UITab
                 }
             }
         }else{
-            dropDown.dataSource = ["  Message"]
+            dropDown.dataSource = ["  " + "message".localized()]
             // Action triggered on selection
             dropDown.selectionAction = { [unowned self] (idx: Int, item: String) in
                 print("Selected item: \(item) at index: \(idx)")
@@ -565,9 +621,9 @@ class PostDetailViewController: BaseViewController, UITableViewDataSource, UITab
             }
             else{
                 if result_code == "1" {
-                    self.showToast(msg: "The post doesn\'t exist.")
+                    self.showToast(msg: "post_not_exist".localized())
                 } else {
-                    self.showToast(msg: "Something wrong!")
+                    self.showToast(msg: "something_wrong".localized())
                 }
             }
         })
@@ -588,7 +644,7 @@ class PostDetailViewController: BaseViewController, UITableViewDataSource, UITab
     
     @IBAction func submitComment(_ sender: Any) {
         if commentBox.text.trimmingCharacters(in: .whitespacesAndNewlines) == "" {
-            showToast(msg: "Please type something...")
+            showToast(msg: "type_something_".localized())
             return
         }
                 
@@ -618,27 +674,30 @@ class PostDetailViewController: BaseViewController, UITableViewDataSource, UITab
                         self.commentBox.checkPlaceholder()
                         self.sendButton.visibilityh = .gone
                         if gRecentViewController == gPostViewController{
-                            gPostViewController.getPosts(member_id:thisUser.idx)
+                            gPostViewController.getUserPosts(me_id: thisUser.idx, member_id: gUser.idx)
                         }else if gRecentViewController == gMyPostViewController{
-                            gMyPostViewController.getPosts(member_id:thisUser.idx)
+                            gMyPostViewController.getMyPosts(member_id: thisUser.idx)
                         }
+                        
                     }else if result_code as! String == "1"{
-                        self.showToast(msg: "This user doesn\'t exist.")
+                        self.showToast(msg: "user_not_exist".localized())
                         self.logout()
                     }else if result_code as! String == "2"{
-                        self.showToast(msg: "This post doesn\'t exist.")
+                        self.showToast(msg: "post_not_exist".localized())
                         if gRecentViewController == gPostViewController{
-                            gPostViewController.getPosts(member_id:thisUser.idx)
+                            gPostViewController.getUserPosts(me_id: thisUser.idx, member_id: gUser.idx)
                         }else if gRecentViewController == gMyPostViewController{
-                            gMyPostViewController.getPosts(member_id:thisUser.idx)
+                            gMyPostViewController.getMyPosts(member_id: thisUser.idx)
                         }
+                        
                         self.dismiss(animated: true, completion: nil)
                     }else {
-                        self.showToast(msg: "Something wrong")
+                        self.showToast(msg: "something_wrong".localized())
                     }
                 }else{
-                    let message = "File size: " + String(response.fileSize()) + "\n" + "Description: " + response.description
-                    self.showToast(msg: "Issue: \n" + message)
+                    self.showToast(msg: "something_wrong".localized())
+//                    let message = "File size: " + String(response.fileSize()) + "\n" + "Description: " + response.description
+//                    self.showToast(msg: "Issue: \n" + message)
                 }
             }
         }else{
@@ -657,27 +716,30 @@ class PostDetailViewController: BaseViewController, UITableViewDataSource, UITab
                         self.sendButton.visibilityh = .gone
                         self.commentBox.checkPlaceholder()
                         if gRecentViewController == gPostViewController{
-                            gPostViewController.getPosts(member_id:thisUser.idx)
+                            gPostViewController.getUserPosts(me_id: thisUser.idx, member_id: gUser.idx)
                         }else if gRecentViewController == gMyPostViewController{
-                            gMyPostViewController.getPosts(member_id:thisUser.idx)
+                            gMyPostViewController.getMyPosts(member_id: thisUser.idx)
                         }
+                        
                     }else if result_code as! String == "1"{
-                        self.showToast(msg: "This user doesn\'t exist.")
+                        self.showToast(msg: "user_not_exist".localized())
                         self.logout()
                     }else if result_code as! String == "2"{
-                        self.showToast(msg: "This post doesn\'t exist.")
+                        self.showToast(msg: "post_not_exist".localized())
                         if gRecentViewController == gPostViewController{
-                            gPostViewController.getPosts(member_id:thisUser.idx)
+                            gPostViewController.getUserPosts(me_id: thisUser.idx, member_id: gUser.idx)
                         }else if gRecentViewController == gMyPostViewController{
-                            gMyPostViewController.getPosts(member_id:thisUser.idx)
+                            gMyPostViewController.getMyPosts(member_id: thisUser.idx)
                         }
+                        
                         self.dismiss(animated: true, completion: nil)
                     }else {
-                        self.showToast(msg: "Something wrong")
+                        self.showToast(msg: "something_wrong".localized())
                     }
                 }else{
-                    let message = "File size: " + String(response.fileSize()) + "\n" + "Description: " + response.description
-                    self.showToast(msg: "Issue: \n" + message)
+                    self.showToast(msg: "something_wrong".localized())
+//                    let message = "File size: " + String(response.fileSize()) + "\n" + "Description: " + response.description
+//                    self.showToast(msg: "Issue: \n" + message)
                 }
             }
         }
@@ -690,18 +752,19 @@ class PostDetailViewController: BaseViewController, UITableViewDataSource, UITab
             result_code in
             self.dismissLoadingView()
             if result_code == "0"{
-                self.showToast2(msg: "Deleted")
+                self.showToast2(msg: "deleted".localized())
                 self.getComments(post_id: gPost.idx)
                 if gRecentViewController == gPostViewController{
-                    gPostViewController.getPosts(member_id:thisUser.idx)
+                    gPostViewController.getUserPosts(me_id: thisUser.idx, member_id: gUser.idx)
                 }else if gRecentViewController == gMyPostViewController{
-                    gMyPostViewController.getPosts(member_id:thisUser.idx)
+                    gMyPostViewController.getMyPosts(member_id: thisUser.idx)
                 }
+                
             }else if result_code == "1"{
-                self.showToast(msg: "This comment doesn\'t exist")
+                self.showToast(msg: "comment_not_exist".localized())
                 self.getComments(post_id: gPost.idx)
             }else {
-                self.showToast(msg:"Something wrong")
+                self.showToast(msg:"something_wrong".localized())
             }
         })
     }

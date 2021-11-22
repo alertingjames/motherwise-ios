@@ -57,12 +57,15 @@ class GroupMembersViewController: BaseViewController, UITableViewDataSource, UIT
     
     var notifiedUsers = [User]()
     var notiFrame:NotisFrame!
-
+    @IBOutlet weak var lbl_selected: UILabel!
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
         gRecentViewController = self
         gGroupMembersViewController = self
+        
+        lbl_title.text = lbl_title.text?.uppercased()
         
         notiFrame = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(identifier: "NotisFrame")
         notiFrame.view.frame = CGRect(x: 0, y: -screenHeight, width: screenWidth, height: screenHeight)
@@ -81,7 +84,7 @@ class GroupMembersViewController: BaseViewController, UITableViewDataSource, UIT
         
         view_noticount.isHidden = true
         view_searchbar.isHidden = true
-        edt_search.attributedPlaceholder = NSAttributedString(string: "Search...",
+        edt_search.attributedPlaceholder = NSAttributedString(string: "search_".localized(),
             attributes: attrs)
         
         view_searchbar.layer.cornerRadius = view_searchbar.frame.height / 2
@@ -104,6 +107,8 @@ class GroupMembersViewController: BaseViewController, UITableViewDataSource, UIT
 //                print("FCMToken!!!", gFCMToken)
             }
         }
+        
+        noResult.text = "no_member_found".localized()
         
         self.getNotifiedUsers()
         self.getNotifications()
@@ -451,6 +456,7 @@ class GroupMembersViewController: BaseViewController, UITableViewDataSource, UIT
     
     func getHomeData(){
         self.lbl_title.text = gGroupName
+        lbl_title.text = lbl_title.text?.uppercased()
         self.users = gUsers
         self.searchUsers = gUsers
         gSelectedUsers.removeAll()
@@ -463,17 +469,17 @@ class GroupMembersViewController: BaseViewController, UITableViewDataSource, UIT
     
     @IBAction func toSelChat(_ sender: Any) {
         if gSelectedUsers.count == 0{
-            self.showToast(msg: "Please select members.")
+            self.showToast(msg: "select_members".localized())
             return
         }
         let vc = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(identifier: "PChatMembersViewController")
-        self.modalPresentationStyle = .fullScreen
+        vc.modalPresentationStyle = .fullScreen
         self.transitionVc(vc: vc, duration: 0.3, type: .fromRight)
     }
     
     @IBAction func toSelMessage(_ sender: Any) {
         if gSelectedUsers.count == 0{
-            self.showToast(msg: "Please select members.")
+            self.showToast(msg: "select_members".localized())
             return
         }
         gUser = User()
@@ -496,7 +502,7 @@ class GroupMembersViewController: BaseViewController, UITableViewDataSource, UIT
         
         dropDown.anchorView = view
         
-        dropDown.dataSource = ["  Posts", "  Chat", "  Message"]
+        dropDown.dataSource = ["  " + "posts".localized(), "  " + "chat".localized(), "  " + "message".localized()]
         // Action triggered on selection
         dropDown.selectionAction = { [unowned self] (idx: Int, item: String) in
             print("Selected item: \(item) at index: \(idx)")

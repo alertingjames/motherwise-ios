@@ -19,6 +19,7 @@ import GSImageViewerController
 class CommentViewController: BaseViewController, UITableViewDataSource, UITableViewDelegate {
 
     @IBOutlet weak var navBar: UIView!
+    @IBOutlet weak var lbl_title: UILabel!
     @IBOutlet weak var commentList: UITableView!
     @IBOutlet weak var attachButton: UIButton!
     @IBOutlet weak var sendButton: UIButton!
@@ -57,11 +58,14 @@ class CommentViewController: BaseViewController, UITableViewDataSource, UITableV
         sendButton.visibilityh = .gone
         view_emoji.visibility = .gone
         
+        lbl_title.text = "comment".localized().uppercased()
+        noResult.text = "no_comment_".localized()
+        
         commentBox.layer.cornerRadius = commentBox.frame.height / 2
         
         self.commentImageBox.isHidden = true
         
-        commentBox.setPlaceholder(string: "Write something ...")
+        commentBox.setPlaceholder(string: "write_something_".localized())
         commentBox.textContainerInset = UIEdgeInsets(top: commentBox.textContainerInset.top, left: 8, bottom: commentBox.textContainerInset.bottom, right: 5)
         commentBox.becomeFirstResponder()
         
@@ -74,7 +78,7 @@ class CommentViewController: BaseViewController, UITableViewDataSource, UITableV
         UITextView.appearance().linkTextAttributes = [ .foregroundColor: UIColor.yellow ]
         
         emojiButtons = [lbl_emoji0, lbl_emoji1, lbl_emoji2, lbl_emoji3, lbl_emoji4, lbl_emoji5, lbl_emoji6, lbl_emoji7, lbl_emoji8, lbl_emoji9]
-        emojiStrings = ["Close", "💖","👍","😊","😄","😍","🙁","😂","😠","😛"]
+        emojiStrings = ["close".localized(), "💖","👍","😊","😄","😍","🙁","😂","😠","😛"]
         
         for emjButton in emojiButtons {
             let index = emojiButtons.firstIndex(of: emjButton)!
@@ -233,7 +237,7 @@ class CommentViewController: BaseViewController, UITableViewDataSource, UITableV
         
         dropDown.anchorView = cell.menuButton
         if comments[index].user.idx == thisUser.idx{
-            dropDown.dataSource = ["  Edit", "  Delete"]
+            dropDown.dataSource = ["  " + "edit".localized(), "  " + "delete".localized()]
             // Action triggered on selection
             dropDown.selectionAction = { [unowned self] (idx: Int, item: String) in
                 print("Selected item: \(item) at index: \(idx)")
@@ -242,10 +246,10 @@ class CommentViewController: BaseViewController, UITableViewDataSource, UITableV
                     self.commentBox.checkPlaceholder()
                     self.commentBox.becomeFirstResponder()
                 }else if idx == 1{
-                    let alert = UIAlertController(title: "Delete", message: "Are you sure you want to delete this comment?", preferredStyle: .alert)
-                    let noAction = UIAlertAction(title: "No", style: .cancel, handler: {
+                    let alert = UIAlertController(title: "delete".localized(), message: "sure_delete_comment".localized(), preferredStyle: .alert)
+                    let noAction = UIAlertAction(title: "no".localized(), style: .cancel, handler: {
                         (action : UIAlertAction!) -> Void in })
-                    let yesAction = UIAlertAction(title: "Yes", style: .destructive, handler: { alert -> Void in
+                    let yesAction = UIAlertAction(title: "yes".localized(), style: .destructive, handler: { alert -> Void in
                         self.deleteComment(comment_id: self.comments[index].idx)
                     })
                     
@@ -256,7 +260,7 @@ class CommentViewController: BaseViewController, UITableViewDataSource, UITableV
                 }
             }
         }else{
-            dropDown.dataSource = ["  Message"]
+            dropDown.dataSource = ["  " + "message".localized()]
             // Action triggered on selection
             dropDown.selectionAction = { [unowned self] (idx: Int, item: String) in
                 print("Selected item: \(item) at index: \(idx)")
@@ -311,9 +315,9 @@ class CommentViewController: BaseViewController, UITableViewDataSource, UITableV
             }
             else{
                 if result_code == "1" {
-                    self.showToast(msg: "The post doesn\'t exist.")
+                    self.showToast(msg: "post_not_exist".localized())
                 } else {
-                    self.showToast(msg: "Something wrong!")
+                    self.showToast(msg: "something_wrong".localized())
                 }
             }
         })
@@ -329,8 +333,8 @@ class CommentViewController: BaseViewController, UITableViewDataSource, UITableV
             if idx == 0{
                 var picker:YPImagePicker!
                 var config = YPImagePickerConfiguration()
-                config.wordings.libraryTitle = "Gallery"
-                config.wordings.cameraTitle = "Camera"
+                config.wordings.libraryTitle = "gallery".localized()
+                config.wordings.cameraTitle = "camera".localized()
                 YPImagePickerConfiguration.shared = config
                 picker = YPImagePicker()
                 picker.didFinishPicking { [picker] items, _ in
@@ -363,7 +367,7 @@ class CommentViewController: BaseViewController, UITableViewDataSource, UITableV
     
     @IBAction func submitComment(_ sender: Any) {
         if commentBox.text.trimmingCharacters(in: .whitespacesAndNewlines) == "" {
-            showToast(msg: "Please type something...")
+            showToast(msg: "type_something_".localized())
             return
         }
                 
@@ -394,27 +398,28 @@ class CommentViewController: BaseViewController, UITableViewDataSource, UITableV
                         self.sendButton.visibilityh = .gone
                         self.imageFile = nil
                         if gRecentViewController == gPostViewController{
-                            gPostViewController.getPosts(member_id: thisUser.idx)
+                            gPostViewController.getUserPosts(me_id: thisUser.idx, member_id: gUser.idx)
                         }else if gRecentViewController == gMyPostViewController{
-                            gMyPostViewController.getPosts(member_id:thisUser.idx)
+                            gMyPostViewController.getMyPosts(member_id: thisUser.idx)
                         }
                     }else if result_code as! String == "1"{
-                        self.showToast(msg: "This user doesn\'t exist.")
+                        self.showToast(msg: "user_not_exist".localized())
                         self.logout()
                     }else if result_code as! String == "2"{
-                        self.showToast(msg: "This post doesn\'t exist.")
+                        self.showToast(msg: "post_not_exist".localized())
                         if gRecentViewController == gPostViewController{
-                            gPostViewController.getPosts(member_id:thisUser.idx)
+                            gPostViewController.getUserPosts(me_id: thisUser.idx, member_id: gUser.idx)
                         }else if gRecentViewController == gMyPostViewController{
-                            gMyPostViewController.getPosts(member_id:thisUser.idx)
+                            gMyPostViewController.getMyPosts(member_id: thisUser.idx)
                         }
                         self.dismiss(animated: true, completion: nil)
                     }else {
-                        self.showToast(msg: "Something wrong")
+                        self.showToast(msg: "something_wrong".localized())
                     }
                 }else{
-                    let message = "File size: " + String(response.fileSize()) + "\n" + "Description: " + response.description
-                    self.showToast(msg: "Issue: \n" + message)
+                    self.showToast(msg: "something_wrong".localized())
+//                    let message = "File size: " + String(response.fileSize()) + "\n" + "Description: " + response.description
+//                    self.showToast(msg: "Issue: \n" + message)
                 }
             }
         }else{
@@ -434,27 +439,28 @@ class CommentViewController: BaseViewController, UITableViewDataSource, UITableV
                         self.sendButton.visibilityh = .gone
                         self.imageFile = nil
                         if gRecentViewController == gPostViewController{
-                            gPostViewController.getPosts(member_id:thisUser.idx)
+                            gPostViewController.getUserPosts(me_id: thisUser.idx, member_id: gUser.idx)
                         }else if gRecentViewController == gMyPostViewController{
-                            gMyPostViewController.getPosts(member_id:thisUser.idx)
+                            gMyPostViewController.getMyPosts(member_id: thisUser.idx)
                         }
                     }else if result_code as! String == "1"{
-                        self.showToast(msg: "This user doesn\'t exist.")
+                        self.showToast(msg: "user_not_exist".localized())
                         self.logout()
                     }else if result_code as! String == "2"{
-                        self.showToast(msg: "This post doesn\'t exist.")
+                        self.showToast(msg: "post_not_exist".localized())
                         if gRecentViewController == gPostViewController{
-                            gPostViewController.getPosts(member_id:thisUser.idx)
+                            gPostViewController.getUserPosts(me_id: thisUser.idx, member_id: gUser.idx)
                         }else if gRecentViewController == gMyPostViewController{
-                            gMyPostViewController.getPosts(member_id:thisUser.idx)
+                            gMyPostViewController.getMyPosts(member_id: thisUser.idx)
                         }
                         self.dismiss(animated: true, completion: nil)
                     }else {
-                        self.showToast(msg: "Something wrong")
+                        self.showToast(msg: "something_wrong".localized())
                     }
                 }else{
-                    let message = "File size: " + String(response.fileSize()) + "\n" + "Description: " + response.description
-                    self.showToast(msg: "Issue: \n" + message)
+                    self.showToast(msg: "something_wrong".localized())
+//                    let message = "File size: " + String(response.fileSize()) + "\n" + "Description: " + response.description
+//                    self.showToast(msg: "Issue: \n" + message)
                 }
             }
         }
@@ -467,18 +473,19 @@ class CommentViewController: BaseViewController, UITableViewDataSource, UITableV
             result_code in
             self.dismissLoadingView()
             if result_code == "0"{
-                self.showToast2(msg: "Deleted")
+                self.showToast2(msg: "deleted".localized())
                 self.getComments(post_id: gPost.idx)
                 if gRecentViewController == gPostViewController{
-                    gPostViewController.getPosts(member_id:thisUser.idx)
+                    gPostViewController.getUserPosts(me_id: thisUser.idx, member_id: gUser.idx)
                 }else if gRecentViewController == gMyPostViewController{
-                    gMyPostViewController.getPosts(member_id:thisUser.idx)
+                    gMyPostViewController.getMyPosts(member_id: thisUser.idx)
                 }
+                
             }else if result_code == "1"{
-                self.showToast(msg: "This comment doesn\'t exist")
+                self.showToast(msg: "comment_not_exist".localized())
                 self.getComments(post_id: gPost.idx)
             }else {
-                self.showToast(msg:"Something wrong")
+                self.showToast(msg: "something_wrong".localized())
             }
         })
     }

@@ -42,7 +42,9 @@ class FilteredMessagesViewController:  BaseViewController, UITableViewDataSource
         super.viewDidLoad()
 
         view_searchbar.isHidden = true
-        edt_search.attributedPlaceholder = NSAttributedString(string: "Search...",
+        lbl_title.text = "filtered_messages".localized().uppercased()
+        noResult.text = "no_message_".localized()
+        edt_search.attributedPlaceholder = NSAttributedString(string: "search_".localized(),
             attributes: attrs)
         
         edt_search.addTarget(self, action: #selector(textFieldDidChange), for: .editingChanged)
@@ -59,7 +61,7 @@ class FilteredMessagesViewController:  BaseViewController, UITableViewDataSource
         UITextView.appearance().linkTextAttributes = [ .foregroundColor: UIColor(rgb: 0x0BFFFF, alpha: 1.0) ]
         
         if gMessageFilterOption == "unread"{
-            lbl_title.text = "UNREAD MESSAGES"
+            lbl_title.text = "unread".localized().uppercased() + " " + "messages".localized().uppercased()
         }
         
     }
@@ -158,6 +160,7 @@ class FilteredMessagesViewController:  BaseViewController, UITableViewDataSource
                 cell.txv_desc.text = String(cell.txv_desc.text.prefix(500)) + " ..."
             }
             
+            cell.btn_new.setTitle("new_".localized(), for: .normal)
             if message.status == "" {
                 cell.btn_new.isHidden = false
             }else{
@@ -234,20 +237,20 @@ class FilteredMessagesViewController:  BaseViewController, UITableViewDataSource
         let dropDown = DropDown()
         
         dropDown.anchorView = cell.menuButton
-        dropDown.dataSource = ["  Chat", "  Delete"]
+        dropDown.dataSource = ["  " + "chat".localized(), "  " + "delete".localized()]
         // Action triggered on selection
         dropDown.selectionAction = { [unowned self] (idx: Int, item: String) in
             print("Selected item: \(item) at index: \(idx)")
             if idx == 0{
                 gUser = self.messages[index].sender
                 let vc = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(identifier: "PrivateChatViewController")
-                self.modalPresentationStyle = .fullScreen
+                vc.modalPresentationStyle = .fullScreen
                 self.present(vc, animated: true, completion: nil)
             }else if idx == 1{
-                let alert = UIAlertController(title: "Delete", message: "Are you sure you want to delete this message?", preferredStyle: .alert)
-                let noAction = UIAlertAction(title: "No", style: .cancel, handler: {
+                let alert = UIAlertController(title: "delete".localized(), message: "sure_delete_message".localized(), preferredStyle: .alert)
+                let noAction = UIAlertAction(title: "no".localized(), style: .cancel, handler: {
                     (action : UIAlertAction!) -> Void in })
-                let yesAction = UIAlertAction(title: "Yes", style: .destructive, handler: { alert -> Void in
+                let yesAction = UIAlertAction(title: "yes".localized(), style: .destructive, handler: { alert -> Void in
                     let message = self.messages[index]
                     self.deleteMessage(message_id: message.idx, option: "received")
                 })
@@ -344,7 +347,7 @@ class FilteredMessagesViewController:  BaseViewController, UITableViewDataSource
                 if result_code == "1" {
                     self.logout()
                 } else {
-                    self.showToast(msg: "Something wrong!")
+                    self.showToast(msg: "something_wrong".localized())
                 }
             }
         })
@@ -356,11 +359,11 @@ class FilteredMessagesViewController:  BaseViewController, UITableViewDataSource
             result_code in
             self.dismissLoadingView()
             if result_code == "0"{
-                self.showToast2(msg: "Deleted")
+                self.showToast2(msg: "deleted".localized())
                 self.getReceivedMessages(member_id: thisUser.idx)
                 gMessageViewController.getReceivedMessages(member_id: thisUser.idx)
             }else {
-                self.showToast(msg:"Something wrong")
+                self.showToast(msg:"something_wrong".localized())
             }
         })
     }
@@ -374,7 +377,7 @@ class FilteredMessagesViewController:  BaseViewController, UITableViewDataSource
                 self.getReceivedMessages(member_id: thisUser.idx)
                 gMessageViewController.getReceivedMessages(member_id: thisUser.idx)
             }else {
-                self.showToast(msg:"Something wrong")
+                self.showToast(msg:"something_wrong".localized())
             }
         })
     }

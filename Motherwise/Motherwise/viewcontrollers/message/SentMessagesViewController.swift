@@ -41,9 +41,11 @@ class SentMessagesViewController: BaseViewController, UITableViewDataSource, UIT
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        lbl_title.text = "sent_messages".localized().uppercased()
 
         view_searchbar.isHidden = true
-        edt_search.attributedPlaceholder = NSAttributedString(string: "Search...",
+        edt_search.attributedPlaceholder = NSAttributedString(string: "search_".localized(),
             attributes: attrs)
         
         edt_search.addTarget(self, action: #selector(textFieldDidChange), for: .editingChanged)
@@ -67,7 +69,7 @@ class SentMessagesViewController: BaseViewController, UITableViewDataSource, UIT
         let dropDown = DropDown()
                 
         dropDown.anchorView = self.menuButton
-        dropDown.dataSource = ["  Inbox", "  Notifications"]
+        dropDown.dataSource = ["  " + "inbox".localized(), "  " + "notifications".localized()]
         // Action triggered on selection
         dropDown.selectionAction = { [unowned self] (idx: Int, item: String) in
             print("Selected item: \(item) at index: \(idx)")
@@ -239,20 +241,20 @@ class SentMessagesViewController: BaseViewController, UITableViewDataSource, UIT
         let dropDown = DropDown()
         
         dropDown.anchorView = cell.menuButton
-        dropDown.dataSource = ["  Chat", "  Delete"]
+        dropDown.dataSource = ["  " + "chat".localized(), "  " + "delete".localized()]
         // Action triggered on selection
         dropDown.selectionAction = { [unowned self] (idx: Int, item: String) in
             print("Selected item: \(item) at index: \(idx)")
             if idx == 0{
                 gUser = self.messages[index].sender
                 let vc = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(identifier: "PrivateChatViewController")
-                self.modalPresentationStyle = .fullScreen
+                vc.modalPresentationStyle = .fullScreen
                 self.present(vc, animated: true, completion: nil)
             }else if idx == 1{
-                let alert = UIAlertController(title: "Delete", message: "Are you sure you want to delete this message?", preferredStyle: .alert)
-                let noAction = UIAlertAction(title: "No", style: .cancel, handler: {
+                let alert = UIAlertController(title: "delete".localized(), message: "sure_delete_message".localized(), preferredStyle: .alert)
+                let noAction = UIAlertAction(title: "no".localized(), style: .cancel, handler: {
                     (action : UIAlertAction!) -> Void in })
-                let yesAction = UIAlertAction(title: "Yes", style: .destructive, handler: { alert -> Void in
+                let yesAction = UIAlertAction(title: "yes".localized(), style: .destructive, handler: { alert -> Void in
                     let message = self.messages[index]
                     self.deleteMessage(message_id: message.idx, option: "sent")
                 })
@@ -341,7 +343,7 @@ class SentMessagesViewController: BaseViewController, UITableViewDataSource, UIT
                 if result_code == "1" {
                     self.logout()
                 } else {
-                    self.showToast(msg: "Something wrong!")
+                    self.showToast(msg: "something_wrong".localized())
                 }
             }
         })
@@ -355,10 +357,10 @@ class SentMessagesViewController: BaseViewController, UITableViewDataSource, UIT
             result_code in
             self.dismissLoadingView()
             if result_code == "0"{
-                self.showToast2(msg: "Deleted")
+                self.showToast2(msg: "deleted".localized())
                 self.getSentMessages(member_id: thisUser.idx)
             }else {
-                self.showToast(msg:"Something wrong")
+                self.showToast(msg: "something_wrong".localized())
             }
         })
     }

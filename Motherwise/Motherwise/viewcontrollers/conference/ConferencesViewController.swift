@@ -39,8 +39,11 @@ class ConferencesViewController: BaseViewController, UITableViewDataSource, UITa
         super.viewDidLoad()
 
         view_searchbar.isHidden = true
-        edt_search.attributedPlaceholder = NSAttributedString(string: "Search...",
+        edt_search.attributedPlaceholder = NSAttributedString(string: "search_".localized(),
             attributes: attrs)
+        
+        lbl_title.text = "conferences".localized().uppercased()
+        noResult.text = "no_conference_found_".localized()
         
         edt_search.addTarget(self, action: #selector(textFieldDidChange), for: .editingChanged)
         
@@ -123,12 +126,12 @@ class ConferencesViewController: BaseViewController, UITableViewDataSource, UITa
             cell.lbl_group_name.text = conf.group_name
             if conf.event_time != ""{
                 cell.lbl_start_time.visibility = .visible
-                cell.lbl_start_time.text = "Start At " + conf.event_time
+                cell.lbl_start_time.text = "start_at".localized() + " " + conf.event_time
             }else{
                 cell.lbl_start_time.visibility = .gone
             }
             
-            cell.lbl_created_time.text = "Created At " + conf.created_time
+            cell.lbl_created_time.text = "created_at".localized() + " " + conf.created_time
             
             let tap = UITapGestureRecognizer(target: self, action: #selector(tappedView(gesture:)))
             cell.view_content.tag = index
@@ -150,29 +153,29 @@ class ConferencesViewController: BaseViewController, UITableViewDataSource, UITa
         if conf.type == "live"{
             
             gConference = conf
-            let vc = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(identifier: "LiveVideoConf2ViewController")
-            self.modalPresentationStyle = .fullScreen
+            let vc = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(identifier: "LiveVideoConf2ViewController") // LiveVideoConf2ViewController
+            vc.modalPresentationStyle = .fullScreen
             self.transitionVc(vc: vc, duration: 0.3, type: .fromRight)
             
 //            self.showInputDialog(title: "Enter security code", button_text: "Entry", index: 0)
             
         }else if conf.type == "youtube" {
             if conf.status != "notified"{
-                self.showAlertDialog(title:"Sorry", message: "You don\'t have any access to this conference yet. Please be patient to wait to get notified.")
+                self.showAlertDialog(title: "sorry".localized(), message: "no_access_to_conference".localized())
                 return
             }
             gConference = conf
             let vc = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(identifier: "YouTubeConfViewController")
-            self.modalPresentationStyle = .fullScreen
+            vc.modalPresentationStyle = .fullScreen
             self.transitionVc(vc: vc, duration: 0.3, type: .fromRight)
         }else if conf.type == "file" {
             if conf.status != "notified"{
-                self.showAlertDialog(title:"Sorry", message: "You don\'t have any access to this conference yet. Please be patient to wait to get notified.")
+                self.showAlertDialog(title:"sorry".localized(), message: "no_access_to_conference".localized())
                 return
             }
             gConference = conf
             let vc = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(identifier: "VideoFileConfViewController")
-            self.modalPresentationStyle = .fullScreen
+            vc.modalPresentationStyle = .fullScreen
             self.transitionVc(vc: vc, duration: 0.3, type: .fromRight)
         }
     }
@@ -248,7 +251,7 @@ class ConferencesViewController: BaseViewController, UITableViewDataSource, UITa
                 if result_code == "1" {
                     self.logout()
                 } else {
-                    self.showToast(msg: "Something wrong!")
+                    self.showToast(msg: "something_wrong".localized())
                 }
             }
         })
@@ -276,7 +279,7 @@ class ConferencesViewController: BaseViewController, UITableViewDataSource, UITa
                 if result_code == "1" {
                     self.logout()
                 } else {
-                    self.showToast(msg: "Something wrong!")
+                    self.showToast(msg: "something_wrong".localized())
                 }
             }
         })

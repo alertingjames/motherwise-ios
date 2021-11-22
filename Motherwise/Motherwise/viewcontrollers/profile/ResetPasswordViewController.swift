@@ -11,6 +11,7 @@ import UIKit
 class ResetPasswordViewController: BaseViewController {
     
     
+    @IBOutlet weak var lbl_title: UILabel!
     @IBOutlet weak var view_email: UIView!
     @IBOutlet weak var view_oldpwd: UIView!
     @IBOutlet weak var view_newpwd: UIView!
@@ -27,6 +28,8 @@ class ResetPasswordViewController: BaseViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        lbl_title.text = "reset_password".localized().uppercased()
 
         view_email.layer.cornerRadius = view_email.frame.height / 2
         view_oldpwd.layer.cornerRadius = view_oldpwd.frame.height / 2
@@ -39,8 +42,23 @@ class ResetPasswordViewController: BaseViewController {
         btn_show.setImageTintColor(.lightGray)
         btn_submit.layer.cornerRadius = btn_submit.frame.height / 2
         
+        edt_email.attributedPlaceholder = NSAttributedString(
+            string: "email".localized(),
+            attributes: [NSAttributedString.Key.foregroundColor: UIColor.lightGray]
+        )
+        edt_oldpwd.attributedPlaceholder = NSAttributedString(
+            string: "old_password".localized(),
+            attributes: [NSAttributedString.Key.foregroundColor: UIColor.lightGray]
+        )
+        edt_newpwd.attributedPlaceholder = NSAttributedString(
+            string: "new_password".localized(),
+            attributes: [NSAttributedString.Key.foregroundColor: UIColor.lightGray]
+        )
+        
         edt_email.text = thisUser.email
         edt_email.isEnabled = false
+        
+        btn_submit.setTitle("submit".localized(), for: .normal)
         
     }
     
@@ -50,17 +68,17 @@ class ResetPasswordViewController: BaseViewController {
     
     @IBAction func submit(_ sender: Any) {
         if edt_oldpwd.text?.trimmingCharacters(in: .whitespacesAndNewlines).count == 0{
-            showToast(msg: "Enter your old password.")
+            showToast(msg: "enter_old_password".localized())
             return
         }
         
         if edt_newpwd.text?.trimmingCharacters(in: .whitespacesAndNewlines).count == 0{
-            showToast(msg: "Enter your new password.")
+            showToast(msg: "enter_new_password".localized())
             return
         }
         
         if thisUser.password != edt_oldpwd.text?.trimmingCharacters(in: .whitespacesAndNewlines){
-            showToast(msg: "Please enter your correct old password.")
+            showToast(msg: "enter_correct_old_password".localized())
             return
         }
         
@@ -71,15 +89,15 @@ class ResetPasswordViewController: BaseViewController {
             if result == "0"{
                 thisUser.password = self.edt_newpwd.text?.trimmingCharacters(in: .whitespacesAndNewlines) as! String
                 UserDefaults.standard.set(thisUser.password, forKey: "password")
-                gProfileViewController.showToast2(msg: "Successfully changed")
+                gProfileViewController.showToast2(msg: "successfully_changed".localized())
                 self.dismiss(animated: true, completion: nil)
             }else if result == "1" {
-                self.showToast2(msg: "This user doesn\'t exist.")
+                self.showToast2(msg: "user_not_exist".localized())
                 self.logout()
             }else if result == "2"{
-                self.showToast2(msg: "Your email or password is incorrect. Please enter your correct info.")
+                self.showToast2(msg: "email_password_incorrect".localized())
             }else {
-                self.showToast2(msg: "Something is wrong...")
+                self.showToast2(msg: "something_wrong_".localized())
             }
             
         })

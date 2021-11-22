@@ -64,14 +64,16 @@ class HeaderViewController: UIViewController {
     @IBAction func openWeatherSettings(_ sender: Any) {
         let dropDown = DropDown()
         dropDown.anchorView = self.btn_settings
-        dropDown.dataSource = ["  Change city", "  Change location", "  Change to Celsius", "  Change to Fahrenheit", "  Change to Kelvin"]
+        dropDown.dataSource = [
+            "  " + "change_city".localized(), "  " + "change_location".localized(),
+            "  " + "change_celsius".localized(), "  " + "change_fahrenheit".localized(), "  " + "change_kelvin".localized()]
         // Action triggered on selection
         dropDown.selectionAction = { [unowned self] (idx: Int, item: String) in
             if idx == 0{
-                gWeatherViewController.showInputDialog(title: "Enter City Name", button_text: "OK", index: 1)
+                gWeatherViewController.showInputDialog(title: "enter_city_name".localized(), button_text: "ok".localized().uppercased(), index: 1)
             }else if idx == 1{
                 let vc = self.storyboard?.instantiateViewController(withIdentifier: "PickWeatherLocationViewController")
-                self.modalPresentationStyle = .fullScreen
+                vc!.modalPresentationStyle = .fullScreen
                 self.present(vc!, animated: true, completion: nil)
             }else if idx == 2{
                 UserDefaults.standard.set("celsius", forKey: "temp_scale")

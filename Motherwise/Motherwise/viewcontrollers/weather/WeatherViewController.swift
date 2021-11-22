@@ -38,11 +38,11 @@ class WeatherViewController: SJSegmentedViewController {
 
             hourlyForecastController = storyboard
                 .instantiateViewController(withIdentifier: "HourlyForecastViewController") as? HourlyForecastViewController
-            hourlyForecastController.title = "Hourly Forecast"
+            hourlyForecastController.title = "hourly_forecast".localized()
 
             dailyForecastController = storyboard
                 .instantiateViewController(withIdentifier: "DailyForecastViewController") as? DailyForecastViewController
-            dailyForecastController.title = "Daily Forecast"
+            dailyForecastController.title = "daily_forecast".localized()
 
             headerViewController = headerController
             segmentControllers = [
@@ -53,7 +53,7 @@ class WeatherViewController: SJSegmentedViewController {
             headerViewHeight = 520
             segmentViewHeight = 60.0
             selectedSegmentViewHeight = 3.0
-            headerViewOffsetHeight = 0.0
+            headerViewOffsetHeight = 100.0
             segmentBackgroundColor = UIColor(rgb: 0xb800e6, alpha: 1.0)
             segmentTitleColor = UIColor(rgb: 0xFFFFFF, alpha: 0.8)
             segmentTitleFont = UIFont.systemFont(ofSize: 17.0)
@@ -76,7 +76,7 @@ class WeatherViewController: SJSegmentedViewController {
             
         }
 
-        title = "Weather"
+        title = "weather".localized().firstUppercased
         
         super.viewDidLoad()
         
@@ -142,13 +142,13 @@ class WeatherViewController: SJSegmentedViewController {
             self.headerController.lbl_temp.text = String(weatherData.main.temp) + " \(scale.symbolForScale())"
             self.headerController.lbl_main_desc.text = weatherData.weather[0].main
             self.headerController.lbl_desc.text = weatherData.weather[0].description.capitalized
-            self.headerController.lbl_clouds.text = "Cloud Coverage: " + String(weatherData.clouds.all) + " %"
+            self.headerController.lbl_clouds.text = "cloud_coverage".localized() + ": " + String(weatherData.clouds.all) + " %"
             self.headerController.lbl_temp_range.text = String(weatherData.main.temp_min) + " \(scale.symbolForScale())" + " ~ " + String(weatherData.main.temp_max) + " \(scale.symbolForScale())"
-            self.headerController.lbl_wind_speed.text = "Wind: " + String(weatherData.wind.speed) + " mps"
+            self.headerController.lbl_wind_speed.text = "wind".localized() + ": " + String(weatherData.wind.speed) + " mps"
             self.headerController.ic_wind_direction.isHidden = false
             self.headerController.ic_wind_direction.transform = self.headerController.ic_wind_direction.transform.rotated(by: .pi + .pi * CGFloat(weatherData.wind.deg!) / 180)
-            self.headerController.lbl_pressure.text = "Pressure: " + String(weatherData.main.pressure) + " kPa"
-            self.headerController.lbl_humidity.text = "Humidity: " + String(weatherData.main.humidity) + " %"
+            self.headerController.lbl_pressure.text = "pressure".localized() + ": " + String(weatherData.main.pressure) + " kPa"
+            self.headerController.lbl_humidity.text = "humidity".localized() + ": " + String(weatherData.main.humidity) + " %"
             self.headerController.ic_sunrise.isHidden = false
             self.headerController.ic_sunset.isHidden = false
             self.headerController.lbl_sunrise.text = self.getTimeFromTimeStamp(timeStamp: weatherData.sys.sunrise)
@@ -204,13 +204,13 @@ class WeatherViewController: SJSegmentedViewController {
         let minute = calendar.component(.minute, from: date as Date)
         let second = calendar.component(.second, from: date as Date)
         
-        var timeStr = convert(number: hour) + ":" + convert(number: minute) + " AM"
+        var timeStr = convert(number: hour) + ":" + convert(number: minute) + " " + "am".localized().uppercased()
             
         if hour >= 12 {
             if hour > 12 {
-                timeStr = convert(number: hour - 12) + ":" + convert(number: minute) + " PM"
+                timeStr = convert(number: hour - 12) + ":" + convert(number: minute) + " " + "pm".localized().uppercased()
             }else {
-                timeStr = convert(number: hour) + ":" + convert(number: minute) + " PM"
+                timeStr = convert(number: hour) + ":" + convert(number: minute) + " " + "pm".localized().uppercased()
             }
         }
         

@@ -10,6 +10,7 @@ import UIKit
 
 class TermsViewController: BaseViewController {
     
+    @IBOutlet weak var lbl_title: UILabel!
     @IBOutlet weak var textBox: UITextView!
     @IBOutlet weak var agreeButton: UIButton!
     
@@ -21,8 +22,11 @@ class TermsViewController: BaseViewController {
             showToast(msg: gNote)
             gNote = ""
         }
+        
+        lbl_title.text = "term_conditions".localized().uppercased()
 
         setRoundShadowButton(button: agreeButton, corner: agreeButton.frame.height / 2)
+        agreeButton.setTitle("accept".localized(), for: .normal)
         
         textBox.text = "Thank you for signing up for the Nest!\n\n***By signing up to the Nest, you are agreeing to not engage in any type of:***\n\n"
         textBox.text = textBox.text + "- hate speech\n\n- cyberbullying\n\n- solicitation and/or selling of goods or services\n\n- posting content inappropriate for our diverse community including but not limited to political or religious views\n\n"
@@ -60,7 +64,7 @@ class TermsViewController: BaseViewController {
                     vc.modalPresentationStyle = .fullScreen
                     self.transitionVc(vc: vc, duration: 0.3, type: .fromRight)
                 }else{
-                    let vc = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "HomeViewController")
+                    let vc = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "NewHomeViewController")
                     vc.modalPresentationStyle = .fullScreen
                     self.transitionVc(vc: vc, duration: 0.3, type: .fromRight)
                 }

@@ -448,12 +448,11 @@ class APIs {
             else
             {
                 let json = JSON(response.result.value!)
-                NSLog("\(json)")
+//                NSLog("\(json)")
                 let result_code = json["result_code"].stringValue
                 if(result_code == "0"){
                     var posts = [Post]()
                     var users = [User]()
-                    var post:Post!
                     
                     var dataArray = json["users"].arrayObject as! [[String: Any]]
                     for data in dataArray{
@@ -493,6 +492,7 @@ class APIs {
                         post.picture_url = data["picture_url"] as! String
                         post.comments = Int64(data["comments"] as! String)!
                         post.likes = Int64(data["likes"] as! String)!
+                        post.scheduled_time = data["scheduled_time"] as! String
                         post.posted_time = data["posted_time"] as! String
                         if data["liked"] as! String == "yes"{
                             post.isLiked = true
@@ -500,6 +500,7 @@ class APIs {
                             post.isLiked = false
                         }
                         post.status = data["status"] as! String
+                        post.sch_status = data["sch_status"] as! String
                         
                         
                         data = json["member"].object as! [String: Any]
@@ -528,6 +529,21 @@ class APIs {
                         
                         post.pictures = pic_count!
                         
+                        var prevs = [PostPreview]()
+                        let prevJsonArray = json["prevs"].arrayObject as! [[String: Any]]
+                        for prevdata in prevJsonArray{
+                            let prev = PostPreview()
+                            prev.idx = prevdata["id"] as! Int64
+                            prev.post_id = Int64(prevdata["post_id"] as! String)!
+                            prev.title = prevdata["title"] as! String
+                            prev.description = prevdata["description"] as! String
+                            prev.image_url = prevdata["image_url"] as! String
+                            prev.icon_url = prevdata["icon_url"] as! String
+                            prev.site_url = prevdata["site_url"] as! String
+                            prevs.append(prev)
+                        }
+                        post.previews = prevs
+                        
                         posts.append(post)
                     }
                     
@@ -538,6 +554,137 @@ class APIs {
                 }
                 else{
                     handleCallback(nil, nil, "Server issue")
+                }
+                
+            }
+        }
+    }
+    
+    
+    
+    static func getUserPosts(me_id: Int64, member_id: Int64, handleCallback: @escaping (Int, [Post]?, [User]?, String) -> ())
+    {
+        //NSLog(url)
+        
+        let params = [
+            "member_id":String(member_id),
+            "me_id":String(me_id)
+        ] as [String : Any]
+        
+        Alamofire.request(ReqConst.SERVER_URL + "userposts", method: .post, parameters: params).responseJSON { response in
+            
+            if response.result.isFailure{
+                handleCallback(0, nil, nil, "Server issue")
+            }
+            else
+            {
+                let json = JSON(response.result.value!)
+                let total_posts = json["total_posts"].stringValue
+                let result_code = json["result_code"].stringValue
+                if(result_code == "0"){
+                    var posts = [Post]()
+                    var users = [User]()
+                    
+                    var dataArray = json["users"].arrayObject as! [[String: Any]]
+                    for data in dataArray{
+                        let user = User()
+                        user.idx = data["id"] as! Int64
+                        user.admin_id = Int64(data["admin_id"] as! String)!
+                        user.name = data["name"] as! String
+                        user.email = data["email"] as! String
+                        user.password = data["password"] as! String
+                        user.photo_url = data["photo_url"] as! String
+                        user.phone_number = data["phone_number"] as! String
+                        user.city = data["city"] as! String
+                        user.address = data["address"] as! String
+                        user.lat = data["lat"] as! String
+                        user.lng = data["lng"] as! String
+                        user.cohort = data["cohort"] as! String
+                        user.registered_time = data["registered_time"] as! String
+                        user.fcm_token = data["fcm_token"] as! String
+                        user.username = data["username"] as! String
+                        user.status = data["status"] as! String
+                        user.status2 = data["status2"] as! String
+                        
+                        users.append(user)
+                    }
+                    
+                    dataArray = json["posts"].arrayObject as! [[String: Any]]
+                    for data in dataArray{
+                        
+                        let json = JSON(data)
+                        
+                        var data = json["post"].object as! [String: Any]
+                        let post = Post()
+                        post.idx = data["id"] as! Int64
+                        post.title = data["title"] as! String
+                        post.category = data["category"] as! String
+                        post.content = data["content"] as! String
+                        post.picture_url = data["picture_url"] as! String
+                        post.comments = Int64(data["comments"] as! String)!
+                        post.likes = Int64(data["likes"] as! String)!
+                        post.scheduled_time = data["scheduled_time"] as! String
+                        post.posted_time = data["posted_time"] as! String
+                        if data["liked"] as! String == "yes"{
+                            post.isLiked = true
+                        }else {
+                            post.isLiked = false
+                        }
+                        post.status = data["status"] as! String
+                        post.sch_status = data["sch_status"] as! String
+                        
+                        
+                        data = json["member"].object as! [String: Any]
+                        let user = User()
+                        user.idx = data["id"] as! Int64
+                        user.admin_id = Int64(data["admin_id"] as! String)!
+                        user.name = data["name"] as! String
+                        user.email = data["email"] as! String
+                        user.password = data["password"] as! String
+                        user.photo_url = data["photo_url"] as! String
+                        user.phone_number = data["phone_number"] as! String
+                        user.city = data["city"] as! String
+                        user.address = data["address"] as! String
+                        user.lat = data["lat"] as! String
+                        user.lng = data["lng"] as! String
+                        user.cohort = data["cohort"] as! String
+                        user.registered_time = data["registered_time"] as! String
+                        user.fcm_token = data["fcm_token"] as! String
+                        user.status = data["status"] as! String
+                        user.status2 = data["status2"] as! String
+                        
+                        post.user = user
+                        
+                        let pics = json["pics"].stringValue
+                        let pic_count = Int(pics)
+                        
+                        post.pictures = pic_count!
+                        
+                        var prevs = [PostPreview]()
+                        let prevJsonArray = json["prevs"].arrayObject as! [[String: Any]]
+                        for prevdata in prevJsonArray{
+                            let prev = PostPreview()
+                            prev.idx = prevdata["id"] as! Int64
+                            prev.post_id = Int64(prevdata["post_id"] as! String)!
+                            prev.title = prevdata["title"] as! String
+                            prev.description = prevdata["description"] as! String
+                            prev.image_url = prevdata["image_url"] as! String
+                            prev.icon_url = prevdata["icon_url"] as! String
+                            prev.site_url = prevdata["site_url"] as! String
+                            prevs.append(prev)
+                        }
+                        post.previews = prevs
+                        
+                        posts.append(post)
+                    }
+                    
+                    handleCallback(Int(total_posts)!, posts, users, "0")
+                    
+                }else if result_code == "1" {
+                    handleCallback(0, nil, nil, result_code)
+                }
+                else{
+                    handleCallback(0, nil, nil, "Server issue")
                 }
                 
             }
@@ -1625,6 +1772,255 @@ class APIs {
                 }else {
                     handleCallback("Server issue")
                 }
+            }
+        }
+    }
+    
+    
+    
+    static func getPostLinks(content: String, handleCallback: @escaping ([PostPreview]?, String) -> ())
+    {        
+        let params = [
+            "content": content
+        ] as [String : Any]
+        
+        Alamofire.request("https://www.vacay.company/mothers/bbbbb", method: .post, parameters: params).responseJSON { response in
+            
+            if response.result.isFailure{
+                handleCallback(nil, "Server issue")
+            }
+            else {
+                let json = JSON(response.result.value!)
+//                NSLog("\(json)")
+                let result = json["result"].stringValue
+                if(result == "success"){
+                    var prevs = [PostPreview]()
+                    let prevJsonArray = json["data"].arrayObject as! [[String: Any]]
+                    for prevdata in prevJsonArray{
+                        let prev = PostPreview()
+                        prev.title = prevdata["title"] as! String
+                        prev.description = prevdata["description"] as! String
+                        prev.image_url = prevdata["image_url"] as! String
+                        prev.icon_url = prevdata["icon_url"] as! String
+                        prev.site_url = prevdata["site_url"] as! String
+                        prevs.append(prev)
+                    }
+                    
+                    handleCallback(prevs, "success")
+                    
+                }
+                
+            }
+        }
+    }
+    
+    
+    static func refreshPosts(member_id: Int64, num:Int64, handleCallback: @escaping ([Post]?, String) -> ())
+    {
+        //NSLog(url)
+        
+        let params = [
+            "member_id":String(member_id),
+            "num":String(num),
+        ] as [String : Any]
+        
+        Alamofire.request(ReqConst.SERVER_URL + "xxxxxxxxxx", method: .post, parameters: params).responseJSON { response in
+            
+            if response.result.isFailure{
+                handleCallback(nil, "Server issue")
+            }
+            else
+            {
+                let json = JSON(response.result.value!)
+//                NSLog("\(json)")
+                let result_code = json["result_code"].stringValue
+                if(result_code == "0"){
+                    var posts = [Post]()
+                    
+                    let dataArray = json["posts"].arrayObject as! [[String: Any]]
+                    for data in dataArray{
+                        
+                        let json = JSON(data)
+                        
+                        var data = json["post"].object as! [String: Any]
+                        let post = Post()
+                        post.idx = data["id"] as! Int64
+                        post.title = data["title"] as! String
+                        post.category = data["category"] as! String
+                        post.content = data["content"] as! String
+                        post.picture_url = data["picture_url"] as! String
+                        post.comments = Int64(data["comments"] as! String)!
+                        post.likes = Int64(data["likes"] as! String)!
+                        post.scheduled_time = data["scheduled_time"] as! String
+                        post.posted_time = data["posted_time"] as! String
+                        if data["liked"] as! String == "yes"{
+                            post.isLiked = true
+                        }else {
+                            post.isLiked = false
+                        }
+                        post.status = data["status"] as! String
+                        post.sch_status = data["sch_status"] as! String
+                        
+                        
+                        data = json["member"].object as! [String: Any]
+                        let user = User()
+                        user.idx = data["id"] as! Int64
+                        user.admin_id = Int64(data["admin_id"] as! String)!
+                        user.name = data["name"] as! String
+                        user.email = data["email"] as! String
+                        user.password = data["password"] as! String
+                        user.photo_url = data["photo_url"] as! String
+                        user.phone_number = data["phone_number"] as! String
+                        user.city = data["city"] as! String
+                        user.address = data["address"] as! String
+                        user.lat = data["lat"] as! String
+                        user.lng = data["lng"] as! String
+                        user.cohort = data["cohort"] as! String
+                        user.registered_time = data["registered_time"] as! String
+                        user.fcm_token = data["fcm_token"] as! String
+                        user.status = data["status"] as! String
+                        user.status2 = data["status2"] as! String
+                        
+                        post.user = user
+                        
+                        let pics = json["pics"].stringValue
+                        let pic_count = Int(pics)
+                        
+                        post.pictures = pic_count!
+                        
+                        var prevs = [PostPreview]()
+                        let prevJsonArray = json["prevs"].arrayObject as! [[String: Any]]
+                        for prevdata in prevJsonArray{
+                            let prev = PostPreview()
+                            prev.idx = prevdata["id"] as! Int64
+                            prev.post_id = Int64(prevdata["post_id"] as! String)!
+                            prev.title = prevdata["title"] as! String
+                            prev.description = prevdata["description"] as! String
+                            prev.image_url = prevdata["image_url"] as! String
+                            prev.icon_url = prevdata["icon_url"] as! String
+                            prev.site_url = prevdata["site_url"] as! String
+                            prevs.append(prev)
+                        }
+                        post.previews = prevs
+                        
+                        posts.append(post)
+                    }
+                    
+                    handleCallback(posts, "0")
+                    
+                }else if result_code == "1" {
+                    handleCallback(nil, result_code)
+                }
+                else{
+                    handleCallback(nil, "Server issue")
+                }
+                
+            }
+        }
+    }
+    
+    
+    static func refreshUserPosts(me_id: Int64, member_id: Int64, num:Int64, handleCallback: @escaping ([Post]?, String) -> ())
+    {
+        //NSLog(url)
+        
+        let params = [
+            "me_id":String(me_id),
+            "member_id":String(member_id),
+            "num":String(num),
+        ] as [String : Any]
+        
+        Alamofire.request(ReqConst.SERVER_URL + "yyyyyyyyyy", method: .post, parameters: params).responseJSON { response in
+            
+            if response.result.isFailure{
+                handleCallback(nil, "Server issue")
+            }
+            else
+            {
+                let json = JSON(response.result.value!)
+//                NSLog("\(json)")
+                let result_code = json["result_code"].stringValue
+                if(result_code == "0"){
+                    var posts = [Post]()
+                    
+                    let dataArray = json["posts"].arrayObject as! [[String: Any]]
+                    for data in dataArray{
+                        
+                        let json = JSON(data)
+                        
+                        var data = json["post"].object as! [String: Any]
+                        let post = Post()
+                        post.idx = data["id"] as! Int64
+                        post.title = data["title"] as! String
+                        post.category = data["category"] as! String
+                        post.content = data["content"] as! String
+                        post.picture_url = data["picture_url"] as! String
+                        post.comments = Int64(data["comments"] as! String)!
+                        post.likes = Int64(data["likes"] as! String)!
+                        post.scheduled_time = data["scheduled_time"] as! String
+                        post.posted_time = data["posted_time"] as! String
+                        if data["liked"] as! String == "yes"{
+                            post.isLiked = true
+                        }else {
+                            post.isLiked = false
+                        }
+                        post.status = data["status"] as! String
+                        post.sch_status = data["sch_status"] as! String
+                        
+                        
+                        data = json["member"].object as! [String: Any]
+                        let user = User()
+                        user.idx = data["id"] as! Int64
+                        user.admin_id = Int64(data["admin_id"] as! String)!
+                        user.name = data["name"] as! String
+                        user.email = data["email"] as! String
+                        user.password = data["password"] as! String
+                        user.photo_url = data["photo_url"] as! String
+                        user.phone_number = data["phone_number"] as! String
+                        user.city = data["city"] as! String
+                        user.address = data["address"] as! String
+                        user.lat = data["lat"] as! String
+                        user.lng = data["lng"] as! String
+                        user.cohort = data["cohort"] as! String
+                        user.registered_time = data["registered_time"] as! String
+                        user.fcm_token = data["fcm_token"] as! String
+                        user.status = data["status"] as! String
+                        user.status2 = data["status2"] as! String
+                        
+                        post.user = user
+                        
+                        let pics = json["pics"].stringValue
+                        let pic_count = Int(pics)
+                        
+                        post.pictures = pic_count!
+                        
+                        var prevs = [PostPreview]()
+                        let prevJsonArray = json["prevs"].arrayObject as! [[String: Any]]
+                        for prevdata in prevJsonArray{
+                            let prev = PostPreview()
+                            prev.idx = prevdata["id"] as! Int64
+                            prev.post_id = Int64(prevdata["post_id"] as! String)!
+                            prev.title = prevdata["title"] as! String
+                            prev.description = prevdata["description"] as! String
+                            prev.image_url = prevdata["image_url"] as! String
+                            prev.icon_url = prevdata["icon_url"] as! String
+                            prev.site_url = prevdata["site_url"] as! String
+                            prevs.append(prev)
+                        }
+                        post.previews = prevs
+                        
+                        posts.append(post)
+                    }
+                    
+                    handleCallback(posts, "0")
+                    
+                }else if result_code == "1" {
+                    handleCallback(nil, result_code)
+                }
+                else{
+                    handleCallback(nil, "Server issue")
+                }
+                
             }
         }
     }

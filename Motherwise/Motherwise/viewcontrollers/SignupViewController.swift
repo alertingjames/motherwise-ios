@@ -44,7 +44,7 @@ class SignupViewController: BaseViewController, UIPickerViewDelegate, UIPickerVi
     
     let thePicker = UIPickerView()
     let groups = [String](arrayLiteral:
-        "- Choose a group -",
+        "- " + "choose_group".localized() + " -",
         "E81",
         "E83",
         "E84",
@@ -81,6 +81,18 @@ class SignupViewController: BaseViewController, UIPickerViewDelegate, UIPickerVi
         "E(v)114",
         "E(v)115",
         "S(v)116",
+        "E(v)117",
+        "E(v)118",
+        "S(v)119",
+        "E(v)120",
+        "E(v)121",
+        "S(v)122",
+        "E(v)123",
+        "E(v)124",
+        "S(v)125",
+        "E(v)126",
+        "E(v)127",
+        "S(v)128",
         "Love Notes E(v)1",
         "Love Notes E(v)2",
         "Love Notes E(v)3",
@@ -110,11 +122,33 @@ class SignupViewController: BaseViewController, UIPickerViewDelegate, UIPickerVi
         setRoundShadowButton(button: sigupButton, corner: 25)
         
         emailBox.keyboardType = UIKeyboardType.emailAddress
-        textView.text = "Please complete your profile"
+        textView.text = "complete_profile".localized()
+        
+        nameBox.attributedPlaceholder = NSAttributedString(
+            string: "full_name".localized(),
+            attributes: [NSAttributedString.Key.foregroundColor: UIColor.lightGray]
+        )
+        emailBox.attributedPlaceholder = NSAttributedString(
+            string: "email".localized(),
+            attributes: [NSAttributedString.Key.foregroundColor: UIColor.lightGray]
+        )
+        passwordBox.attributedPlaceholder = NSAttributedString(
+            string: "password".localized(),
+            attributes: [NSAttributedString.Key.foregroundColor: UIColor.lightGray]
+        )
+        phoneBox.attributedPlaceholder = NSAttributedString(
+            string: "phone_number".localized(),
+            attributes: [NSAttributedString.Key.foregroundColor: UIColor.lightGray]
+        )
+        groupBox.attributedPlaceholder = NSAttributedString(
+            string: "choose_group".localized(),
+            attributes: [NSAttributedString.Key.foregroundColor: UIColor.lightGray]
+        )
+        sigupButton.setTitle("next", for: .normal)
         
         var config = YPImagePickerConfiguration()
-        config.wordings.libraryTitle = "Gallery"
-        config.wordings.cameraTitle = "Camera"
+        config.wordings.libraryTitle = "gallery".localized()
+        config.wordings.cameraTitle = "camera".localized()
         YPImagePickerConfiguration.shared = config
         picker = YPImagePicker()
         
@@ -234,7 +268,7 @@ class SignupViewController: BaseViewController, UIPickerViewDelegate, UIPickerVi
         toolbar.sizeToFit()
         toolbar.tintColor = primaryDarkColor
         toolbar.backgroundColor = UIColor.lightGray
-        let doneButton = UIBarButtonItem(title: "Done", style: .plain, target: self, action: #selector(SignupViewController.closePickerView))
+        let doneButton = UIBarButtonItem(title: "done".localized(), style: .plain, target: self, action: #selector(SignupViewController.closePickerView))
         toolbar.setItems([doneButton], animated: false)
         toolbar.isUserInteractionEnabled = true
         groupBox.inputAccessoryView = toolbar
@@ -243,32 +277,32 @@ class SignupViewController: BaseViewController, UIPickerViewDelegate, UIPickerVi
     
     @IBAction func register(_ sender: Any) {
         if nameBox.text?.trimmingCharacters(in: .whitespacesAndNewlines) == ""{
-            showToast(msg: "Enter your full name")
+            showToast(msg: "enter_name".localized())
             return
         }
             
         if emailBox.text?.trimmingCharacters(in: .whitespacesAndNewlines) == ""{
-            showToast(msg: "Enter your email")
+            showToast(msg: "enter_email".localized())
             return
         }
             
         if isValidEmail(testStr: (emailBox.text?.trimmingCharacters(in: .whitespacesAndNewlines))!) == false{
-            showToast(msg: "Please enter a valid email.")
+            showToast(msg: "invalid_email".localized())
             return
         }
         
         if phoneBox.text?.trimmingCharacters(in: .whitespacesAndNewlines) == ""{
-            showToast(msg: "Enter your full phone number.")
+            showToast(msg: "enter_phone".localized())
             return
         }
             
         if isValidPhone(phone: (phoneBox.text?.trimmingCharacters(in: .whitespacesAndNewlines))!) == false{
-            showToast(msg: "Please enter a valid phone number.")
+            showToast(msg: "invalid_phone".localized())
             return
         }
         
         if groupBox.text?.trimmingCharacters(in: .whitespacesAndNewlines) == ""{
-            showToast(msg: "Choose a group.")
+            showToast(msg: "choose_group".localized())
             return
         }
         
@@ -307,14 +341,15 @@ class SignupViewController: BaseViewController, UIPickerViewDelegate, UIPickerVi
                         
                     }else if result_code as! String == "1"{
                         thisUser.idx = 0
-                        self.showToast(msg: "This user doesn\'t exist.")
+                        self.showToast(msg: "user_not_exist".localized())
                     }else {
                         thisUser.idx = 0
-                        self.showToast(msg: "Something wrong")
+                        self.showToast(msg: "something_wrong".localized())
                     }
                 }else{
-                    let message = "File size: " + String(response.fileSize()) + "\n" + "Description: " + response.description
-                    self.showToast(msg: "Issue: \n" + message)
+                    self.showToast(msg: "something_wrong".localized())
+//                    let message = "File size: " + String(response.fileSize()) + "\n" + "Description: " + response.description
+//                    self.showToast(msg: "Issue: \n" + message)
                 }
             }
         }else{
@@ -331,14 +366,15 @@ class SignupViewController: BaseViewController, UIPickerViewDelegate, UIPickerVi
                         
                     }else if result_code as! String == "1"{
                         thisUser.idx = 0
-                        self.showToast(msg: "This user doesn\'t exist.")
+                        self.showToast(msg: "user_not_exist".localized())
                     }else {
                         thisUser.idx = 0
-                        self.showToast(msg: "Something wrong")
+                        self.showToast(msg: "something_wrong".localized())
                     }
                 }else{
-                    let message = "File size: " + String(response.fileSize()) + "\n" + "Description: " + response.description
-                    self.showToast(msg: "Issue: \n" + message)
+                    self.showToast(msg: "something_wrong".localized())
+//                    let message = "File size: " + String(response.fileSize()) + "\n" + "Description: " + response.description
+//                    self.showToast(msg: "Issue: \n" + message)
                 }
             }
         }
@@ -372,6 +408,10 @@ class SignupViewController: BaseViewController, UIPickerViewDelegate, UIPickerVi
         let vc = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "AddLocationViewController")
         vc.modalPresentationStyle = .fullScreen
         self.transitionVc(vc: vc, duration: 0.3, type: .fromRight)
+        
+        
+        
+        
     }
     
     @IBAction func back(_ sender: Any) {

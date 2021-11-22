@@ -49,11 +49,13 @@ class MessageViewController: BaseViewController, UITableViewDataSource, UITableV
         
         gMessageViewController = self
         
+        lbl_title.text = "messages".localized().uppercased()
+        
         notiFrame = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(identifier: "NotisFrame")
         notiFrame.view.frame = CGRect(x: 0, y: -screenHeight, width: screenWidth, height: screenHeight)
 
         view_searchbar.isHidden = true
-        edt_search.attributedPlaceholder = NSAttributedString(string: "Search...",
+        edt_search.attributedPlaceholder = NSAttributedString(string: "search_".localized(),
             attributes: attrs)
         
         edt_search.addTarget(self, action: #selector(textFieldDidChange), for: .editingChanged)
@@ -85,7 +87,7 @@ class MessageViewController: BaseViewController, UITableViewDataSource, UITableV
         if self.notifiedUsers.count > 0{
             notiMark = "🔴"
         }
-        dropDown.dataSource = ["  Sent Messages", "  Unread (" + String(self.unreads) + ")", "  Notifications " + notiMark]
+        dropDown.dataSource = ["  " + "sent_messages".localized(), "unread".localized() + " (" + String(self.unreads) + ")", " " + "notifications".localized() + " " + notiMark]
         // Action triggered on selection
         dropDown.selectionAction = { [unowned self] (idx: Int, item: String) in
             print("Selected item: \(item) at index: \(idx)")
@@ -219,6 +221,7 @@ class MessageViewController: BaseViewController, UITableViewDataSource, UITableV
                 cell.txv_desc.text = String(cell.txv_desc.text.prefix(500)) + " ..."
             }
             
+            cell.btn_new.setTitle("new_".localized(), for: .normal)
             if message.status == "" {
                 cell.btn_new.isHidden = false
             }else{
@@ -295,20 +298,20 @@ class MessageViewController: BaseViewController, UITableViewDataSource, UITableV
         let dropDown = DropDown()
         
         dropDown.anchorView = cell.menuButton
-        dropDown.dataSource = ["  Chat", "  Delete"]
+        dropDown.dataSource = ["  " + "chat".localized(), "  " + "delete".localized()]
         // Action triggered on selection
         dropDown.selectionAction = { [unowned self] (idx: Int, item: String) in
             print("Selected item: \(item) at index: \(idx)")
             if idx == 0{
                 gUser = self.messages[index].sender
                 let vc = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(identifier: "PrivateChatViewController")
-                self.modalPresentationStyle = .fullScreen
+                vc.modalPresentationStyle = .fullScreen
                 self.present(vc, animated: true, completion: nil)
             }else if idx == 1{
-                let alert = UIAlertController(title: "Delete", message: "Are you sure you want to delete this message?", preferredStyle: .alert)
-                let noAction = UIAlertAction(title: "No", style: .cancel, handler: {
+                let alert = UIAlertController(title: "delete".localized(), message: "sure_delete_message".localized(), preferredStyle: .alert)
+                let noAction = UIAlertAction(title: "no".localized(), style: .cancel, handler: {
                     (action : UIAlertAction!) -> Void in })
-                let yesAction = UIAlertAction(title: "Yes", style: .destructive, handler: { alert -> Void in
+                let yesAction = UIAlertAction(title: "yes".localized(), style: .destructive, handler: { alert -> Void in
                     let message = self.messages[index]
                     self.deleteMessage(message_id: message.idx, option: "received")
                 })
@@ -410,7 +413,7 @@ class MessageViewController: BaseViewController, UITableViewDataSource, UITableV
                 if result_code == "1" {
                     self.logout()
                 } else {
-                    self.showToast(msg: "Something wrong!")
+                    self.showToast(msg: "something_wrong".localized())
                 }
             }
         })
@@ -423,10 +426,10 @@ class MessageViewController: BaseViewController, UITableViewDataSource, UITableV
             result_code in
             self.dismissLoadingView()
             if result_code == "0"{
-                self.showToast2(msg: "Deleted")
+                self.showToast2(msg: "deleted".localized())
                 self.getReceivedMessages(member_id: thisUser.idx)
             }else {
-                self.showToast(msg:"Something wrong")
+                self.showToast(msg: "something_wrong".localized())
             }
         })
     }
@@ -439,7 +442,7 @@ class MessageViewController: BaseViewController, UITableViewDataSource, UITableV
             if result_code == "0"{
                 self.getReceivedMessages(member_id: thisUser.idx)
             }else {
-                self.showToast(msg:"Something wrong")
+                self.showToast(msg: "something_wrong".localized())
             }
         })
     }
@@ -605,7 +608,7 @@ class MessageViewController: BaseViewController, UITableViewDataSource, UITableV
                 noti.status = type
                     
                 if type == "call_request" {
-                    self.showCallAlertDialog(title: noti.sender.name, message: "Incoming call...", alias: noti.id, ref: ref.child(key))
+                    self.showCallAlertDialog(title: noti.sender.name, message: "incomming_call_".localized(), alias: noti.id, ref: ref.child(key))
                 }
                 
                 if !self.notifiedUsers.contains(where: {$0.idx == user.idx}) {

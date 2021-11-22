@@ -1,0 +1,285 @@
+"done" = "hecho";
+"phone" = "Teléfono";
+"rating" = "Clasificación";
+"address" = "Dirección";
+"notify_participants" = "Notificar participantes ";
+"search_" = "Buscar...";
+"no_member_found" = "Ningún miembro encontrado";
+"add_comments" = "Agregar comentario";
+"is_typing_" = "Está escribiendo. . .";
+"write_something_" = "Escriba algo aquí ";
+"participants" = "Participantes";
+"no_user_online_" = "Ningún usuario en línea ...";
+"conferences" = "Conferencias";
+"no_conference_found_" = "No se encontró conferencia...";
+"edit_post" = "Editar publicación ";
+"enter_title" = "Ingrese un título ";
+"choose_category" = "Elija una categoría ";
+"select_members_notified" = " Seleccionar miembros para notificar ";
+"submit" = "Enviar";
+"filtered_messages" = "Mensajes filtrados";
+"user_will_notified" = "los usuarios serán notificados";
+"no_message_" = "No hay mensaje...";
+"forgot_password" = "Olvide mi contraseña ";
+"fp_text" = "Por favor entre su correo electrónico. Le enviaremos un enlace para cambiar su contraseña a su correo electrónico.";
+"email" = "Correo electrónico";
+"login" = "Iniciar sesión ";
+"group_chat" = "Chat de grupo";
+"selected" = "Seleccionado";
+"home" = "Inicio";
+"groups" = "Grupos";
+"communities" = "Comunidades";
+"posts" = "Publicaciones";
+"messages" = "Mensajes";
+"profile" = "Perfil";
+"logout" = "Cerrar sesión";
+"nearby" = "Cercano";
+"weather" = "Clima";
+"settings" = "Ajustes";
+"meet_" = "¡Unirse!";
+"marquee_text" = "¡Por favor conéctese y conozca otras participantes a través de Comunidades, Grupos, Publicaciones, y Mensajes!";
+"new_notifications" = "Notificaciones nuevas ";
+"connect_with_group" = "Conectar con un grupo";
+"choose_group" = "Elija un grupo";
+"members" = "Miembros";
+"video_conference" = "Video conferencia";
+"connect_with_community" = "Conecta con una comunidad";
+"choose_community" = "Elija una comunidad";
+"send_message" = "Enviar mensaje";
+"type_something_here_" = "Escriba algo aquí...";
+"call_ended" = "Llamada terminada ";
+"conference" = "Conferencia";
+"register_location" = "Registrar ubicación";
+"type_address_" = "Escriba dirección...";
+"map_hint" = "Por favor seleccione ubicación correcta.\nPuede escribir la dirección o puede seleccionar la ubicación correcta en el mapa.";
+"ok" = "OK";
+"welcome_motherwise" = "¡Bienvenida a el Nido de MotherWise!";
+"password" = "Contraseña";
+"log_in" = "Iniciar sesión";
+"sign_up" = "Inscribirse";
+"forgot_password_" = " Olvide mi contraseña";
+"my_posts" = "Mis publicaciones";
+"no_result_found_" = "Resultado no encontrado...";
+"add_post" = "Agregar nueva publicación";
+"load_pictures" = "Cargar fotos";
+"notifications" = "Notificaciones";
+"pick_location" = "Elija ubicación";
+"details" = "Detalles";
+"comment" = "Comentario";
+"no_comment_" = "No hay comentarios...";
+"comments" = "Comentarios";
+"chat_with" = "Hable con";
+"my_profile" = "Mi perfil";
+"phone_number" = "Numero de teléfono";
+"reply_message" = "mensaje de respuesta";
+"report_user" = "Reportar usuario";
+"type_report_" = "Escriba su reporte aquí...";
+"reset_password" = "Cambiar contraseña";
+"old_password" = "Contraseña anterior";
+"new_password" = "Nueva contraseña";
+"search_places" = "Buscar lugares";
+"sent_messages" = "Mensajes enviados";
+"complete_profile" = "Por favor complete su perfil";
+"full_name" = "Nombre completo";
+"next" = "Siguiente";
+"term_conditions" = " Términos y Condiciones";
+"accept" = "Aceptar";
+"try_again" = "Intentar de nuevo";
+"replied" = "Respondido";
+"new_" = "Nuevo";
+"edit" = "Editar";
+"delete" = "Eliminar";
+"chat_with_" = "Hablar con...";
+"message" = "Mensaje";
+"likes" = "Likes";
+"report_user_" = "Reportar usuario";
+"unlike" = "Unlike";
+"incomming_call_" = "Llamada entrante...";
+"block" = "Bloquear";
+"sent_messages_" = "Mensaje enviado";
+"unread" = "No leído";
+"inbox" = "Buzón";
+"read" = "Leído";
+"contact" = "Contacto";
+"chat" = "Chat";
+"live" = "En vivo";
+"yes" = "Si";
+"no" = "No";
+"wait_" = "Espere por favor...";
+"start_at" = "Empiece en ";
+"created_at" = "Creado en";
+"something_wrong" = "Algo está mal";
+"schedule_post" = "programar la publicación (opcional)";
+"select_scheduled_time" = "Seleccione la hora programada ...";
+"schedule_activated" = "la publicación programada está activada";
+"edit_scheduled_time" = "puede editar la hora programada hasta que se active.";
+"sorry" = "Perdon";
+"no_access_to_conference" = "Aun no tiene acceso a esta conferencia. Por favor espere una notificación.";
+"warning" = "¡Advertencia!";
+"sure_delete_picture" = "¿Esta segura que quiere eliminar esta foto?";
+
+"positive_quotes" = "Dichos positivos";
+"inspiration" = "Inspiración";
+"shout_outs" = "Reconocimientos";
+"wellness" = "Bienestar";
+"activities_suggestions" = "Recomendaciones de actividades";
+"resource" = "Recurso";
+
+"write_about_post" = "Escriba algo de esta publicación.";
+"post_not_exist" = "Esta publicación no existe";
+"sorry_dont_know_email" = "¿No conocemos su correo electrónico.";
+"sure_delete_message" = "¿Esta segura que quiere borrar este mensaje?";
+"deleted" = "Eliminado";
+"enter_email" = "Entre su correo electrónico.";
+"invalid_email_" = "Correo electrónico invalido...";
+"sent_link_to_email" = "Le enviamos un enlace para cambiar su contraseña a su correo electrónico. Por favor revise...";
+"shared_picture" = "Compartió una foto";
+"select_members" = "Por favor seleccione miembros";
+"enable_location" = "Habilitar ubicación ";
+"location_not_enabled" = " su configuración de ubicaciones no está habilitada. habilítelo en el menú de configuración.";
+"location_settings" = "configuración de ubicación";
+"no_community_belong" = "No pertenece a una comunidad.";
+"message_sent" = "¡Mensaje enviado!";
+"account_not_exist" = "Su cuenta no existe.";
+"user_not_exist" = "Usuario no existe.";
+"closing_" = "Cerrando...";
+"confirm_selection" = "Confirme selección";
+"selected_location" = "Ubicación seleccionada";
+"register" = "Registrar";
+"cancel" = "Cancelar";
+"enter_password" = "Entere su contraseña.";
+"read_terms" = "Por favor lea los Términos y Condiciones.";
+"success_login" = "Iniciado sesión correctamente.";
+"register_profile" = "Por favor registre su perfil.";
+"password_incorrect" = "Contraseña invalida.";
+"sure_delete_post" = "¿Esta segura que quiere eliminar esta publicación?";
+"picked" = "Seleccionado";
+"pick" = "Selección";
+"sure_delete_comment" = "¿Esta segura que quiere eliminar este comentario?";
+"comment_not_exist" = "Comentario no existe";
+"type_something_" = "Por favor escribe algo...";
+"updated_at" = "Actualizado a";
+"sorry_account_not_exist" = "Su cuento no existe.";
+"last_seen_at" = "Visto ";
+"online" = "En línea";
+"shared_file" = "Compartió un archivo.";
+"cant_chat" = "No puede conversar con este usuario.";
+"unblock" = "Desbloquear";
+"enter_name" = "Entre su nombre.";
+"enter_phone" = "Entre su numero de teléfono.";
+"invalid_phone" = "Numero de teléfono invalido...";
+"successfully_updated" = "Actualizado exitosamente";
+"report_submited" = "¡Su reporte fue enviado!";
+"enter_old_password" = "Por favor entre su contraseña anterior.";
+"enter_new_password" = "Por favor entre su nueva contraseña.";
+"enter_correct_old_password" = "Entre su correcta contraseña anterior.";
+"successfully_changed" = "Contraseña cambiada exitosamente.";
+"email_password_incorrect" = "Su correo electrónico o contraseña es invalida. Por favor entre la correcta información.";
+"downloaded_at" = "Descargada at";
+"network_posts" = "Publicaciones de la red";
+"meet" = "Unirse";
+
+"save" = "Guardar";
+"language" = "Lenguaje";
+"english" = "Ingles";
+"spanish" = "Español";
+"change_language" = "Cambiar lenguaje";
+"browse_" = "Navegar...";
+
+"camera" = "cámara";
+"gallery" = "galería";
+"close" = "cerrar";
+"pick_date_time" = "Elija una fecha y hora";
+"users" = "usuarios";
+"selected_all_users" = "Seleccionado todos los usuarios";
+"confirm" = "confirmar";
+"hint" = "insinuación";
+"pick_your_location" = "por favor elija su ubicación";
+"location_info" = "Información de ubicación";
+"select" = "Seleccione";
+"user_name" = "nombre de usuario";
+"code_incorrect" = "tu código es incorrecto. por favor intente con otro.";
+"login_success" = "Iniciar sesión correctamente";
+"add_location" = "Por favor agregue su ubicación";
+
+
+"jan" = "ene";
+"feb" = "feb";
+"mar" = "mar";
+"apr" = "abr";
+"may" = "may";
+"june" = "jun";
+"july" = "jul";
+"aug" = "ago";
+"sep" = "sep";
+"oct" = "oct";
+"nov" = "nov";
+"dec" = "dic";
+
+
+"am" = "soy";
+"pm" = "pm";
+
+
+"change_city" = "Cambiar de ciudad";
+"change_location" = "Cambiar locación";
+"change_celsius" = "Cambiar a Celsius";
+"change_fahrenheit" = "Cambiar a Fahrenheit";
+"change_kelvin" = "Cambiar a Kelvin";
+"enter_city_name" = "Ingrese el nombre de la ciudad";
+"hourly_forecast" = "Pronóstico por hora";
+"daily_forecast" = "Pronóstico diario";
+
+"cloud_coverage" = "Cobertura de nubes";
+"wind" = "Viento";
+"pressure" = "Presión";
+"humidity" = "Humedad";
+
+"select_location" = "Seleccione una ubicación";
+
+"sunrise" = "Amanecer";
+"sunset" = "Puesta de sol";
+"wind_speed" = "Velocidad del viento";
+"wind_direction" = "Dirección del viento";
+"temperature" = "Temperatura";
+
+"day_time" = "Tiempo de día";
+
+"logged_out" = "Desconectado";
+
+"search_nearby_" = "Buscar lugares cercanos ...";
+
+"langxxx" = "&lang=es";
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

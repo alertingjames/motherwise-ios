@@ -16,6 +16,7 @@ import VoxeetUXKit
 
 class VideoFileConfViewController: BaseViewController {
     
+    @IBOutlet weak var lbl_title: UILabel!
     @IBOutlet weak var btn_users: UIButton!
     @IBOutlet weak var btn_video: UIButton!
     @IBOutlet weak var view_player: UIView!
@@ -37,6 +38,8 @@ class VideoFileConfViewController: BaseViewController {
         
         gVideoFileViewController = self
         gRecentViewController = self
+        
+        lbl_title.text = "conference".localized().uppercased()
         
         conferenceAlias = gConference.name
         adminParticipantID = String(gAdmin.idx) + String(gAdmin.idx)
@@ -132,7 +135,7 @@ class VideoFileConfViewController: BaseViewController {
             users, result in
             self.dismissLoadingView()
             gConfUsers = users!
-            self.lbl_group.text = self.lbl_group.text! + " Participants: " + String(users!.count)
+            self.lbl_group.text = self.lbl_group.text! + " " + "participants".localized() + ": " + String(users!.count)
             self.getComments(chatID: self.CHAT_ID)
         })
     }
@@ -222,7 +225,7 @@ class VideoFileConfViewController: BaseViewController {
         DispatchQueue.main.async {
             // Error message.
             let alert = UIAlertController(title: "Error", message: error.localizedDescription, preferredStyle: UIAlertController.Style.alert)
-            alert.addAction(UIAlertAction(title: "OK", style: UIAlertAction.Style.cancel, handler: nil))
+            alert.addAction(UIAlertAction(title: "ok".localized().uppercased(), style: UIAlertAction.Style.cancel, handler: nil))
             self.present(alert, animated: true, completion: nil)
         }
     }
@@ -248,37 +251,35 @@ class VideoFileConfViewController: BaseViewController {
 extension VideoFileConfViewController: VTConferenceDelegate {
     func statusUpdated(status: VTConferenceStatus) {}
     
-    func participantAdded(participant: VTParticipant) {
-        // refresh
-    }
+    func permissionsUpdated(permissions: [Int]) {}
     
-    func participantUpdated(participant: VTParticipant) {
-        // refresh
-    }
+    func participantAdded(participant: VTParticipant) {}
+    
+    func participantUpdated(participant: VTParticipant) {}
     
     func streamAdded(participant: VTParticipant, stream: MediaStream) {
         switch stream.type {
-        case .Camera:
-            print("Participant ID: \(participant.id)")
-            if participant.id == VoxeetSDK.shared.session.participant?.id {
-                // Attaching own participant's video stream to the renderer.
-                if !stream.videoTracks.isEmpty {
-                    print("My Stream added: \(participant.id)")
-            //    ownCameraView.attach(participant: participant, stream: stream)
-            //    ownCameraView.isHidden = false
+            case .Camera:
+                print("Participant ID: \(participant.id)")
+                if participant.id == VoxeetSDK.shared.session.participant?.id {
+                    // Attaching own participant's video stream to the renderer.
+                    if !stream.videoTracks.isEmpty {
+                        print("My Stream added: \(participant.id)")
+                //    ownCameraView.attach(participant: participant, stream: stream)
+                //    ownCameraView.isHidden = false
+                    }
+                } else if participant.info.externalID == self.adminParticipantID {
+                    //refresh
+                    print("admin stream added")
+                }else {
+                    //refresh
+                    print("stream added")
                 }
-            } else if participant.info.externalID == self.adminParticipantID {
-                //refresh
-                print("admin stream added")
-            }else {
-                //refresh
+            case .ScreenShare:
+                // Attaching a video stream to a renderer.
                 print("stream added")
-            }
-        case .ScreenShare:
-            // Attaching a video stream to a renderer.
-            print("stream added")
-        default:
-            break
+            default:
+                break
         }
     }
     
@@ -303,17 +304,21 @@ extension VideoFileConfViewController: VTConferenceDelegate {
     
     func streamRemoved(participant: VTParticipant, stream: MediaStream) {
         switch stream.type {
-        case .Camera:
-            //refresh
-            print("stream removed")
-        case .ScreenShare:
-            // screenshareview alpha = 0
-            print("stream removed")
-        default:
-            break
+            case .Camera:
+                //refresh
+                print("stream removed")
+            case .ScreenShare:
+                // screenshareview alpha = 0
+                print("stream removed")
+            default:
+                break
         }
     }
+    
+    
 }
+
+
 
 extension VideoFileConfViewController: CachingPlayerItemDelegate {
     

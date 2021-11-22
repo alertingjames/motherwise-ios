@@ -37,7 +37,7 @@ class NotificationsViewController: BaseViewController, UITableViewDataSource, UI
         super.viewDidLoad()
 
         view_searchbar.isHidden = true
-        edt_search.attributedPlaceholder = NSAttributedString(string: "Search...",
+        edt_search.attributedPlaceholder = NSAttributedString(string: "search_".localized(),
             attributes: attrs)
         
         edt_search.textColor = .white
@@ -138,7 +138,7 @@ class NotificationsViewController: BaseViewController, UITableViewDataSource, UI
             cell.lbl_sender_name.text = message.sender.name
                 
             cell.lbl_time.text = message.messaged_time
-            if gHomeViewController.notifiedUsers.contains(where: {$0.idx == message.sender.idx}){
+            if gNewHomeVC.notifiedUsers.contains(where: {$0.idx == message.sender.idx}){
                 cell.lbl_time.text = message.messaged_time + " " + "🔴".decodeEmoji
             }
             if message.sender.cohort != "" {
@@ -177,26 +177,26 @@ class NotificationsViewController: BaseViewController, UITableViewDataSource, UI
         if message.status == "pchat"{
             gUser = message.sender
             let vc = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(identifier: "PrivateChatViewController")
-            self.modalPresentationStyle = .fullScreen
+            vc.modalPresentationStyle = .fullScreen
             self.present(vc, animated: true, completion: nil)
         }else if message.status == "gchat"{
             gSelectedGroupId = Int64(message.id)!
             gSelectedCohort = ""
             let vc = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(identifier: "GroupChatViewController")
-            self.modalPresentationStyle = .fullScreen
+            vc.modalPresentationStyle = .fullScreen
             self.present(vc, animated: true, completion: nil)
         }else if message.status == "cchat"{
             gSelectedGroupId = 0
             gSelectedCohort = message.id
             let vc = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(identifier: "GroupChatViewController")
-            self.modalPresentationStyle = .fullScreen
+            vc.modalPresentationStyle = .fullScreen
             self.present(vc, animated: true, completion: nil)
         }else if message.status.starts(with: "call"){
             self.contactCall(message: message)
         }else {
             gId = message.mes_id
             let vc = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(identifier: "MessageViewController")
-            self.modalPresentationStyle = .fullScreen
+            vc.modalPresentationStyle = .fullScreen
             self.transitionVc(vc: vc, duration: 0.3, type: .fromRight)
         }
     }
@@ -260,21 +260,21 @@ class NotificationsViewController: BaseViewController, UITableViewDataSource, UI
                 if message.status == "pchat"{
                     gUser = message.sender
                     let vc = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(identifier: "PrivateChatViewController")
-                    self.modalPresentationStyle = .fullScreen
+                    vc.modalPresentationStyle = .fullScreen
                     self.present(vc, animated: true, completion: nil)
                 }else if message.status.starts(with: "call"){
                     self.contactCall(message: message)
                 }else {
                     gId = message.mes_id
                     let vc = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(identifier: "MessageViewController")
-                    self.modalPresentationStyle = .fullScreen
+                    vc.modalPresentationStyle = .fullScreen
                     self.transitionVc(vc: vc, duration: 0.3, type: .fromRight)
                 }
             }else if idx == 1 {
                 gUser = message.sender
                 if message.status == "pchat"{
                     let vc = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(identifier: "PrivateChatViewController")
-                    self.modalPresentationStyle = .fullScreen
+                    vc.modalPresentationStyle = .fullScreen
                     self.present(vc, animated: true, completion: nil)
                 }else if message.status.starts(with: "call"){
                     self.contactCall(message: message)
@@ -326,8 +326,8 @@ class NotificationsViewController: BaseViewController, UITableViewDataSource, UI
                 user.idx = Int64(sender_id)!
                 user.name = sender_name
                 user.email = sender_email
-                if gHomeViewController.users.contains(where: {$0.email == sender_email}){
-                    user.cohort = gHomeViewController.users.filter{user in return user.email == sender_email}[0].cohort
+                if gNewHomeVC.users.contains(where: {$0.email == sender_email}){
+                    user.cohort = gNewHomeVC.users.filter{user in return user.email == sender_email}[0].cohort
                 }
                 user.photo_url = sender_photo
                 
@@ -392,8 +392,8 @@ class NotificationsViewController: BaseViewController, UITableViewDataSource, UI
             user.idx = Int64(sender_id)!
             user.name = sender_name
             user.email = sender_email
-            if gHomeViewController.users.contains(where: {$0.email == sender_email}){
-                user.cohort = gHomeViewController.users.filter{user in return user.email == sender_email}[0].cohort
+            if gNewHomeVC.users.contains(where: {$0.email == sender_email}){
+                user.cohort = gNewHomeVC.users.filter{user in return user.email == sender_email}[0].cohort
             }
             user.photo_url = sender_photo
             

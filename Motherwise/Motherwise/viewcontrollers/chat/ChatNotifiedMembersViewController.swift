@@ -39,9 +39,12 @@ class ChatNotifiedMembersViewController:  BaseViewController, UITableViewDataSou
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        lbl_title.text = "notify_participants".localized().uppercased()
+        noResult.text = "no_member_found".localized()
 
         view_searchbar.isHidden = true
-        edt_search.attributedPlaceholder = NSAttributedString(string: "Search...",
+        edt_search.attributedPlaceholder = NSAttributedString(string: "search_".localized(),
             attributes: attrs)
         
         view_searchbar.layer.cornerRadius = view_searchbar.frame.height / 2
@@ -143,8 +146,8 @@ class ChatNotifiedMembersViewController:  BaseViewController, UITableViewDataSou
                 if let firstIndex = string.firstIndex(of: "@") {
                     cell.lbl_username.text = "@" + string[..<firstIndex]
                 }else{
-                    if gHomeViewController.users.contains(where: {$0.idx == user.idx}){
-                        cell.lbl_username.text = gHomeViewController.users.filter{usr in
+                    if gNewHomeVC.users.contains(where: {$0.idx == user.idx}){
+                        cell.lbl_username.text = gNewHomeVC.users.filter{usr in
                             return usr.idx == user.idx
                             }[0].username
                     }else{
@@ -159,8 +162,8 @@ class ChatNotifiedMembersViewController:  BaseViewController, UITableViewDataSou
             
             if user.cohort != "" { if user.cohort == "admin" { cell.lbl_cohort.text = "VaCay Community" } else { cell.lbl_cohort.text = user.cohort }}
             else {
-                if gHomeViewController.users.contains(where: {$0.idx == user.idx}){
-                    cell.lbl_cohort.text = gHomeViewController.users.filter{usr in
+                if gNewHomeVC.users.contains(where: {$0.idx == user.idx}){
+                    cell.lbl_cohort.text = gNewHomeVC.users.filter{usr in
                         return usr.idx == user.idx
                         }[0].cohort
                 }else{
@@ -258,7 +261,7 @@ class ChatNotifiedMembersViewController:  BaseViewController, UITableViewDataSou
         
         if gRecentViewController == gGroupChatViewController {
             if gSelectedUsers.count > 0{
-                gGroupChatViewController.lbl_sel_notify.text = String(gSelectedUsers.count) + " users will be notified"
+                gGroupChatViewController.lbl_sel_notify.text = String(gSelectedUsers.count) + " " + "user_will_notified".localized()
                 gGroupChatViewController.lbl_sel_notify.isHidden = false
             }else{
                 gGroupChatViewController.lbl_sel_notify.isHidden = true
@@ -282,7 +285,7 @@ class ChatNotifiedMembersViewController:  BaseViewController, UITableViewDataSou
             gSelectedUsers = gUsers
             self.btn_all_sel.setImage(icChecked, for: .normal)
             if gRecentViewController == gGroupChatViewController {
-                gGroupChatViewController.lbl_sel_notify.text = String(gSelectedUsers.count) + " users will be notified"
+                gGroupChatViewController.lbl_sel_notify.text = String(gSelectedUsers.count) + " " + "user_will_notified".localized()
                 gGroupChatViewController.lbl_sel_notify.isHidden = false
             }
         }
