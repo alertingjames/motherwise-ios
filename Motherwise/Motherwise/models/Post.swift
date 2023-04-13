@@ -20,12 +20,22 @@ class Post{
     var comments:Int64 = 0
     var scheduled_time:String = ""
     var posted_time:String = ""
-    var likes:Int64 = 0
+    // Reactions
+    var likes:Int = 0
+    var loves:Int = 0
+    var hahas:Int = 0
+    var wows:Int = 0
+    var sads:Int = 0
+    var angrys:Int = 0
+    var my_feeling:String = ""
+    var reactions:Int = 0
+    
     var isLiked:Bool = false
     var pictures:Int = 0
     var status:String = ""
     var sch_status:String = ""
     var previews = [PostPreview]()
+    var comment_list = [Comment]()
 }
 
 var gPost:Post = Post()

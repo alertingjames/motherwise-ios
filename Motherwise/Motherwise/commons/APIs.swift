@@ -490,8 +490,17 @@ class APIs {
                         post.category = data["category"] as! String
                         post.content = data["content"] as! String
                         post.picture_url = data["picture_url"] as! String
+                        // Reactions
+                        post.likes = (data["likes"] as! String).count > 0 ? Int(data["likes"] as! String)! : 0
+                        post.loves = (data["loves"] as! String).count > 0 ? Int(data["loves"] as! String)! : 0
+                        post.hahas = (data["haha"] as! String).count > 0 ? Int(data["haha"] as! String)! : 0
+                        post.wows = (data["wow"] as! String).count > 0 ? Int(data["wow"] as! String)! : 0
+                        post.sads = (data["sad"] as! String).count > 0 ? Int(data["sad"] as! String)! : 0
+                        post.angrys = (data["angry"] as! String).count > 0 ? Int(data["angry"] as! String)! : 0
+                        post.reactions = (data["reactions"] as! String).count > 0 ? Int(data["reactions"] as! String)! : 0
+                        post.my_feeling = data["liked"] as! String
+                        
                         post.comments = Int64(data["comments"] as! String)!
-                        post.likes = Int64(data["likes"] as! String)!
                         post.scheduled_time = data["scheduled_time"] as! String
                         post.posted_time = data["posted_time"] as! String
                         if data["liked"] as! String == "yes"{
@@ -544,6 +553,26 @@ class APIs {
                         }
                         post.previews = prevs
                         
+                        var comments = [Comment]()
+                        let commentJsonArray = json["comments"].arrayObject as! [[String: Any]]
+                        for commentObj in commentJsonArray {
+                            var cdata = commentObj["comment"] as! [String: Any]
+                            let comment = Comment()
+                            comment.idx = cdata["id"] as! Int64
+                            comment.post_id = Int64(cdata["post_id"] as! String)!
+                            comment.comment = cdata["comment_text"] as! String
+                            
+                            var udata = commentObj["commented_member"] as! [String: Any]
+                            let user = User()
+                            user.idx = udata["id"] as! Int64
+                            user.admin_id = Int64(udata["admin_id"] as! String)!
+                            user.name = udata["name"] as! String
+                            user.photo_url = udata["photo_url"] as! String
+                            comment.user = user                            
+                            comments.append(comment)
+                        }
+                        post.comment_list = comments
+                        
                         posts.append(post)
                     }
                     
@@ -560,6 +589,36 @@ class APIs {
         }
     }
     
+    
+    static func getpostcategories(admin_id:Int64, handleCallback: @escaping (String?, String?, String) -> ())
+    {
+        //NSLog(url)
+        let params = [
+            "admin_id": String(admin_id),
+            ] as [String : Any]
+        
+        Alamofire.request(ReqConst.SERVER_URL + "upostcategories", method: .post, parameters: params).responseJSON { response in
+            
+            if response.result.isFailure{
+                handleCallback("", "", "Server issue")
+            }
+            else
+            {
+                let json = JSON(response.result.value!)
+                NSLog("Post Categories response: \(json)")
+                let result_code = json["result_code"].stringValue
+                if result_code != nil{
+                    if result_code == "0" {
+                        let us_categories = json["us_categories"].stringValue
+                        let es_categories = json["es_categories"].stringValue
+                        handleCallback(us_categories, es_categories, result_code)
+                    }else { handleCallback("", "", "server issue") }
+                }else {
+                    handleCallback("", "", "Server issue")
+                }
+            }
+        }
+    }
     
     
     static func getUserPosts(me_id: Int64, member_id: Int64, handleCallback: @escaping (Int, [Post]?, [User]?, String) -> ())
@@ -621,8 +680,17 @@ class APIs {
                         post.category = data["category"] as! String
                         post.content = data["content"] as! String
                         post.picture_url = data["picture_url"] as! String
+                        // Reactions
+                        post.likes = (data["likes"] as! String).count > 0 ? Int(data["likes"] as! String)! : 0
+                        post.loves = (data["loves"] as! String).count > 0 ? Int(data["loves"] as! String)! : 0
+                        post.hahas = (data["haha"] as! String).count > 0 ? Int(data["haha"] as! String)! : 0
+                        post.wows = (data["wow"] as! String).count > 0 ? Int(data["wow"] as! String)! : 0
+                        post.sads = (data["sad"] as! String).count > 0 ? Int(data["sad"] as! String)! : 0
+                        post.angrys = (data["angry"] as! String).count > 0 ? Int(data["angry"] as! String)! : 0
+                        post.reactions = (data["reactions"] as! String).count > 0 ? Int(data["reactions"] as! String)! : 0
+                        post.my_feeling = data["liked"] as! String
+                        
                         post.comments = Int64(data["comments"] as! String)!
-                        post.likes = Int64(data["likes"] as! String)!
                         post.scheduled_time = data["scheduled_time"] as! String
                         post.posted_time = data["posted_time"] as! String
                         if data["liked"] as! String == "yes"{
@@ -675,6 +743,26 @@ class APIs {
                         }
                         post.previews = prevs
                         
+                        var comments = [Comment]()
+                        let commentJsonArray = json["comments"].arrayObject as! [[String: Any]]
+                        for commentObj in commentJsonArray {
+                            var cdata = commentObj["comment"] as! [String: Any]
+                            let comment = Comment()
+                            comment.idx = cdata["id"] as! Int64
+                            comment.post_id = Int64(cdata["post_id"] as! String)!
+                            comment.comment = cdata["comment_text"] as! String
+                            
+                            var udata = commentObj["commented_member"] as! [String: Any]
+                            let user = User()
+                            user.idx = udata["id"] as! Int64
+                            user.admin_id = Int64(udata["admin_id"] as! String)!
+                            user.name = udata["name"] as! String
+                            user.photo_url = udata["photo_url"] as! String
+                            comment.user = user
+                            comments.append(comment)
+                        }
+                        post.comment_list = comments
+                        
                         posts.append(post)
                     }
                     
@@ -725,12 +813,71 @@ class APIs {
         }
     }
     
-    static func getComments(post_id: Int64, handleCallback: @escaping ([Comment]?, String) -> ())
+    
+    static func reactPost(member_id:Int64, post_id:Int64, feeling:String, handleCallback: @escaping (Post?, String) -> ())
+    {
+        let params = [
+            "member_id": String(member_id),
+            "post_id": String(post_id),
+            "feeling": feeling,
+        ] as [String : Any]
+        
+        Alamofire.request(ReqConst.SERVER_URL + "react_post", method: .post, parameters: params).responseJSON { response in
+            
+            if response.result.isFailure {
+                handleCallback(nil, "Server issue")
+            } else {
+                let json = JSON(response.result.value!)
+                NSLog("React post response: \(json)")
+                let result_code = json["result_code"].stringValue
+                if result_code != nil{
+                    if result_code == "0"{
+                        var data = json["post"].object as! [String: Any]
+                        let post = Post()
+                        post.idx = data["id"] as! Int64
+                        post.title = data["title"] as! String
+                        post.category = data["category"] as! String
+                        post.content = data["content"] as! String
+                        post.picture_url = data["picture_url"] as! String
+                        // Reactions
+                        post.likes = (data["likes"] as! String).count > 0 ? Int(data["likes"] as! String)! : 0
+                        post.loves = (data["loves"] as! String).count > 0 ? Int(data["loves"] as! String)! : 0
+                        post.hahas = (data["haha"] as! String).count > 0 ? Int(data["haha"] as! String)! : 0
+                        post.wows = (data["wow"] as! String).count > 0 ? Int(data["wow"] as! String)! : 0
+                        post.sads = (data["sad"] as! String).count > 0 ? Int(data["sad"] as! String)! : 0
+                        post.angrys = (data["angry"] as! String).count > 0 ? Int(data["angry"] as! String)! : 0
+                        post.reactions = (data["reactions"] as! String).count > 0 ? Int(data["reactions"] as! String)! : 0
+                        post.my_feeling = data["liked"] as! String
+                        
+                        post.comments = Int64(data["comments"] as! String)!
+                        post.scheduled_time = data["scheduled_time"] as! String
+                        post.posted_time = data["posted_time"] as! String
+                        if data["liked"] as! String == "yes"{
+                            post.isLiked = true
+                        }else {
+                            post.isLiked = false
+                        }
+                        post.status = data["status"] as! String
+                        post.sch_status = data["sch_status"] as! String
+                        handleCallback(post, result_code)
+                    }else{
+                        handleCallback(nil, result_code)
+                    }
+                }else {
+                    handleCallback(nil, "Server issue")
+                }
+            }
+        }
+    }
+    
+    
+    static func getComments(post_id: Int64, member_id: Int64, handleCallback: @escaping ([Comment]?, String) -> ())
     {
         //NSLog(url)
         
         let params = [
-            "post_id":String(post_id)
+            "post_id":String(post_id),
+            "member_id":String(member_id),
         ] as [String : Any]
         
         Alamofire.request(ReqConst.SERVER_URL + "getcomments", method: .post, parameters: params).responseJSON { response in
@@ -761,6 +908,16 @@ class APIs {
                         comment.commented_time = data["commented_time"] as! String
                         comment.status = data["status"] as! String
                         
+                        // Reactions
+                        comment.likes = (data["likes"] as! String).count > 0 ? Int(data["likes"] as! String)! : 0
+                        comment.loves = (data["loves"] as! String).count > 0 ? Int(data["loves"] as! String)! : 0
+                        comment.hahas = (data["haha"] as! String).count > 0 ? Int(data["haha"] as! String)! : 0
+                        comment.wows = (data["wow"] as! String).count > 0 ? Int(data["wow"] as! String)! : 0
+                        comment.sads = (data["sad"] as! String).count > 0 ? Int(data["sad"] as! String)! : 0
+                        comment.angrys = (data["angry"] as! String).count > 0 ? Int(data["angry"] as! String)! : 0
+                        comment.reactions = (data["reactions"] as! String).count > 0 ? Int(data["reactions"] as! String)! : 0
+                        comment.my_feeling = data["liked"] as! String
+                        comment.comments = Int64(data["comments"] as! String)!
                         
                         data = json["member"].object as! [String: Any]
                         let user = User()
@@ -798,6 +955,57 @@ class APIs {
             }
         }
     }
+    
+    
+    static func reactComment(member_id:Int64, comment_id:Int64, feeling:String, handleCallback: @escaping (Comment?, String) -> ())
+    {
+        let params = [
+            "member_id": String(member_id),
+            "comment_id": String(comment_id),
+            "feeling": feeling,
+        ] as [String : Any]
+        
+        Alamofire.request(ReqConst.SERVER_URL + "react_comment", method: .post, parameters: params).responseJSON { response in
+            
+            if response.result.isFailure {
+                handleCallback(nil, "Server issue")
+            } else {
+                let json = JSON(response.result.value!)
+                NSLog("React comment response: \(json)")
+                let result_code = json["result_code"].stringValue
+                if result_code != nil{
+                    if result_code == "0"{
+                        var data = json["comment"].object as! [String: Any]
+                        let comment = Comment()
+                        comment.idx = data["id"] as! Int64
+                        comment.post_id = Int64(data["post_id"] as! String)!
+                        comment.comment = data["comment_text"] as! String
+                        comment.image_url = data["image_url"] as! String
+                        comment.commented_time = data["commented_time"] as! String
+                        comment.status = data["status"] as! String
+                        
+                        // Reactions
+                        comment.likes = (data["likes"] as! String).count > 0 ? Int(data["likes"] as! String)! : 0
+                        comment.loves = (data["loves"] as! String).count > 0 ? Int(data["loves"] as! String)! : 0
+                        comment.hahas = (data["haha"] as! String).count > 0 ? Int(data["haha"] as! String)! : 0
+                        comment.wows = (data["wow"] as! String).count > 0 ? Int(data["wow"] as! String)! : 0
+                        comment.sads = (data["sad"] as! String).count > 0 ? Int(data["sad"] as! String)! : 0
+                        comment.angrys = (data["angry"] as! String).count > 0 ? Int(data["angry"] as! String)! : 0
+                        comment.reactions = (data["reactions"] as! String).count > 0 ? Int(data["reactions"] as! String)! : 0
+                        comment.my_feeling = data["liked"] as! String
+                        comment.comments = Int64(data["comments"] as! String)!
+                        
+                        handleCallback(comment, result_code)
+                    }else{
+                        handleCallback(nil, result_code)
+                    }
+                }else {
+                    handleCallback(nil, "Server issue")
+                }
+            }
+        }
+    }
+    
     
     static func deletePost(post_id:Int64, handleCallback: @escaping (String) -> ())
     {
@@ -1011,6 +1219,7 @@ class APIs {
                         user.lat = data["lat"] as! String
                         user.lng = data["lng"] as! String
                         user.cohort = data["cohort"] as! String
+                        user.post_feeling = data["post_feeling"] as! String
                         user.registered_time = data["registered_time"] as! String
                         user.fcm_token = data["fcm_token"] as! String
                         user.status = data["status"] as! String
@@ -1849,8 +2058,17 @@ class APIs {
                         post.category = data["category"] as! String
                         post.content = data["content"] as! String
                         post.picture_url = data["picture_url"] as! String
+                        // Reactions
+                        post.likes = (data["likes"] as! String).count > 0 ? Int(data["likes"] as! String)! : 0
+                        post.loves = (data["loves"] as! String).count > 0 ? Int(data["loves"] as! String)! : 0
+                        post.hahas = (data["haha"] as! String).count > 0 ? Int(data["haha"] as! String)! : 0
+                        post.wows = (data["wow"] as! String).count > 0 ? Int(data["wow"] as! String)! : 0
+                        post.sads = (data["sad"] as! String).count > 0 ? Int(data["sad"] as! String)! : 0
+                        post.angrys = (data["angry"] as! String).count > 0 ? Int(data["angry"] as! String)! : 0
+                        post.reactions = (data["reactions"] as! String).count > 0 ? Int(data["reactions"] as! String)! : 0
+                        post.my_feeling = data["liked"] as! String
+                        
                         post.comments = Int64(data["comments"] as! String)!
-                        post.likes = Int64(data["likes"] as! String)!
                         post.scheduled_time = data["scheduled_time"] as! String
                         post.posted_time = data["posted_time"] as! String
                         if data["liked"] as! String == "yes"{
@@ -1902,6 +2120,26 @@ class APIs {
                             prevs.append(prev)
                         }
                         post.previews = prevs
+                        
+                        var comments = [Comment]()
+                        let commentJsonArray = json["comments"].arrayObject as! [[String: Any]]
+                        for commentObj in commentJsonArray {
+                            var cdata = commentObj["comment"] as! [String: Any]
+                            let comment = Comment()
+                            comment.idx = cdata["id"] as! Int64
+                            comment.post_id = Int64(cdata["post_id"] as! String)!
+                            comment.comment = cdata["comment_text"] as! String
+                            
+                            var udata = commentObj["commented_member"] as! [String: Any]
+                            let user = User()
+                            user.idx = udata["id"] as! Int64
+                            user.admin_id = Int64(udata["admin_id"] as! String)!
+                            user.name = udata["name"] as! String
+                            user.photo_url = udata["photo_url"] as! String
+                            comment.user = user
+                            comments.append(comment)
+                        }
+                        post.comment_list = comments
                         
                         posts.append(post)
                     }
@@ -1955,8 +2193,17 @@ class APIs {
                         post.category = data["category"] as! String
                         post.content = data["content"] as! String
                         post.picture_url = data["picture_url"] as! String
+                        // Reactions
+                        post.likes = (data["likes"] as! String).count > 0 ? Int(data["likes"] as! String)! : 0
+                        post.loves = (data["loves"] as! String).count > 0 ? Int(data["loves"] as! String)! : 0
+                        post.hahas = (data["haha"] as! String).count > 0 ? Int(data["haha"] as! String)! : 0
+                        post.wows = (data["wow"] as! String).count > 0 ? Int(data["wow"] as! String)! : 0
+                        post.sads = (data["sad"] as! String).count > 0 ? Int(data["sad"] as! String)! : 0
+                        post.angrys = (data["angry"] as! String).count > 0 ? Int(data["angry"] as! String)! : 0
+                        post.reactions = (data["reactions"] as! String).count > 0 ? Int(data["reactions"] as! String)! : 0
+                        post.my_feeling = data["liked"] as! String
+                        
                         post.comments = Int64(data["comments"] as! String)!
-                        post.likes = Int64(data["likes"] as! String)!
                         post.scheduled_time = data["scheduled_time"] as! String
                         post.posted_time = data["posted_time"] as! String
                         if data["liked"] as! String == "yes"{
@@ -2024,6 +2271,309 @@ class APIs {
             }
         }
     }
+    
+    
+    static func getgroupnames(admin_id:Int64, handleCallback: @escaping (String?, String) -> ())
+    {
+        //NSLog(url)
+        let params = [
+            "admin_id": String(admin_id),
+            ] as [String : Any]
+        
+        Alamofire.request(ReqConst.SERVER_URL + "ugroupnames", method: .post, parameters: params).responseJSON { response in
+            
+            if response.result.isFailure{
+                handleCallback("", "Server issue")
+            }
+            else
+            {
+                let json = JSON(response.result.value!)
+                NSLog("group names response: \(json)")
+                let result_code = json["result_code"].stringValue
+                if result_code != nil{
+                    if result_code == "0" {
+                        let group_names = json["group_names"].stringValue
+                        handleCallback(group_names, result_code)
+                    }else { handleCallback("", "server issue") }
+                }else {
+                    handleCallback("", "Server issue")
+                }
+            }
+        }
+    }
+    
+    
+    static func getComidaPosts(member_id: Int64, handleCallback: @escaping ([Post]?, [User]?, String) -> ())
+    {
+        //NSLog(url)
+        
+        let params = [
+            "member_id":String(member_id),
+        ] as [String : Any]
+        
+        Alamofire.request(ReqConst.SERVER_URL + "comidaposts", method: .post, parameters: params).responseJSON { response in
+            
+            if response.result.isFailure{
+                handleCallback(nil, nil, "Server issue")
+            }
+            else
+            {
+                let json = JSON(response.result.value!)
+                let result_code = json["result_code"].stringValue
+                if(result_code == "0"){
+                    var posts = [Post]()
+                    var users = [User]()
+                    
+                    var dataArray = json["users"].arrayObject as! [[String: Any]]
+                    for data in dataArray{
+                        let user = User()
+                        user.idx = data["id"] as! Int64
+                        user.admin_id = Int64(data["admin_id"] as! String)!
+                        user.name = data["name"] as! String
+                        user.email = data["email"] as! String
+                        user.password = data["password"] as! String
+                        user.photo_url = data["photo_url"] as! String
+                        user.phone_number = data["phone_number"] as! String
+                        user.city = data["city"] as! String
+                        user.address = data["address"] as! String
+                        user.lat = data["lat"] as! String
+                        user.lng = data["lng"] as! String
+                        user.cohort = data["cohort"] as! String
+                        user.registered_time = data["registered_time"] as! String
+                        user.fcm_token = data["fcm_token"] as! String
+                        user.username = data["username"] as! String
+                        user.status = data["status"] as! String
+                        user.status2 = data["status2"] as! String
+                        
+                        users.append(user)
+                    }
+                    
+                    dataArray = json["posts"].arrayObject as! [[String: Any]]
+                    for data in dataArray{
+                        
+                        let json = JSON(data)
+                        
+                        var data = json["post"].object as! [String: Any]
+                        let post = Post()
+                        post.idx = data["id"] as! Int64
+                        post.title = data["title"] as! String
+                        post.category = data["category"] as! String
+                        post.content = data["content"] as! String
+                        post.picture_url = data["picture_url"] as! String
+                        // Reactions
+                        post.likes = (data["likes"] as! String).count > 0 ? Int(data["likes"] as! String)! : 0
+                        post.loves = (data["loves"] as! String).count > 0 ? Int(data["loves"] as! String)! : 0
+                        post.hahas = (data["haha"] as! String).count > 0 ? Int(data["haha"] as! String)! : 0
+                        post.wows = (data["wow"] as! String).count > 0 ? Int(data["wow"] as! String)! : 0
+                        post.sads = (data["sad"] as! String).count > 0 ? Int(data["sad"] as! String)! : 0
+                        post.angrys = (data["angry"] as! String).count > 0 ? Int(data["angry"] as! String)! : 0
+                        post.reactions = (data["reactions"] as! String).count > 0 ? Int(data["reactions"] as! String)! : 0
+                        post.my_feeling = data["liked"] as! String
+                        
+                        post.comments = Int64(data["comments"] as! String)!
+                        post.scheduled_time = data["scheduled_time"] as! String
+                        post.posted_time = data["posted_time"] as! String
+                        if data["liked"] as! String == "yes"{
+                            post.isLiked = true
+                        }else {
+                            post.isLiked = false
+                        }
+                        post.status = data["status"] as! String
+                        post.sch_status = data["sch_status"] as! String
+                        
+                        
+                        data = json["member"].object as! [String: Any]
+                        let user = User()
+                        user.idx = data["id"] as! Int64
+                        user.admin_id = Int64(data["admin_id"] as! String)!
+                        user.name = data["name"] as! String
+                        user.email = data["email"] as! String
+                        user.password = data["password"] as! String
+                        user.photo_url = data["photo_url"] as! String
+                        user.phone_number = data["phone_number"] as! String
+                        user.city = data["city"] as! String
+                        user.address = data["address"] as! String
+                        user.lat = data["lat"] as! String
+                        user.lng = data["lng"] as! String
+                        user.cohort = data["cohort"] as! String
+                        user.registered_time = data["registered_time"] as! String
+                        user.fcm_token = data["fcm_token"] as! String
+                        user.status = data["status"] as! String
+                        user.status2 = data["status2"] as! String
+                        
+                        post.user = user
+                        
+                        let pics = json["pics"].stringValue
+                        let pic_count = Int(pics)
+                        
+                        post.pictures = pic_count!
+                        
+                        var prevs = [PostPreview]()
+                        let prevJsonArray = json["prevs"].arrayObject as! [[String: Any]]
+                        for prevdata in prevJsonArray{
+                            let prev = PostPreview()
+                            prev.idx = prevdata["id"] as! Int64
+                            prev.post_id = Int64(prevdata["post_id"] as! String)!
+                            prev.title = prevdata["title"] as! String
+                            prev.description = prevdata["description"] as! String
+                            prev.image_url = prevdata["image_url"] as! String
+                            prev.icon_url = prevdata["icon_url"] as! String
+                            prev.site_url = prevdata["site_url"] as! String
+                            prevs.append(prev)
+                        }
+                        post.previews = prevs
+                        
+                        var comments = [Comment]()
+                        let commentJsonArray = json["comments"].arrayObject as! [[String: Any]]
+                        for commentObj in commentJsonArray {
+                            var cdata = commentObj["comment"] as! [String: Any]
+                            let comment = Comment()
+                            comment.idx = cdata["id"] as! Int64
+                            comment.post_id = Int64(cdata["post_id"] as! String)!
+                            comment.comment = cdata["comment_text"] as! String
+                            
+                            var udata = commentObj["commented_member"] as! [String: Any]
+                            let user = User()
+                            user.idx = udata["id"] as! Int64
+                            user.admin_id = Int64(udata["admin_id"] as! String)!
+                            user.name = udata["name"] as! String
+                            user.photo_url = udata["photo_url"] as! String
+                            comment.user = user
+                            comments.append(comment)
+                        }
+                        post.comment_list = comments
+                        
+                        posts.append(post)
+                    }
+                    
+                    handleCallback(posts, users, "0")
+                    
+                }else if result_code == "1" {
+                    handleCallback(nil, nil, result_code)
+                }
+                else{
+                    handleCallback(nil, nil, "Server issue")
+                }
+                
+            }
+        }
+    }
+    
+    
+    static func getFoodResources(admin_id: Int64, handleCallback: @escaping ([FoodResource]?, String) -> ())
+    {
+        let params = [
+            "admin_id": String(admin_id)
+        ] as [String : Any]
+        
+        Alamofire.request(ReqConst.SERVER_URL + "foodresourcelist", method: .post, parameters: params).responseJSON { response in
+            
+            if response.result.isFailure{
+                handleCallback(nil, "Server issue")
+            }
+            else {
+                let json = JSON(response.result.value!)
+                NSLog("\(json)")
+                let result_code = json["result_code"].stringValue
+                if(result_code == "0"){
+                    var frs = [FoodResource]()
+                    
+                    let dataArray = json["data"].arrayObject as! [[String: Any]]
+                    
+                    for data in dataArray {
+                        let fr = FoodResource()
+                        fr.idx = data["id"] as! Int64
+                        fr.title = data["title"] as! String
+                        fr.description = data["content"] as! String
+                        fr.image_url = data["image_url"] as! String
+                        fr.category = data["category"] as! String
+                        fr.group = data["group"] as! String
+                        fr.location = data["location"] as! String
+                        fr.lat = data["lat"] as! String
+                        fr.lng = data["lng"] as! String
+                        fr.site_url = data["link"] as! String
+                        fr.daily_meal = data["daily_meal"] as! String
+                        frs.append(fr)
+                    }
+                    
+                    handleCallback(frs, "0")
+                    
+                }
+                else{
+                    handleCallback(nil, "Server issue")
+                }
+                
+            }
+        }
+    }
+    
+    
+    static func getRecipes(admin_id: Int64, category:String, handleCallback: @escaping ([Recipe]?, String) -> ()) {
+        let params = [
+            "admin_id": String(admin_id),
+            "category": category,
+        ] as [String : Any]
+        
+        Alamofire.request(ReqConst.SERVER_URL + "recipelist", method: .post, parameters: params).responseJSON { response in
+            
+            if response.result.isFailure{
+                handleCallback(nil, "Server issue")
+            }
+            else {
+                let json = JSON(response.result.value!)
+                NSLog("\(json)")
+                let result_code = json["result_code"].stringValue
+                if(result_code == "0") {
+                    var rs = [Recipe]()
+                    let dataArray = json["data"].arrayObject as! [[String: Any]]
+                    for data in dataArray {
+                        let r = Recipe()
+                        r.idx = data["id"] as! Int64
+                        r.title = data["title"] as! String
+                        r.description = data["description"] as! String
+                        r.image_url = data["image_url"] as! String
+                        r.icon_url = data["icon_url"] as! String
+                        r.site_url = data["site_url"] as! String
+                        rs.append(r)
+                    }
+                    handleCallback(rs, "0")
+                }
+                else{
+                    handleCallback(nil, "Server issue")
+                }                
+            }
+        }
+    }
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
     
     
 }

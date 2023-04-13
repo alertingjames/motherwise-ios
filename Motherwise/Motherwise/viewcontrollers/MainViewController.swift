@@ -242,7 +242,7 @@ class MainViewController: BaseViewController {
     
     @objc func getCommunities(_ sender: UITapGestureRecognizer? = nil) {
         if gGroups.count == 0{
-            showToast(msg: "No community you belong to.")
+            showToast(msg: "no_community_belong".localized())
             return
         }
         gUsers = self.users

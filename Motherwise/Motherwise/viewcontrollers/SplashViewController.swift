@@ -24,6 +24,8 @@ class SplashViewController: BaseViewController {
         iconWidth.constant = self.view.frame.width / 3
         iconHeight.constant = self.view.frame.height / 3
         
+        UIApplication.shared.applicationIconBadgeNumber = 0
+        
         DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
             // Code you want to be delayed
             
@@ -34,7 +36,7 @@ class SplashViewController: BaseViewController {
                 self.login(email: email!, password: password!)
             }else{
                 thisUser.idx = 0
-                let vc = UIStoryboard(name:"Main", bundle:nil).instantiateViewController(withIdentifier:"LoginViewController")
+                let vc = UIStoryboard(name:"Main", bundle:nil).instantiateViewController(withIdentifier:"LoginViewController")  // LoginViewController
                 vc.modalPresentationStyle = .fullScreen
                 self.transitionVc(vc: vc, duration: 0.3, type: .fromRight)
             }
@@ -48,7 +50,6 @@ class SplashViewController: BaseViewController {
         APIs.login(email: email, password: password, handleCallback:{
             user, result_code in
             self.dismissLoadingView()
-            print(result_code)
             if result_code == "0"{
                 thisUser = user!
                 UserDefaults.standard.set(thisUser.email, forKey: "email")
@@ -65,7 +66,7 @@ class SplashViewController: BaseViewController {
                 }
             }else if result_code == "1" {
                 thisUser = user!
-                let vc = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "AddLocationViewController")
+                let vc = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "NewHomeViewController")  // AddLocationViewController
                 vc.modalPresentationStyle = .fullScreen
                 self.transitionVc(vc: vc, duration: 0.3, type: .fromRight)
             }else if result_code == "2" {

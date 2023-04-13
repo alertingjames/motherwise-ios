@@ -51,7 +51,7 @@ class LikesViewController: BaseViewController, UITableViewDataSource, UITableVie
     
     func loadPicture(imageView:UIImageView, url:URL){
         let processor = DownsamplingImageProcessor(size: imageView.frame.size)
-            >> ResizingImageProcessor(referenceSize: imageView.frame.size, mode: .aspectFill)
+        ResizingImageProcessor(referenceSize: imageView.frame.size, mode: .aspectFill)
         imageView.kf.indicatorType = .activity
         imageView.kf.setImage(
             with: url,
@@ -97,6 +97,14 @@ class LikesViewController: BaseViewController, UITableViewDataSource, UITableVie
             if user.photo_url != ""{
                 loadPicture(imageView: cell.userPicture, url: URL(string: user.photo_url)!)
             }
+            
+            cell.feelingIcon.layer.cornerRadius = cell.feelingIcon.frame.height / 2
+            if user.post_feeling == "like" { cell.feelingIcon.image = UIImage(named: "ic_fb_like")}
+            if user.post_feeling == "love" { cell.feelingIcon.image = UIImage(named: "ic_fb_love")}
+            if user.post_feeling == "haha" { cell.feelingIcon.image = UIImage(named: "ic_fb_haha")}
+            if user.post_feeling == "wow" { cell.feelingIcon.image = UIImage(named: "ic_fb_wow")}
+            if user.post_feeling == "sad" { cell.feelingIcon.image = UIImage(named: "ic_fb_sad")}
+            if user.post_feeling == "angry" { cell.feelingIcon.image = UIImage(named: "ic_fb_angry")}
                     
             cell.userName.text = user.name
                 
@@ -184,7 +192,7 @@ class LikesViewController: BaseViewController, UITableViewDataSource, UITableVie
                 print("Selected item: \(item) at index: \(idx)")
                 if idx == 0{
                     gUser = user
-                    self.likePost(member_id: thisUser.idx, post: gPost)
+//                    self.likePost(member_id: thisUser.idx, post: gPost)
                 }
             }
         }
@@ -236,9 +244,6 @@ class LikesViewController: BaseViewController, UITableViewDataSource, UITableVie
         APIs.likePost(member_id: member_id, post_id: post.idx, handleCallback: {
             likes, result_code in
             if result_code == "0"{
-                gPostDetailViewController.likeButton.setImage(UIImage(named: "ic_like"), for: .normal)
-                gPostDetailViewController.likeButton.setImageTintColor(.white)
-                gPostDetailViewController.likesLabel.text = likes
                 self.getLikes(post_id: post.idx)
             }else if result_code == "1"{
                 self.showToast(msg:"account_not_exist".localized())

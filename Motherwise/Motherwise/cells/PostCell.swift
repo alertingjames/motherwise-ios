@@ -7,6 +7,7 @@
 //
 
 import UIKit
+//import Reactions
 
 class PostCell: UITableViewCell {
     
@@ -18,33 +19,30 @@ class PostCell: UITableViewCell {
     @IBOutlet weak var lbl_category: UILabel!
     @IBOutlet weak var lbl_posted_time: UILabel!
     @IBOutlet weak var img_post_picture: UIImageView!
-    @IBOutlet weak var lbl_likes: UILabel!
     @IBOutlet weak var lbl_comments: UILabel!
     @IBOutlet weak var menuButton: UIButton!
-    @IBOutlet weak var likeButton: UIButton!
     @IBOutlet weak var commentButton: UIButton!
     @IBOutlet weak var txv_desc: UITextView!
     @IBOutlet weak var lbl_pics: UILabel!
-    @IBOutlet weak var detailButton: UIButton!
+    @IBOutlet weak var reactionButton: ReactionButton!
+    @IBOutlet weak var reactionSummary: ReactionSummary!
     
     @IBOutlet weak var postImageHeight: NSLayoutConstraint!
-    @IBOutlet weak var postDescHeight: UITextView!
     
     @IBOutlet weak var linkView: UIView!
     @IBOutlet weak var stackView: UIStackView!
     @IBOutlet weak var linkViewH: NSLayoutConstraint!
+    @IBOutlet weak var footerView: UIView!
+    @IBOutlet weak var commentsView: UIView!
+    @IBOutlet weak var commentsStackView: UIStackView!
     
     override func awakeFromNib() {
         super.awakeFromNib()
-        // Initialization code
-        
-        
         
     }
 
     override func setSelected(_ selected: Bool, animated: Bool) {
         super.setSelected(selected, animated: animated)
-
         // Configure the view for the selected state
     }
 

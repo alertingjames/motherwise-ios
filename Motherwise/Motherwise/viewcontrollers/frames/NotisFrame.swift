@@ -61,7 +61,7 @@ class NotisFrame: BaseViewController, UITableViewDataSource, UITableViewDelegate
     
     func loadPicture(imageView:UIImageView, url:URL){
         let processor = DownsamplingImageProcessor(size: imageView.frame.size)
-            >> ResizingImageProcessor(referenceSize: imageView.frame.size, mode: .aspectFill)
+        ResizingImageProcessor(referenceSize: imageView.frame.size, mode: .aspectFill)
         imageView.kf.indicatorType = .activity
         imageView.kf.setImage(
             with: url,

@@ -54,6 +54,9 @@ class HomeGroupViewController: BaseViewController, UIPickerViewDelegate, UIPicke
         setIconTintColor(imageView: ic_community, color: UIColor.lightGray)
         
         lbl_title.text = "connect_with_community".localized().uppercased()
+        lbl_members.text = "members".localized()
+        lbl_video.text = "videos".localized()
+        lbl_group_chat.text = "group_chat".localized()
         
         var tap = UITapGestureRecognizer(target: self, action: #selector(self.getGroupMembers(_:)))
         membersButton.addGestureRecognizer(tap)

@@ -43,6 +43,8 @@ class ForgotPasswordViewController: BaseViewController {
 
         textView.attributedText = attributedString
         
+        UIApplication.shared.applicationIconBadgeNumber = 0
+        
         setRoundShadowView(view: view_email, corner: 25)
         setRoundShadowButton(button: submitButton, corner: 25)
         

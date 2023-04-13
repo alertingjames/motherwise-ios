@@ -36,70 +36,11 @@ class ProfileViewController: BaseViewController, UIPickerViewDelegate, UIPickerV
     var ImageArray = NSMutableArray()
     
     let thePicker = UIPickerView()
-    let groups = [String](arrayLiteral:
-        "- " + "choose_group".localized() + " -",
-        "E81",
-        "E83",
-        "E84",
-        "E86",
-        "E87",
-        "S82",
-        "S85",
-        "S88",
-        "E(v)89",
-        "E(v)90",
-        "S(v)91",
-        "E(v)92",
-        "E(v)93",
-        "E(v)94",
-        "S(v)95",
-        "E(v)96",
-        "E(v)97",
-        "S(v)98",
-        "E(v)99",
-        "E(v)100",
-        "S(v)101",
-        "E(v)102",
-        "E(v)103",
-        "S(v)104",
-        "E(v)105",
-        "E(v)106",
-        "S(v)107",
-        "E(v)108",
-        "E(v)109",
-        "S(v)110",
-        "E(v)111",
-        "E(v)112",
-        "S(v)113",
-        "E(v)114",
-        "E(v)115",
-        "S(v)116",
-        "E(v)117",
-        "E(v)118",
-        "S(v)119",
-        "E(v)120",
-        "E(v)121",
-        "S(v)122",
-        "E(v)123",
-        "E(v)124",
-        "S(v)125",
-        "E(v)126",
-        "E(v)127",
-        "S(v)128",
-        "Love Notes E(v)1",
-        "Love Notes E(v)2",
-        "Love Notes E(v)3",
-        "Love Notes E(v)4",
-        "Love Notes E(v)5",
-        "Love Notes E(v)6",
-        "Love Notes E(v)7",
-        "Love Notes E(v)8",
-        "MotherWise Alumni",
-        "MotherWise Team")
+    var groups = [String]()
     
     var city:String = ""
-    var lat:String = ""
-    var lng:String = ""
+    var lat:String = "0"
+    var lng:String = "0"
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -153,7 +94,7 @@ class ProfileViewController: BaseViewController, UIPickerViewDelegate, UIPickerV
             attributes: [NSAttributedString.Key.foregroundColor: UIColor.lightGray]
         )
         edt_address.attributedPlaceholder = NSAttributedString(
-            string: "address".localized(),
+            string: "city".localized(),
             attributes: [NSAttributedString.Key.foregroundColor: UIColor.lightGray]
         )
         
@@ -176,6 +117,8 @@ class ProfileViewController: BaseViewController, UIPickerViewDelegate, UIPickerV
         lat = thisUser.lat
         lng = thisUser.lng
         
+        
+        getGroupNames()
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -184,7 +127,7 @@ class ProfileViewController: BaseViewController, UIPickerViewDelegate, UIPickerV
     
     func loadPicture(imageView:UIImageView, url:URL){
         let processor = DownsamplingImageProcessor(size: imageView.frame.size)
-            >> ResizingImageProcessor(referenceSize: imageView.frame.size, mode: .aspectFill)
+        ResizingImageProcessor(referenceSize: imageView.frame.size, mode: .aspectFill)
         imageView.kf.indicatorType = .activity
         imageView.kf.setImage(
             with: url,
@@ -303,7 +246,8 @@ class ProfileViewController: BaseViewController, UIPickerViewDelegate, UIPickerV
             self.btn_save.setImageTintColor(.white)
             
             self.btn_edt_picture.isHidden = false
-            self.btn_address.isHidden = false
+//            self.btn_address.isHidden = false
+            edt_address.isEnabled = true
             
             self.edt_name.backgroundColor = UIColor(rgb: 0xffffff, alpha: 0.12)
             self.edt_email.backgroundColor = UIColor(rgb: 0xffffff, alpha: 0.12)
@@ -348,7 +292,10 @@ class ProfileViewController: BaseViewController, UIPickerViewDelegate, UIPickerV
                 showToast(msg: "choose_group".localized())
                 return
             }
-            
+            if edt_address.text?.trimmingCharacters(in: .whitespacesAndNewlines) == ""{
+                showToast(msg: "enter_city_name".localized())
+                return
+            }
                 
             let parameters: [String:Any] = [
                 "member_id" : String(thisUser.idx),
@@ -358,7 +305,7 @@ class ProfileViewController: BaseViewController, UIPickerViewDelegate, UIPickerV
                 "cohort" : edt_group.text?.trimmingCharacters(in: .whitespacesAndNewlines) as Any,
                 "phone_number": edt_phone.text?.trimmingCharacters(in: .whitespacesAndNewlines) as Any,
                 "address" : edt_address.text?.trimmingCharacters(in: .whitespacesAndNewlines) as Any,
-                "city" : self.city,
+                "city" : edt_address.text?.trimmingCharacters(in: .whitespacesAndNewlines) as Any,
                 "lat" : self.lat,
                 "lng" : self.lng
             ]
@@ -495,6 +442,7 @@ class ProfileViewController: BaseViewController, UIPickerViewDelegate, UIPickerV
         self.edt_name.isEnabled = false
         self.edt_phone.isEnabled = false
         self.edt_group.isEnabled = false
+        self.edt_address.isEnabled = false
         
         if self.imageFile != nil {
             self.imageFile = nil
@@ -525,4 +473,20 @@ class ProfileViewController: BaseViewController, UIPickerViewDelegate, UIPickerV
         vc.modalPresentationStyle = .fullScreen
         self.transitionVc(vc: vc, duration: 0.3, type: .fromRight)
     }
+    
+    func getGroupNames() {
+        self.showLoadingView()
+        APIs.getgroupnames(admin_id: thisUser.admin_id, handleCallback: {
+            group_names, result_code in
+            self.dismissLoadingView()
+            if result_code == "0" {
+                self.groups = group_names!.split(separator: ",").map { String($0) }
+                self.groups.insert("- " + "choose_group".localized() + " -", at: 0)
+                self.thePicker.selectRow(self.groups.firstIndex(of: thisUser.cohort)!, inComponent: 0, animated: false)
+            }
+        })
+    }
+    
+    
+    
 }

@@ -19,6 +19,7 @@ class SignupViewController: BaseViewController, UIPickerViewDelegate, UIPickerVi
     @IBOutlet weak var emailBox: UITextField!
     @IBOutlet weak var passwordBox: UITextField!
     @IBOutlet weak var phoneBox: UITextField!
+    @IBOutlet weak var cityBox: UITextField!
     @IBOutlet weak var groupBox: UITextField!
     
     @IBOutlet weak var showButton: UIButton!
@@ -29,6 +30,7 @@ class SignupViewController: BaseViewController, UIPickerViewDelegate, UIPickerVi
     @IBOutlet weak var view_email: UIView!
     @IBOutlet weak var view_password: UIView!
     @IBOutlet weak var view_phone: UIView!
+    @IBOutlet weak var view_city: UIView!
     @IBOutlet weak var view_group: UIView!
     
     
@@ -43,66 +45,7 @@ class SignupViewController: BaseViewController, UIPickerViewDelegate, UIPickerVi
     var showF = false
     
     let thePicker = UIPickerView()
-    let groups = [String](arrayLiteral:
-        "- " + "choose_group".localized() + " -",
-        "E81",
-        "E83",
-        "E84",
-        "E86",
-        "E87",
-        "S82",
-        "S85",
-        "S88",
-        "E(v)89",
-        "E(v)90",
-        "S(v)91",
-        "E(v)92",
-        "E(v)93",
-        "E(v)94",
-        "S(v)95",
-        "E(v)96",
-        "E(v)97",
-        "S(v)98",
-        "E(v)99",
-        "E(v)100",
-        "S(v)101",
-        "E(v)102",
-        "E(v)103",
-        "S(v)104",
-        "E(v)105",
-        "E(v)106",
-        "S(v)107",
-        "E(v)108",
-        "E(v)109",
-        "S(v)110",
-        "E(v)111",
-        "E(v)112",
-        "S(v)113",
-        "E(v)114",
-        "E(v)115",
-        "S(v)116",
-        "E(v)117",
-        "E(v)118",
-        "S(v)119",
-        "E(v)120",
-        "E(v)121",
-        "S(v)122",
-        "E(v)123",
-        "E(v)124",
-        "S(v)125",
-        "E(v)126",
-        "E(v)127",
-        "S(v)128",
-        "Love Notes E(v)1",
-        "Love Notes E(v)2",
-        "Love Notes E(v)3",
-        "Love Notes E(v)4",
-        "Love Notes E(v)5",
-        "Love Notes E(v)6",
-        "Love Notes E(v)7",
-        "Love Notes E(v)8",
-        "MotherWise Alumni",
-        "MotherWise Team")
+    var groups = [String]()
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -117,6 +60,7 @@ class SignupViewController: BaseViewController, UIPickerViewDelegate, UIPickerVi
         setRoundShadowView(view: view_email, corner: 25)
         setRoundShadowView(view: view_password, corner: 25)
         setRoundShadowView(view: view_phone, corner: 25)
+        setRoundShadowView(view: view_city, corner: 25)
         setRoundShadowView(view: view_group, corner: 25)
         
         setRoundShadowButton(button: sigupButton, corner: 25)
@@ -160,6 +104,8 @@ class SignupViewController: BaseViewController, UIPickerViewDelegate, UIPickerVi
         thePicker.backgroundColor = UIColor.white
         createToolbar()
         
+        UIApplication.shared.applicationIconBadgeNumber = 0
+        
         if thisUser.idx > 0 {
             nameBox.text = thisUser.name
             emailBox.text = thisUser.email
@@ -173,6 +119,8 @@ class SignupViewController: BaseViewController, UIPickerViewDelegate, UIPickerVi
         }else {
             emailBox.isEnabled = true
         }
+        
+        getGroupNames()
         
     }
     
@@ -306,6 +254,11 @@ class SignupViewController: BaseViewController, UIPickerViewDelegate, UIPickerVi
             return
         }
         
+        if cityBox.text?.trimmingCharacters(in: .whitespacesAndNewlines) == ""{
+            showToast(msg: "enter_city_name".localized())
+            return
+        }
+        
         var userId:Int64 = 0
         if thisUser.idx > 0 { userId = thisUser.idx }
             
@@ -316,10 +269,10 @@ class SignupViewController: BaseViewController, UIPickerViewDelegate, UIPickerVi
             "password" : passwordBox.text?.trimmingCharacters(in: .whitespacesAndNewlines) as Any,
             "cohort" : groupBox.text?.trimmingCharacters(in: .whitespacesAndNewlines) as Any,
             "phone_number": phoneBox.text?.trimmingCharacters(in: .whitespacesAndNewlines) as Any,
-            "address" : "",
-            "city" : "",
-            "lat" : "",
-            "lng" : ""
+            "address" : cityBox.text?.trimmingCharacters(in: .whitespacesAndNewlines) as Any,
+            "city" : cityBox.text?.trimmingCharacters(in: .whitespacesAndNewlines) as Any,
+            "lat" : "0",
+            "lng" : "0"
         ]
             
         if self.imageFile != nil{
@@ -405,7 +358,7 @@ class SignupViewController: BaseViewController, UIPickerViewDelegate, UIPickerVi
         UserDefaults.standard.set(thisUser.email, forKey: "email")
         UserDefaults.standard.set(thisUser.password, forKey: "password")
         
-        let vc = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "AddLocationViewController")
+        let vc = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "TermsViewController")
         vc.modalPresentationStyle = .fullScreen
         self.transitionVc(vc: vc, duration: 0.3, type: .fromRight)
         
@@ -419,6 +372,19 @@ class SignupViewController: BaseViewController, UIPickerViewDelegate, UIPickerVi
         self.dismissViewController()
         
     }
+    
+    
+    func getGroupNames() {
+        APIs.getgroupnames(admin_id: thisUser.admin_id, handleCallback: {
+            group_names, result_code in
+                if result_code == "0" {
+                    self.groups = group_names!.split(separator: ",").map { String($0) }
+                    self.groups.insert("- " + "choose_group".localized() + " -", at: 0)
+                }
+        })
+    }
+    
+    
 }
 
 

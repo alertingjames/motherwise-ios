@@ -39,6 +39,7 @@ class GroupMembersViewController: BaseViewController, UITableViewDataSource, UIT
     let icChecked = UIImage(named: "ic_checked")
     
     var user_buttons:HomeUserMenu!
+    var profile_dialog: UserProfileFrame!
     
     var isNotified:Bool = false
     
@@ -91,6 +92,7 @@ class GroupMembersViewController: BaseViewController, UITableViewDataSource, UIT
         view_searchbar.backgroundColor = UIColor(rgb: 0xffffff, alpha: 0.3)
         
         user_buttons = self.storyboard!.instantiateViewController(withIdentifier: "HomeUserMenu") as! HomeUserMenu
+        profile_dialog = (UIStoryboard(name: "Frames", bundle: nil).instantiateViewController(withIdentifier: "UserProfileFrame") as! UserProfileFrame)
         
         self.userList.delegate = self
         self.userList.dataSource = self
@@ -158,7 +160,7 @@ class GroupMembersViewController: BaseViewController, UITableViewDataSource, UIT
     
     func loadPicture(imageView:UIImageView, url:URL){
         let processor = DownsamplingImageProcessor(size: imageView.frame.size)
-            >> ResizingImageProcessor(referenceSize: imageView.frame.size, mode: .aspectFill)
+        ResizingImageProcessor(referenceSize: imageView.frame.size, mode: .aspectFill)
         imageView.kf.indicatorType = .activity
         imageView.kf.setImage(
             with: url,
@@ -218,8 +220,6 @@ class GroupMembersViewController: BaseViewController, UITableViewDataSource, UIT
             
             if users[index].cohort == "admin" { cell.lbl_group1.text = "VaCay Community" } else { cell.lbl_group1.text = users[index].cohort}
             
-            
-            
             if gSelectedUsers.contains(where: {$0 === users[index]}){
                 cell.btn_add1.setImage(icChecked, for: .normal) // You can set image direct from Storyboard
             }else{
@@ -240,7 +240,7 @@ class GroupMembersViewController: BaseViewController, UITableViewDataSource, UIT
                 
             cell.view_item1.isHidden = false
             cell.view_item1.tag = index
-            let tap1 = UITapGestureRecognizer(target: self, action: #selector(self.tappedItem1(_ :)))
+            let tap1 = UITapGestureRecognizer(target: self, action: #selector(self.tappedUser(_ :)))
             cell.view_item1.addGestureRecognizer(tap1)
                 
             cell.view_item1.sizeToFit()
@@ -284,7 +284,7 @@ class GroupMembersViewController: BaseViewController, UITableViewDataSource, UIT
                 
             cell.view_item2.isHidden = false
             cell.view_item2.tag = index2
-            let tap2 = UITapGestureRecognizer(target: self, action: #selector(self.tappedItem2(_:)))
+            let tap2 = UITapGestureRecognizer(target: self, action: #selector(self.tappedUser(_:)))
             cell.view_item2.addGestureRecognizer(tap2)
                 
             cell.view_item2.sizeToFit()
@@ -297,6 +297,36 @@ class GroupMembersViewController: BaseViewController, UITableViewDataSource, UIT
         cell.view_content.layoutIfNeeded()
             
         return cell
+    }
+    
+    @objc func tappedUser(_ sender:UITapGestureRecognizer? = nil) {
+        if self.loadingView.isAnimating{
+            return
+        }
+        if let tag = sender?.view?.tag {
+            print(tag)
+            gUser = self.users[tag]
+            self.profile_dialog.view.frame = CGRect(x: 0, y: 0, width: self.screenWidth, height: self.screenHeight)
+            if gUser.photo_url != "" {
+                self.profile_dialog.pictureBox.visibility = .visible
+                loadPicture(imageView:self.profile_dialog.pictureBox, url: URL(string: gUser.photo_url)!)
+            }else{
+                self.profile_dialog.pictureBox.visibility = .gone
+            }
+            self.profile_dialog.nameBox.text = gUser.name
+            self.profile_dialog.groupBox.text = gUser.cohort
+            self.profile_dialog.group_name = gUser.cohort
+            self.profile_dialog.cityBox.text = gUser.city
+            self.profile_dialog.buttonView.alpha = 0
+            self.profile_dialog.from_group = true
+            setIconTintColor(imageView: self.profile_dialog.groupIconBox, color: .white)
+            self.profile_dialog.groupBox.textColor = .white
+            UIView.animate(withDuration: 1.2) {
+                self.profile_dialog.buttonView.alpha = 1
+                self.addChild(self.profile_dialog)
+                self.view.addSubview(self.profile_dialog.view)
+            }
+        }
     }
         
     @objc func addUser(sender : UIButton){

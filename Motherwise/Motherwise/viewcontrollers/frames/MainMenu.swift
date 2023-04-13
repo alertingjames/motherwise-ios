@@ -40,6 +40,7 @@ class MainMenu: BaseViewController {
     
     @IBOutlet weak var profileFrame: UIView!
     
+    @IBOutlet weak var meetH: NSLayoutConstraint!
     
     @IBOutlet weak var lbl_home: UILabel!
     @IBOutlet weak var lbl_meet: UILabel!
@@ -77,7 +78,8 @@ class MainMenu: BaseViewController {
         setIconTintColor(imageView:languageIcon, color: UIColor.white)
         setIconTintColor(imageView:logoutIcon, color: UIColor.white)
         
-        
+        meetButton.visibility = .gone
+        meetH.constant = 0
         
         var tap = UITapGestureRecognizer(target: self, action: #selector(self.getNetworkUsers(_:)))
         networkButton.addGestureRecognizer(tap)
@@ -88,7 +90,8 @@ class MainMenu: BaseViewController {
         tap = UITapGestureRecognizer(target: self, action: #selector(self.getGroups(_:)))
         groupsButton.addGestureRecognizer(tap)
         
-        tap = UITapGestureRecognizer(target: self, action: #selector(self.getCommunities(_:)))
+        // Comida Connection
+        tap = UITapGestureRecognizer(target: self, action: #selector(self.toComidaConnection(_:)))
         communitiesButton.addGestureRecognizer(tap)
         
         tap = UITapGestureRecognizer(target: self, action: #selector(self.getConferences(_:)))
@@ -118,8 +121,8 @@ class MainMenu: BaseViewController {
         lbl_home.text = "home".localized().uppercased()
         lbl_meet.text = "meet".localized().uppercased()
         lbl_groups.text = "groups".localized().uppercased()
-        lbl_communities.text = "communities".localized().uppercased()
-        lbl_conferences.text = "conferences".localized().uppercased()
+        lbl_communities.text = "comida_connection".localized().uppercased()
+        lbl_conferences.text = "videos".localized().uppercased()
         lbl_messages.text = "messages".localized().uppercased()
         lbl_profile.text = "profile".localized().uppercased()
         lbl_lang.text = "language".localized().uppercased()
@@ -150,11 +153,18 @@ class MainMenu: BaseViewController {
     
     @objc func getCommunities(_ sender: UITapGestureRecognizer? = nil) {
         if gGroups.count == 0{
-            showToast(msg: "No community you belong to.")
+            showToast(msg: "no_community_belong".localized())
             return
         }
         gUsers = gNewHomeVC.users
         let vc = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(identifier: "HomeGroupViewController")
+        vc.modalPresentationStyle = .fullScreen
+        self.present(vc, animated: true, completion: nil)
+        gNewHomeVC.close_menu()
+    }
+    
+    @objc func toComidaConnection(_ sender:UITapGestureRecognizer? = nil) {
+        let vc = UIStoryboard(name: "Comida", bundle: nil).instantiateViewController(identifier: "ComidaViewController")
         vc.modalPresentationStyle = .fullScreen
         self.present(vc, animated: true, completion: nil)
         gNewHomeVC.close_menu()

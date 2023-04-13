@@ -15,30 +15,16 @@ import DropDown
 import Auk
 import DynamicBlurView
 import GSImageViewerController
+import Emoji
+import Smile
 
 class CommentViewController: BaseViewController, UITableViewDataSource, UITableViewDelegate {
 
     @IBOutlet weak var navBar: UIView!
     @IBOutlet weak var lbl_title: UILabel!
     @IBOutlet weak var commentList: UITableView!
-    @IBOutlet weak var attachButton: UIButton!
-    @IBOutlet weak var sendButton: UIButton!
-    @IBOutlet weak var commentBox: UITextView!
-    @IBOutlet weak var commentImageBox: UIImageView!
+    @IBOutlet weak var penButton: UIButton!
     @IBOutlet weak var noResult: UILabel!
-    @IBOutlet weak var view_emoji: UIView!
-    
-    @IBOutlet weak var lbl_emoji0: UILabel!
-    @IBOutlet weak var lbl_emoji1: UILabel!
-    @IBOutlet weak var lbl_emoji2: UILabel!
-    @IBOutlet weak var lbl_emoji3: UILabel!
-    @IBOutlet weak var lbl_emoji4: UILabel!
-    @IBOutlet weak var lbl_emoji5: UILabel!
-    @IBOutlet weak var lbl_emoji6: UILabel!
-    @IBOutlet weak var lbl_emoji7: UILabel!
-    @IBOutlet weak var lbl_emoji8: UILabel!
-    @IBOutlet weak var lbl_emoji9: UILabel!
-    
 
     var imageFile:Data!
     var ImageArray = NSMutableArray()
@@ -52,22 +38,10 @@ class CommentViewController: BaseViewController, UITableViewDataSource, UITableV
         super.viewDidLoad()
 
         addShadowToBar(view: navBar)
-    
-        sendButton.setImageTintColor(primaryDarkColor)
-        
-        sendButton.visibilityh = .gone
-        view_emoji.visibility = .gone
+        penButton.setImageTintColor(.white)
         
         lbl_title.text = "comment".localized().uppercased()
         noResult.text = "no_comment_".localized()
-        
-        commentBox.layer.cornerRadius = commentBox.frame.height / 2
-        
-        self.commentImageBox.isHidden = true
-        
-        commentBox.setPlaceholder(string: "write_something_".localized())
-        commentBox.textContainerInset = UIEdgeInsets(top: commentBox.textContainerInset.top, left: 8, bottom: commentBox.textContainerInset.bottom, right: 5)
-        commentBox.becomeFirstResponder()
         
         self.commentList.delegate = self
         self.commentList.dataSource = self
@@ -77,38 +51,11 @@ class CommentViewController: BaseViewController, UITableViewDataSource, UITableV
         
         UITextView.appearance().linkTextAttributes = [ .foregroundColor: UIColor.yellow ]
         
-        emojiButtons = [lbl_emoji0, lbl_emoji1, lbl_emoji2, lbl_emoji3, lbl_emoji4, lbl_emoji5, lbl_emoji6, lbl_emoji7, lbl_emoji8, lbl_emoji9]
-        emojiStrings = ["close".localized(), "💖","👍","😊","😄","😍","🙁","😂","😠","😛"]
-        
-        for emjButton in emojiButtons {
-            let index = emojiButtons.firstIndex(of: emjButton)!
-            emjButton.text = emojiStrings[index].decodeEmoji
-            
-            let tap = UITapGestureRecognizer(target: self, action: #selector(addEmoji))
-            emjButton.tag = index
-            emjButton.isUserInteractionEnabled = true
-            emjButton.addGestureRecognizer(tap)
-        }
-    }
-    
-    @objc func addEmoji(sender:UITapGestureRecognizer){
-        let label = sender.view as! UILabel
-        let index = label.tag
-        if index == 0{
-            self.view_emoji.visibility = .gone
-        }else{
-            self.commentBox.text = self.commentBox.text + emojiStrings[index].decodeEmoji
-            self.commentBox.checkPlaceholder()
-            if self.commentBox.text == ""{
-                sendButton.visibilityh = .gone
-            }else{
-                sendButton.visibilityh = .visible
-            }
-        }
     }
     
     override func viewWillAppear(_ animated: Bool) {
-        
+        gRecentViewController = self
+        gCommentVC = self
         self.getComments(post_id: gPost.idx)
         
     }
@@ -120,7 +67,7 @@ class CommentViewController: BaseViewController, UITableViewDataSource, UITableV
     
     func loadPicture(imageView:UIImageView, url:URL){
         let processor = DownsamplingImageProcessor(size: imageView.frame.size)
-            >> ResizingImageProcessor(referenceSize: imageView.frame.size, mode: .aspectFill)
+        ResizingImageProcessor(referenceSize: imageView.frame.size, mode: .aspectFill)
         imageView.kf.indicatorType = .activity
         imageView.kf.setImage(
             with: url,
@@ -188,7 +135,7 @@ class CommentViewController: BaseViewController, UITableViewDataSource, UITableV
             }
             
             cell.userCohortBox.text = comment.user.cohort
-            cell.commentBox.text = comment.comment.decodeEmoji
+            cell.commentBox.text = self.processingEmoji(str:comment.comment)
             cell.commentedTimeBox.text = comment.commented_time
             
             cell.menuButton.setImageTintColor(UIColor.gray)
@@ -242,9 +189,12 @@ class CommentViewController: BaseViewController, UITableViewDataSource, UITableV
             dropDown.selectionAction = { [unowned self] (idx: Int, item: String) in
                 print("Selected item: \(item) at index: \(idx)")
                 if idx == 0{
-                    self.commentBox.text = cell.commentBox.text.decodeEmoji
-                    self.commentBox.checkPlaceholder()
-                    self.commentBox.becomeFirstResponder()
+                    let vc = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "AddCommentViewController") as! AddCommentViewController
+                    vc.commentBox.text = self.processingEmoji(str:cell.commentBox.text)
+                    vc.commentBox.checkPlaceholder()
+                    vc.commentBox.becomeFirstResponder()
+                    vc.submitButton.alpha = 1.0
+                    self.present(vc, animated: true, completion: nil)
                 }else if idx == 1{
                     let alert = UIAlertController(title: "delete".localized(), message: "sure_delete_comment".localized(), preferredStyle: .alert)
                     let noAction = UIAlertAction(title: "no".localized(), style: .cancel, handler: {
@@ -286,19 +236,9 @@ class CommentViewController: BaseViewController, UITableViewDataSource, UITableV
         
     }
     
-    
-    func textViewDidChange(_ textView: UITextView) {
-        textView.checkPlaceholder()
-        if textView.text == ""{
-            sendButton.visibilityh = .gone
-        }else{
-            sendButton.visibilityh = .visible
-        }
-    }
-    
     func getComments(post_id:Int64){
         self.showLoadingView()
-        APIs.getComments(post_id: post_id, handleCallback: {
+        APIs.getComments(post_id: post_id, member_id: thisUser.idx, handleCallback: {
             comments, result_code in
             self.dismissLoadingView()
             print(result_code)
@@ -323,150 +263,6 @@ class CommentViewController: BaseViewController, UITableViewDataSource, UITableV
         })
     }
     
-    @IBAction func openCamera(_ sender: Any) {
-        let dropDown = DropDown()
-        
-        dropDown.anchorView = self.attachButton
-        dropDown.dataSource = ["  📷".decodeEmoji, "  😊".decodeEmoji]
-        // Action triggered on selection
-        dropDown.selectionAction = { [unowned self] (idx: Int, item: String) in
-            if idx == 0{
-                var picker:YPImagePicker!
-                var config = YPImagePickerConfiguration()
-                config.wordings.libraryTitle = "gallery".localized()
-                config.wordings.cameraTitle = "camera".localized()
-                YPImagePickerConfiguration.shared = config
-                picker = YPImagePicker()
-                picker.didFinishPicking { [picker] items, _ in
-                    if let photo = items.singlePhoto {
-                        self.commentImageBox.image = photo.image
-                        self.commentImageBox.layer.cornerRadius = 5
-                        self.commentImageBox.isHidden = false
-                        self.imageFile = photo.image.jpegData(compressionQuality: 0.8)
-                    }
-                    picker!.dismiss(animated: true, completion: nil)
-                }
-                self.present(picker, animated: true, completion: nil)
-            }else if idx == 1{
-                self.view_emoji.visibility = .visible
-            }
-        }
-        
-        DropDown.appearance().textColor = UIColor.black
-        DropDown.appearance().selectedTextColor = UIColor.white
-        DropDown.appearance().textFont = UIFont.boldSystemFont(ofSize: 25.0)
-        DropDown.appearance().backgroundColor = UIColor.white
-        DropDown.appearance().selectionBackgroundColor = UIColor.gray
-        DropDown.appearance().cellHeight = 45
-        
-        dropDown.separatorColor = UIColor.lightGray
-        dropDown.width = 70
-        
-        dropDown.show()
-    }
-    
-    @IBAction func submitComment(_ sender: Any) {
-        if commentBox.text.trimmingCharacters(in: .whitespacesAndNewlines) == "" {
-            showToast(msg: "type_something_".localized())
-            return
-        }
-                
-        let parameters: [String:Any] = [
-            "member_id" : String(thisUser.idx),
-            "post_id" : String(gPost.idx),
-            "content" : commentBox.text?.trimmingCharacters(in: .whitespacesAndNewlines).encodeEmoji as Any,
-        ]
-                
-        if self.imageFile != nil{
-            let ImageDic = ["image" : self.imageFile!]
-            // Here you can pass multiple image in array i am passing just one
-            ImageArray = NSMutableArray(array: [ImageDic as NSDictionary])
-                    
-            self.showLoadingView()
-            APIs().registerWithPicture(withUrl: ReqConst.SERVER_URL + "submitcomment", withParam: parameters, withImages: ImageArray) { (isSuccess, response) in
-                // Your Will Get Response here
-                self.dismissLoadingView()
-                print("Response: \(response)")
-                if isSuccess == true{
-                    let result_code = response["result_code"] as Any
-                    if result_code as! String == "0"{
-                        self.getComments(post_id: gPost.idx)
-                        self.commentImageBox.isHidden = true
-                        self.commentBox.text = ""
-                        self.commentBox.resignFirstResponder()
-                        self.commentBox.checkPlaceholder()
-                        self.sendButton.visibilityh = .gone
-                        self.imageFile = nil
-                        if gRecentViewController == gPostViewController{
-                            gPostViewController.getUserPosts(me_id: thisUser.idx, member_id: gUser.idx)
-                        }else if gRecentViewController == gMyPostViewController{
-                            gMyPostViewController.getMyPosts(member_id: thisUser.idx)
-                        }
-                    }else if result_code as! String == "1"{
-                        self.showToast(msg: "user_not_exist".localized())
-                        self.logout()
-                    }else if result_code as! String == "2"{
-                        self.showToast(msg: "post_not_exist".localized())
-                        if gRecentViewController == gPostViewController{
-                            gPostViewController.getUserPosts(me_id: thisUser.idx, member_id: gUser.idx)
-                        }else if gRecentViewController == gMyPostViewController{
-                            gMyPostViewController.getMyPosts(member_id: thisUser.idx)
-                        }
-                        self.dismiss(animated: true, completion: nil)
-                    }else {
-                        self.showToast(msg: "something_wrong".localized())
-                    }
-                }else{
-                    self.showToast(msg: "something_wrong".localized())
-//                    let message = "File size: " + String(response.fileSize()) + "\n" + "Description: " + response.description
-//                    self.showToast(msg: "Issue: \n" + message)
-                }
-            }
-        }else{
-            self.showLoadingView()
-            APIs().registerWithoutPicture(withUrl: ReqConst.SERVER_URL + "submitcomment", withParam: parameters) { (isSuccess, response) in
-                // Your Will Get Response here
-                self.dismissLoadingView()
-                print("Response: \(response)")
-                if isSuccess == true{
-                    let result_code = response["result_code"] as Any
-                    if result_code as! String == "0"{
-                        self.getComments(post_id: gPost.idx)
-                        self.commentImageBox.isHidden = true
-                        self.commentBox.text = ""
-                        self.commentBox.resignFirstResponder()
-                        self.commentBox.checkPlaceholder()
-                        self.sendButton.visibilityh = .gone
-                        self.imageFile = nil
-                        if gRecentViewController == gPostViewController{
-                            gPostViewController.getUserPosts(me_id: thisUser.idx, member_id: gUser.idx)
-                        }else if gRecentViewController == gMyPostViewController{
-                            gMyPostViewController.getMyPosts(member_id: thisUser.idx)
-                        }
-                    }else if result_code as! String == "1"{
-                        self.showToast(msg: "user_not_exist".localized())
-                        self.logout()
-                    }else if result_code as! String == "2"{
-                        self.showToast(msg: "post_not_exist".localized())
-                        if gRecentViewController == gPostViewController{
-                            gPostViewController.getUserPosts(me_id: thisUser.idx, member_id: gUser.idx)
-                        }else if gRecentViewController == gMyPostViewController{
-                            gMyPostViewController.getMyPosts(member_id: thisUser.idx)
-                        }
-                        self.dismiss(animated: true, completion: nil)
-                    }else {
-                        self.showToast(msg: "something_wrong".localized())
-                    }
-                }else{
-                    self.showToast(msg: "something_wrong".localized())
-//                    let message = "File size: " + String(response.fileSize()) + "\n" + "Description: " + response.description
-//                    self.showToast(msg: "Issue: \n" + message)
-                }
-            }
-        }
-                
-    }
-    
     func deleteComment(comment_id: Int64){
         self.showLoadingView()
         APIs.deleteComment(comment_id: comment_id, handleCallback: {
@@ -489,5 +285,13 @@ class CommentViewController: BaseViewController, UITableViewDataSource, UITableV
             }
         })
     }
+    
+    
+    @IBAction func openInputView(_ sender: Any) {
+        let vc = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "AddCommentViewController")
+        self.present(vc, animated: true, completion: nil)
+    }
+    
+    
     
 }

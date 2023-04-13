@@ -12,6 +12,8 @@ import Kingfisher
 import YPImagePicker
 import DynamicBlurView
 import GSImageViewerController
+import Smile
+import Emoji
 
 class EditPostViewController: BaseViewController, UIPickerViewDelegate, UIPickerViewDataSource {
 
@@ -45,24 +47,22 @@ class EditPostViewController: BaseViewController, UIPickerViewDelegate, UIPicker
     var picker:YPImagePicker!
     let thePicker = UIPickerView()
         
-    let categories = [String](arrayLiteral:
-                                "- " + "choose_category".localized() + " -",
-                                "positive_quotes".localized(),
-                                "inspiration".localized(),
-                              "shout_outs".localized(),
-                              "wellness".localized(),
-                              "activities_suggestions".localized(),
-                              "resource".localized())
+    var categories = [String]()
     
     var selectedTime:String = ""
     var postPictures = [PostPicture]()
     
+    @IBOutlet weak var xxxTop: NSLayoutConstraint!
     
 
     override func viewDidLoad() {
         super.viewDidLoad()
             
         gEditPostViewController = self
+        
+        scheduleNoteBox.visibility = .gone
+        xxxTop.constant = 0
+        scheduleView.visibility = .gone
             
         gSelectedUsers.removeAll()
         
@@ -134,9 +134,9 @@ class EditPostViewController: BaseViewController, UIPickerViewDelegate, UIPicker
         let tap = UITapGestureRecognizer(target: self, action: #selector(self.openUsersPage(_:)))
         view_notify.addGestureRecognizer(tap)
         
-        edt_postname.text = gPost.title.decodeEmoji
+        edt_postname.text = self.processingEmoji(str:gPost.title)
         edt_category.text = gPost.category
-        edt_desc.text = gPost.content.decodeEmoji
+        edt_desc.text = self.processingEmoji(str:gPost.content)
         edt_desc.checkPlaceholder()
         
         linkpreviews = gPost.previews
@@ -178,6 +178,8 @@ class EditPostViewController: BaseViewController, UIPickerViewDelegate, UIPicker
         linkView.sizeToFit()
         
         self.getPostPictures(post: gPost)
+        
+        self.getPostCategories()
             
     }
     
@@ -272,7 +274,7 @@ class EditPostViewController: BaseViewController, UIPickerViewDelegate, UIPicker
             
     func loadPicture(imageView:UIImageView, url:URL){
         let processor = DownsamplingImageProcessor(size: imageView.frame.size)
-                    >> ResizingImageProcessor(referenceSize: imageView.frame.size, mode: .aspectFill)
+        ResizingImageProcessor(referenceSize: imageView.frame.size, mode: .aspectFill)
         imageView.kf.indicatorType = .activity
         imageView.kf.setImage(
             with: url,
@@ -644,6 +646,25 @@ class EditPostViewController: BaseViewController, UIPickerViewDelegate, UIPicker
         if let url = URL(string: linkprev.site_url) {
             UIApplication.shared.open(url)
         }
+    }
+    
+    func getPostCategories() {
+        self.showLoadingView()
+        APIs.getpostcategories(admin_id: thisUser.admin_id, handleCallback: {
+            us_categories, es_categories, result_code in
+            self.dismissLoadingView()
+            if result_code == "0" {
+                let lang = UserDefaults.standard.string(forKey: "app_lang") ?? "en"
+                if lang == "es" {
+                    self.categories = es_categories!.split(separator: ",").map { String($0) }
+                }else {
+                    self.categories = us_categories!.split(separator: ",").map { String($0) }
+                }
+                self.categories.insert("- " + "choose_category".localized() + " -", at: 0)
+                self.thePicker.selectRow(self.categories.firstIndex(of: gPost.category)!, inComponent: 0, animated: false)
+            }
+            
+        })
     }
     
         

@@ -16,11 +16,21 @@ class BaseViewController: UIViewController, UITextFieldDelegate, UITextViewDeleg
     let search = UIImage(named: "ic_search_w")
     
     var inputDialog:InputDialog!
+    
+    var topSafeAreaHeight: CGFloat = 0
+    var bottomSafeAreaHeight: CGFloat = 0
 
     override func viewDidLoad() {
         super.viewDidLoad()
         
         UITextField.appearance().tintColor = UIColor(rgb: 0xEE06C6, alpha: 1.0)
+        
+        if #available(iOS 11.0, *) {
+            let window = UIApplication.shared.windows[0]
+            let safeFrame = window.safeAreaLayoutGuide.layoutFrame
+            topSafeAreaHeight = safeFrame.minY
+            bottomSafeAreaHeight = window.frame.maxY - safeFrame.maxY
+        }
         
     }
     
@@ -199,6 +209,8 @@ class BaseViewController: UIViewController, UITextFieldDelegate, UITextViewDeleg
         
         UserDefaults.standard.set("", forKey: "email")
         UserDefaults.standard.set("", forKey: "role")
+        
+        UIApplication.shared.applicationIconBadgeNumber = 0
 
         thisUser.idx = 0
         gNote = "Logged Out"
@@ -206,6 +218,20 @@ class BaseViewController: UIViewController, UITextFieldDelegate, UITextViewDeleg
         vc.modalPresentationStyle = .fullScreen
         self.transitionVc(vc: vc, duration: 0.3, type: .fromLeft)
         
+    }
+    
+    func processingEmoji(str:String) -> String {
+        var text = str
+        text = text.replacingOccurrences(of: ":Santa_Claus:", with: "🎅")
+        text = text.replacingOccurrences(of: ":kissing_face_with_closed_eyes:", with: "😚")
+        text = text.replacingOccurrences(of: ":smiling_face_with_smiling_eyes:", with: "😊")
+        text = text.replacingOccurrences(of: ":slightly_smiling_face:", with: "🙂")
+        text = text.replacingOccurrences(of: ":winking_face:", with: "😉")
+        text = text.replacingOccurrences(of: ":smiling_face_with_heart-eyes:", with: "😍")
+        text = text.replacingOccurrences(of: ":beaming_face_with_smiling_eyes:", with: "😁")
+        text = text.replacingOccurrences(of: ":slightly_smiling_face:", with: "🙂")
+        text = text.replacingOccurrences(of: ":soft_ice_cream:", with: "🍦")
+        return (text.jsonStringRedecoded?.decodeEmoji.emojiUnescapedString)!
     }
     
     func showCallAlertDialog(title:String, message:String, alias:String, ref:DatabaseReference){
@@ -407,7 +433,7 @@ extension UIViewController {
         transition.duration = 0.3
         transition.type = CATransitionType.push
         transition.subtype = CATransitionSubtype.fromLeft
-        self.view.window!.layer.add(transition, forKey: kCATransition)
+        if self.view.window != nil { self.view.window?.layer.add(transition, forKey: kCATransition) }
         
         dismiss(animated: false)
     }
@@ -494,6 +520,15 @@ extension UIApplication {
     }
 }
 
+extension UITableView {
+    func reloadDataWithoutScroll() {
+        let offset = contentOffset
+        reloadData()
+        layoutIfNeeded()
+        setContentOffset(offset, animated: false)
+    }
+}
+
 extension UIButton{
 
     func setImageTintColor(_ color: UIColor) {
@@ -502,6 +537,14 @@ extension UIButton{
         self.tintColor = color
     }
 
+}
+
+extension String {
+    var jsonStringRedecoded: String? {
+        let data = ("\""+self+"\"").data(using: .utf8)!
+        let result = (try? JSONSerialization.jsonObject(with: data, options: .allowFragments) as? String) ?? self
+        return result
+    }
 }
 
 extension String {

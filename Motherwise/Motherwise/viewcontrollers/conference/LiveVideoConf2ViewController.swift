@@ -14,7 +14,7 @@ import AVKit
 import Firebase
 import FirebaseDatabase
 import VoxeetSDK
-//import VoxeetUXKit
+import VoxeetUXKit
 
 class LiveVideoConf2ViewController: BaseViewController, UICollectionViewDelegate, UICollectionViewDataSource, UITableViewDataSource, UITableViewDelegate  {
     
@@ -268,7 +268,7 @@ class LiveVideoConf2ViewController: BaseViewController, UICollectionViewDelegate
     
     func loadPicture(imageView:UIImageView, url:URL){
         let processor = DownsamplingImageProcessor(size: imageView.frame.size)
-            >> ResizingImageProcessor(referenceSize: imageView.frame.size, mode: .aspectFill)
+        ResizingImageProcessor(referenceSize: imageView.frame.size, mode: .aspectFill)
         imageView.kf.indicatorType = .activity
         imageView.kf.setImage(
             with: url,
@@ -326,7 +326,7 @@ class LiveVideoConf2ViewController: BaseViewController, UICollectionViewDelegate
             cell.imageBox.isUserInteractionEnabled = true
 
             if comment.comment != ""{
-                cell.commentBox.text = comment.comment.decodeEmoji
+                cell.commentBox.text = self.processingEmoji(str:comment.comment)
                 cell.commentBox.visibility = .visible
             }else {
                 cell.commentBox.visibility = .gone

@@ -124,6 +124,9 @@
 "wellness" = "Bienestar";
 "activities_suggestions" = "Recomendaciones de actividades";
 "resource" = "Recurso";
+"videos" = "Vídeos del taller";
+"enjoy_watching" = "disfruta viéndolo";
+"everyone" = "Todas";
 
 "write_about_post" = "Escriba algo de esta publicación.";
 "post_not_exist" = "Esta publicación no existe";
@@ -201,7 +204,8 @@
 "code_incorrect" = "tu código es incorrecto. por favor intente con otro.";
 "login_success" = "Iniciar sesión correctamente";
 "add_location" = "Por favor agregue su ubicación";
-
+"create_post" = "crear publicación";
+"city" = "Ciudad";
 
 "jan" = "ene";
 "feb" = "feb";
@@ -251,7 +255,20 @@
 
 "langxxx" = "&lang=es";
 
-
+"write_comment_on_this_post" = "Escribe tu comentario en esta publicación...";
+"comment_on_comment" = "Comentar en Comentar";
+"comida_connection" = "Conexión de comida";
+"recipes" = "Recetas";
+"food_resources" = "Recursos Alimentarios";
+"meat" = "Carne";
+"vegetarian" = "Vegetariano";
+"light_bites" = "Bocados Ligeros";
+"sweet_tooth" = "Goloso";
+"meat_recipes" = "Recetas De Carnes";
+"vegetarian_recipes" = "Recetas Vegetarianas";
+"light_bites_recipes" = "Recetas de bocados ligeros";
+"sweet_tooth_recipes" = "Recetas de golosos";
+"resources_in_community" = "Recursos en la comunidad";
 
 
 

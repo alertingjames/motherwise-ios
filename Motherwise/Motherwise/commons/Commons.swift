@@ -33,6 +33,8 @@ var gId:Int64 = 0
 var gPostOpt:String = "all"
 var isWeatherLocationChanged:Bool = false
 
+var selectedRecipeType:String = "meat"
+
 var gRecentViewController:UIViewController!
 
 var gFCMToken:String = ""
@@ -50,6 +52,10 @@ var gConfUsers = [User]()
 var gChatMessageCount:Int = 0
 var gForecastWeatherData:ForecastData.Weathers!
 var gDailyForecastWeatherData:DailyForecastData.Weathers!
+
+var gComment1:Comment!
+var gCommentsView:UIView!
+var gCommentsStackView:UIStackView!
 
 ///////////// ViewController ////////////////////////////////////////////////
 
@@ -75,8 +81,11 @@ var gNearbyViewController:MainVC!
 
 var gLiveVideoConf2ViewController:LiveVideoConf2ViewController!
 var gNewHomeVC:NewHomeViewController!
+var gCommentVC:CommentViewController!
 
-
+var gPostDetailVC:PostDetailVC!
+var gComidaViewViewController:ComidaViewController!
+var gFoodResourcesVC:FoodResourcesVC!
 
 
 

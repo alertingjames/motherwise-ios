@@ -20,8 +20,11 @@ import FirebaseDatabase
 import FirebaseStorage
 import AVFoundation
 import AudioToolbox
+import Emoji
+import Smile
+import ISEmojiView
 
-class ConfCommentFrame: BaseViewController, UITableViewDataSource, UITableViewDelegate {
+class ConfCommentFrame: BaseViewController, UITableViewDataSource, UITableViewDelegate, EmojiViewDelegate {
 
     @IBOutlet weak var navBar: UIView!
     @IBOutlet weak var lbl_title: UILabel!
@@ -31,18 +34,8 @@ class ConfCommentFrame: BaseViewController, UITableViewDataSource, UITableViewDe
     @IBOutlet weak var commentBox: UITextView!
     @IBOutlet weak var commentImageBox: UIImageView!
     @IBOutlet weak var noResult: UILabel!
-    @IBOutlet weak var view_emoji: UIView!
-    
-    @IBOutlet weak var lbl_emoji0: UILabel!
-    @IBOutlet weak var lbl_emoji1: UILabel!
-    @IBOutlet weak var lbl_emoji2: UILabel!
-    @IBOutlet weak var lbl_emoji3: UILabel!
-    @IBOutlet weak var lbl_emoji4: UILabel!
-    @IBOutlet weak var lbl_emoji5: UILabel!
-    @IBOutlet weak var lbl_emoji6: UILabel!
-    @IBOutlet weak var lbl_emoji7: UILabel!
-    @IBOutlet weak var lbl_emoji8: UILabel!
-    @IBOutlet weak var lbl_emoji9: UILabel!
+    @IBOutlet weak var listH: NSLayoutConstraint!
+    @IBOutlet weak var bottomH: NSLayoutConstraint!
     
     @IBOutlet weak var lbl_participants: UILabel!
     
@@ -50,9 +43,6 @@ class ConfCommentFrame: BaseViewController, UITableViewDataSource, UITableViewDe
     var ImageArray = NSMutableArray()
     
     var comments = [Comment]()
-    
-    var emojiButtons = [UILabel]()
-    var emojiStrings = [String]()
     
     var CHAT_ID:String = ""
     
@@ -64,20 +54,20 @@ class ConfCommentFrame: BaseViewController, UITableViewDataSource, UITableViewDe
     @IBOutlet weak var img_user2: UIImageView!    
     @IBOutlet weak var img_user3: UIImageView!
     
-    var userImages = [UIImageView]()
+    var userImages = [UIImageView]()    
+    var isEmoji = false
     
     override func viewDidLoad() {
         super.viewDidLoad()
 
         addShadowToBar(view: navBar)
+        bottomH.constant = bottomSafeAreaHeight
         
         lbl_title.text = "add_comments".localized().uppercased()
         
         sendButton.setImageTintColor(primaryDarkColor)
         btn_image_upload.layer.cornerRadius = btn_image_upload.frame.height / 2
         btn_image_cancel.layer.cornerRadius = btn_image_cancel.frame.height / 2
-        
-        view_emoji.visibility = .gone
         
         sendButton.visibilityh = .gone
         
@@ -96,8 +86,8 @@ class ConfCommentFrame: BaseViewController, UITableViewDataSource, UITableViewDe
         self.view_image_form.isHidden = true
         
         commentBox.setPlaceholder(string: "write_something_".localized())
-        commentBox.textContainerInset = UIEdgeInsets(top: commentBox.textContainerInset.top, left: 8, bottom: commentBox.textContainerInset.bottom, right: 5)
-        commentBox.becomeFirstResponder()
+        commentBox.textContainerInset = UIEdgeInsets(top: 8, left: 8, bottom: 8, right: 8)
+//        commentBox.becomeFirstResponder()
         
         self.commentList.delegate = self
         self.commentList.dataSource = self
@@ -107,23 +97,10 @@ class ConfCommentFrame: BaseViewController, UITableViewDataSource, UITableViewDe
         
         UITextView.appearance().linkTextAttributes = [ .foregroundColor: UIColor.blue ]
         
-        emojiButtons = [lbl_emoji0, lbl_emoji1, lbl_emoji2, lbl_emoji3, lbl_emoji4, lbl_emoji5, lbl_emoji6, lbl_emoji7, lbl_emoji8, lbl_emoji9]
-        emojiStrings = ["close".localized(), "💖","👍","😊","😄","😍","🙁","😂","😠","😛"]
-        
-        for emjButton in emojiButtons {
-            let index = emojiButtons.firstIndex(of: emjButton)!
-            emjButton.text = emojiStrings[index].decodeEmoji
-            
-            let tap = UITapGestureRecognizer(target: self, action: #selector(addEmoji))
-            emjButton.tag = index
-            emjButton.isUserInteractionEnabled = true
-            emjButton.addGestureRecognizer(tap)
-        }
-        
         if gConference.group_id > 0{
             CHAT_ID = "\(gAdmin.idx)gr\(gConference.group_id)conf\(gConference.idx)"
-        }else if gConference.cohort != ""{
-            CHAT_ID = "\(gAdmin.idx)\(gConference.cohort)conf\(gConference.idx)"
+        }else {
+            CHAT_ID = "\(gAdmin.idx)everyoneconf\(gConference.idx)"
         }
         
         if gConfComments.count > 0{
@@ -140,20 +117,18 @@ class ConfCommentFrame: BaseViewController, UITableViewDataSource, UITableViewDe
         
     }
     
-    @objc func addEmoji(sender:UITapGestureRecognizer){
-        let label = sender.view as! UILabel
-        let index = label.tag
-        if index == 0 {
-            self.view_emoji.visibility = .gone
-        }else{
-            self.commentBox.text = self.commentBox.text + emojiStrings[index].decodeEmoji
-            self.commentBox.checkPlaceholder()
-            if self.commentBox.text == ""{
-                sendButton.visibilityh = .gone
-            }else{
-                sendButton.visibilityh = .visible
-            }
+    func textViewShouldBeginEditing(_ textView: UITextView) -> Bool {
+        if !self.isEmoji {
+            commentBox.inputView = nil
+            commentBox.keyboardType = .default
+            commentBox.reloadInputViews()
         }
+        return true
+    }
+    
+    func textViewShouldEndEditing(_ textView: UITextView) -> Bool {
+        self.isEmoji = false
+        return true
     }
 
     @IBAction func back(_ sender: Any) {
@@ -162,7 +137,7 @@ class ConfCommentFrame: BaseViewController, UITableViewDataSource, UITableViewDe
     
     func loadPicture(imageView:UIImageView, url:URL){
         let processor = DownsamplingImageProcessor(size: imageView.frame.size)
-            >> ResizingImageProcessor(referenceSize: imageView.frame.size, mode: .aspectFill)
+        ResizingImageProcessor(referenceSize: imageView.frame.size, mode: .aspectFill)
         imageView.kf.indicatorType = .activity
         imageView.kf.setImage(
             with: url,
@@ -184,6 +159,26 @@ class ConfCommentFrame: BaseViewController, UITableViewDataSource, UITableViewDe
         }
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+        self.commentList.addObserver(self, forKeyPath: "contentSize", options: .new, context: nil)
+        self.commentList.reloadData()
+    }
+
+    override func viewWillDisappear(_ animated: Bool) {
+        self.commentList.removeObserver(self, forKeyPath: "contentSize")
+        self.commentList.reloadData()
+    }
+
+    override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
+        if keyPath == "contentSize" {
+            if object is UITableView {
+                if let newvalue = change?[.newKey]{
+                    let newsize = newvalue as! CGSize
+                    self.listH.constant = newsize.height
+                }
+            }
+        }
+    }    
     
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         
@@ -225,7 +220,7 @@ class ConfCommentFrame: BaseViewController, UITableViewDataSource, UITableViewDe
                 cell.myImageBox.isUserInteractionEnabled = true
 
                 if comment.comment != ""{
-                    cell.myCommentBox.text = comment.comment.decodeEmoji
+                    cell.myCommentBox.text = self.processingEmoji(str:comment.comment)
                     cell.myCommentBox.visibility = .visible
                     
                     cell.myCommentBoxWidth.constant = UIFont.systemFont(ofSize: 16.0).textWidth(s: cell.myCommentBox.text) + 120
@@ -287,7 +282,7 @@ class ConfCommentFrame: BaseViewController, UITableViewDataSource, UITableViewDe
                 }
                 
                 if comment.comment != ""{
-                    cell.commentBox.text = comment.comment.decodeEmoji
+                    cell.commentBox.text = self.processingEmoji(str:comment.comment)
                     cell.commentBox.visibility = .visible
                     
                     cell.commentBoxWidth.constant = UIFont.systemFont(ofSize: 16.0).textWidth(s: cell.commentBox.text) + 120
@@ -421,45 +416,54 @@ class ConfCommentFrame: BaseViewController, UITableViewDataSource, UITableViewDe
     
     @IBAction func openAttachMenu(_ sender: Any) {
         
-        let dropDown = DropDown()
+        self.isEmoji = true
+        let keyboardSettings = KeyboardSettings(bottomType: .categories)
+        let emojiView = EmojiView(keyboardSettings: keyboardSettings)
+        emojiView.translatesAutoresizingMaskIntoConstraints = false
+        emojiView.delegate = self
+        commentBox.inputView = emojiView
+        commentBox.reloadInputViews()
+        commentBox.becomeFirstResponder()
         
-        dropDown.anchorView = self.attachButton
-        dropDown.dataSource = ["  📷".decodeEmoji, "  😊".decodeEmoji]
-        // Action triggered on selection
-        dropDown.selectionAction = { [unowned self] (idx: Int, item: String) in
-            if idx == 0{
-                var picker:YPImagePicker!
-                var config = YPImagePickerConfiguration()
-                config.wordings.libraryTitle = "gallary".localized().firstUppercased
-                config.wordings.cameraTitle = "camera".localized().firstUppercased
-                YPImagePickerConfiguration.shared = config
-                picker = YPImagePicker()
-                picker.didFinishPicking { [picker] items, _ in
-                    if let photo = items.singlePhoto {
-                        self.commentImageBox.image = photo.image
-                        self.commentImageBox.layer.cornerRadius = 5
-                        self.view_image_form.isHidden = false
-                        self.imageFile = photo.image.jpegData(compressionQuality: 0.8)
-                    }
-                    picker!.dismiss(animated: true, completion: nil)
-                }
-                self.present(picker, animated: true, completion: nil)
-            }else if idx == 1{
-                self.view_emoji.visibility = .visible
-            }
-        }
-        
-        DropDown.appearance().textColor = UIColor.black
-        DropDown.appearance().selectedTextColor = UIColor.white
-        DropDown.appearance().textFont = UIFont.boldSystemFont(ofSize: 25.0)
-        DropDown.appearance().backgroundColor = UIColor.white
-        DropDown.appearance().selectionBackgroundColor = UIColor.gray
-        DropDown.appearance().cellHeight = 45
-        
-        dropDown.separatorColor = UIColor.lightGray
-        dropDown.width = 70
-        
-        dropDown.show()
+//        let dropDown = DropDown()
+//
+//        dropDown.anchorView = self.attachButton
+//        dropDown.dataSource = ["  📷".decodeEmoji, "  😊".decodeEmoji]
+//        // Action triggered on selection
+//        dropDown.selectionAction = { [unowned self] (idx: Int, item: String) in
+//            if idx == 0{
+//                var picker:YPImagePicker!
+//                var config = YPImagePickerConfiguration()
+//                config.wordings.libraryTitle = "gallary".localized().firstUppercased
+//                config.wordings.cameraTitle = "camera".localized().firstUppercased
+//                YPImagePickerConfiguration.shared = config
+//                picker = YPImagePicker()
+//                picker.didFinishPicking { [picker] items, _ in
+//                    if let photo = items.singlePhoto {
+//                        self.commentImageBox.image = photo.image
+//                        self.commentImageBox.layer.cornerRadius = 5
+//                        self.view_image_form.isHidden = false
+//                        self.imageFile = photo.image.jpegData(compressionQuality: 0.8)
+//                    }
+//                    picker!.dismiss(animated: true, completion: nil)
+//                }
+//                self.present(picker, animated: true, completion: nil)
+//            }else if idx == 1{
+//                self.view_emoji.visibility = .visible
+//            }
+//        }
+//
+//        DropDown.appearance().textColor = UIColor.black
+//        DropDown.appearance().selectedTextColor = UIColor.white
+//        DropDown.appearance().textFont = UIFont.boldSystemFont(ofSize: 25.0)
+//        DropDown.appearance().backgroundColor = UIColor.white
+//        DropDown.appearance().selectionBackgroundColor = UIColor.gray
+//        DropDown.appearance().cellHeight = 45
+//
+//        dropDown.separatorColor = UIColor.lightGray
+//        dropDown.width = 70
+//
+//        dropDown.show()
         
     }
     
@@ -724,5 +728,31 @@ class ConfCommentFrame: BaseViewController, UITableViewDataSource, UITableViewDe
         }
         self.lbl_participants.text = String(self.users.count)
     }
+    
+    // callback when tap a emoji on keyboard
+    func emojiViewDidSelectEmoji(_ emoji: String, emojiView: EmojiView) {
+        commentBox.insertText(emoji)
+    }
+
+    // callback when tap change keyboard button on keyboard
+    func emojiViewDidPressChangeKeyboardButton(_ emojiView: EmojiView) {
+        commentBox.inputView = nil
+        commentBox.keyboardType = .default
+        commentBox.reloadInputViews()
+    }
+        
+    // callback when tap delete button on keyboard
+    func emojiViewDidPressDeleteBackwardButton(_ emojiView: EmojiView) {
+        commentBox.deleteBackward()
+    }
+
+    // callback when tap dismiss button on keyboard
+    func emojiViewDidPressDismissKeyboardButton(_ emojiView: EmojiView) {
+        print("dismiss keyboard")
+        commentBox.resignFirstResponder()
+    }
+    
+    
+    
     
 }

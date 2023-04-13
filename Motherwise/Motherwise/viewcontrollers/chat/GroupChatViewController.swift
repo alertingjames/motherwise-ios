@@ -20,6 +20,8 @@ import FirebaseDatabase
 import FirebaseStorage
 import AVFoundation
 import AudioToolbox
+import Emoji
+import Smile
 
 class GroupChatViewController: BaseViewController, UITableViewDataSource, UITableViewDelegate {
 
@@ -32,6 +34,7 @@ class GroupChatViewController: BaseViewController, UITableViewDataSource, UITabl
     @IBOutlet weak var commentImageBox: UIImageView!
     @IBOutlet weak var noResult: UILabel!
     @IBOutlet weak var view_emoji: UIView!
+    @IBOutlet weak var bottomH: NSLayoutConstraint!
     
     @IBOutlet weak var lbl_emoji0: UILabel!
     @IBOutlet weak var lbl_emoji1: UILabel!
@@ -74,6 +77,8 @@ class GroupChatViewController: BaseViewController, UITableViewDataSource, UITabl
         gRecentViewController = self
         gGroupChatViewController = self
         
+        bottomH.constant = bottomSafeAreaHeight
+        
         lbl_title.text = "group_chat".localized().uppercased()
         
         lbl_sel_notify.isHidden = true
@@ -103,7 +108,7 @@ class GroupChatViewController: BaseViewController, UITableViewDataSource, UITabl
         self.view_image_form.isHidden = true
         
         commentBox.setPlaceholder(string: "write_something_".localized())
-        commentBox.textContainerInset = UIEdgeInsets(top: commentBox.textContainerInset.top, left: 8, bottom: commentBox.textContainerInset.bottom, right: 5)
+        commentBox.textContainerInset = UIEdgeInsets(top: 8, left: 8, bottom: 8, right: 8)
 //        commentBox.becomeFirstResponder()
         
         self.commentList.delegate = self
@@ -173,7 +178,7 @@ class GroupChatViewController: BaseViewController, UITableViewDataSource, UITabl
         if index == 0 {
             self.view_emoji.visibility = .gone
         }else{
-            self.commentBox.text = self.commentBox.text + emojiStrings[index].decodeEmoji
+            self.commentBox.text = self.commentBox.text + (self.processingEmoji(str:emojiStrings[index]))
             self.commentBox.checkPlaceholder()
             if self.commentBox.text == ""{
                 sendButton.visibilityh = .gone
@@ -190,7 +195,7 @@ class GroupChatViewController: BaseViewController, UITableViewDataSource, UITabl
     
     func loadPicture(imageView:UIImageView, url:URL){
         let processor = DownsamplingImageProcessor(size: imageView.frame.size)
-            >> ResizingImageProcessor(referenceSize: imageView.frame.size, mode: .aspectFill)
+        ResizingImageProcessor(referenceSize: imageView.frame.size, mode: .aspectFill)
         imageView.kf.indicatorType = .activity
         imageView.kf.setImage(
             with: url,
@@ -258,7 +263,7 @@ class GroupChatViewController: BaseViewController, UITableViewDataSource, UITabl
                 cell.myCommentBox.textContainerInset = UIEdgeInsets(top: 12, left: 16, bottom: 12, right: 16)
 
                 if comment.comment != ""{
-                    cell.myCommentBox.text = comment.comment.decodeEmoji
+                    cell.myCommentBox.text = self.processingEmoji(str:comment.comment)
                     cell.myCommentBox.visibility = .visible
                     
                     cell.myCommentBoxWidth.constant = UIFont.systemFont(ofSize: 16.0).textWidth(s: cell.myCommentBox.text) + 150
@@ -320,7 +325,7 @@ class GroupChatViewController: BaseViewController, UITableViewDataSource, UITabl
                 cell.commentBox.textContainerInset = UIEdgeInsets(top: 12, left: 16, bottom: 12, right: 16)
                 
                 if comment.comment != ""{
-                    cell.commentBox.text = comment.comment.decodeEmoji
+                    cell.commentBox.text = self.processingEmoji(str:comment.comment)
                     cell.commentBox.visibility = .visible
                     
                     cell.commentBoxWidth.constant = UIFont.systemFont(ofSize: 16.0).textWidth(s: cell.commentBox.text) + 150

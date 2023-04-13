@@ -24,66 +24,7 @@ class HomeCohortViewController: BaseViewController, UIPickerViewDelegate, UIPick
     @IBOutlet weak var ic_groupchat: UIImageView!
     
     let thePicker = UIPickerView()
-    let groups = [String](arrayLiteral:
-        "- Choose a group -",
-        "E81",
-        "E83",
-        "E84",
-        "E86",
-        "E87",
-        "S82",
-        "S85",
-        "S88",
-        "E(v)89",
-        "E(v)90",
-        "S(v)91",
-        "E(v)92",
-        "E(v)93",
-        "E(v)94",
-        "S(v)95",
-        "E(v)96",
-        "E(v)97",
-        "S(v)98",
-        "E(v)99",
-        "E(v)100",
-        "S(v)101",
-        "E(v)102",
-        "E(v)103",
-        "S(v)104",
-        "E(v)105",
-        "E(v)106",
-        "S(v)107",
-        "E(v)108",
-        "E(v)109",
-        "S(v)110",
-        "E(v)111",
-        "E(v)112",
-        "S(v)113",
-        "E(v)114",
-        "E(v)115",
-        "S(v)116",
-        "E(v)117",
-        "E(v)118",
-        "S(v)119",
-        "E(v)120",
-        "E(v)121",
-        "S(v)122",
-        "E(v)123",
-        "E(v)124",
-        "S(v)125",
-        "E(v)126",
-        "E(v)127",
-        "S(v)128",
-        "Love Notes E(v)1",
-        "Love Notes E(v)2",
-        "Love Notes E(v)3",
-        "Love Notes E(v)4",
-        "Love Notes E(v)5",
-        "Love Notes E(v)6",
-        "Love Notes E(v)7",
-        "Love Notes E(v)8",
-        "MotherWise Alumni",
-        "MotherWise Team")
+    var groups = [String]()
 
     @IBOutlet weak var lbl_title: UILabel!
     @IBOutlet weak var lbl_members: UILabel!
@@ -100,6 +41,7 @@ class HomeCohortViewController: BaseViewController, UIPickerViewDelegate, UIPick
         groupBox.attributedPlaceholder = NSAttributedString(string: "choose_group".localized(),
                                      attributes: [NSAttributedString.Key.foregroundColor: UIColor.lightGray])
         
+        conferenceButton.visibility = .gone
 
         membersButton.layer.cornerRadius = 23
         conferenceButton.layer.cornerRadius = 23
@@ -131,6 +73,11 @@ class HomeCohortViewController: BaseViewController, UIPickerViewDelegate, UIPick
         thePicker.backgroundColor = UIColor.white
         createToolbar()
         
+        self.groups.append(thisUser.cohort)
+        self.groups.insert("- " + "choose_group".localized() + " -", at: 0)
+        if self.groups.count > 1 { self.groupBox.text = self.groups[1] }
+        
+//        getGroupNames()
         
     }
     
@@ -244,6 +191,19 @@ class HomeCohortViewController: BaseViewController, UIPickerViewDelegate, UIPick
         toolbar.setItems([doneButton], animated: false)
         toolbar.isUserInteractionEnabled = true
         groupBox.inputAccessoryView = toolbar
+    }
+    
+    func getGroupNames() {
+        self.showLoadingView()
+        APIs.getgroupnames(admin_id: thisUser.admin_id, handleCallback: {
+            group_names, result_code in
+            self.dismissLoadingView()
+            if result_code == "0" {
+//                self.groups = group_names!.split(separator: ",").map { String($0) }
+                self.groups.append(thisUser.cohort)
+                self.groups.insert("- " + "choose_group".localized() + " -", at: 0)
+            }
+        })
     }
     
     

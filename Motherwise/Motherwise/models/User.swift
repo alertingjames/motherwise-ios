@@ -21,6 +21,7 @@ class User{
     var lat:String = ""
     var lng:String = ""
     var cohort:String = ""
+    var post_feeling:String = ""
     var registered_time:String = ""
     var fcm_token:String = ""
     var username:String = ""

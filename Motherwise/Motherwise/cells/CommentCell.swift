@@ -19,6 +19,14 @@ class CommentCell: UITableViewCell {
     @IBOutlet weak var commentBox: UITextView!
     @IBOutlet weak var imageBox: UIImageView!    
     @IBOutlet weak var commentBoxWidth: NSLayoutConstraint!
+    @IBOutlet weak var subcommentsView: UIView!
+    @IBOutlet weak var subcommentsStackView: UIStackView!
+    @IBOutlet weak var reactionButton: ReactionButton!    
+    @IBOutlet weak var reactionSummary: ReactionSummary!
+    @IBOutlet weak var commentsButton: UIButton!
+    @IBOutlet weak var commentsBox: UILabel!
+    @IBOutlet weak var commentButton: UIButton!
+    
     
     override func awakeFromNib() {
         super.awakeFromNib()

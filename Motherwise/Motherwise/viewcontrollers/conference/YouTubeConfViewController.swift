@@ -14,8 +14,12 @@ import Firebase
 import FirebaseDatabase
 import VoxeetSDK
 import VoxeetUXKit
+import Emoji
+import Smile
+import ISEmojiView
+import DropDown
 
-class YouTubeConfViewController: BaseViewController, UITableViewDataSource, UITableViewDelegate {
+class YouTubeConfViewController: BaseViewController, UITableViewDataSource, UITableViewDelegate, EmojiViewDelegate {
     
     @IBOutlet weak var lbl_title: UILabel!
     @IBOutlet weak var lbl_confname: UILabel!
@@ -24,45 +28,46 @@ class YouTubeConfViewController: BaseViewController, UITableViewDataSource, UITa
     @IBOutlet weak var btn_video: UIButton!
     @IBOutlet weak var view_player: YoutubePlayerView!
     @IBOutlet weak var commentList: UITableView!
-    @IBOutlet weak var btn_comment: UIButton!
     @IBOutlet weak var noResult: UILabel!
-    
     var comments = [Comment]()
-    
     private var participants = [VTParticipantInfo]()
-    private var conferenceAlias:String = ""
-    
+    private var conferenceAlias:String = ""    
     var CHAT_ID:String = ""
     var adminParticipantID = ""
+    
+    @IBOutlet weak var sendButton: UIButton!
+    @IBOutlet weak var emojiButton: UIButton!
+    @IBOutlet weak var commentBox: UITextView!
+    var isEmoji = false
 
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        gYouTubeConfViewController = self
-        gRecentViewController = self
-        
-        lbl_title.text = "conference".localized().uppercased()
+        lbl_title.text = "enjoy_watching".localized().uppercased()
         
         conferenceAlias = gConference.name
         adminParticipantID = String(gAdmin.idx) + String(gAdmin.idx)
-        
-        btn_comment.layer.cornerRadius = btn_comment.frame.height / 2
-        btn_comment.backgroundColor = primaryDarkColor
-        btn_comment.setImageTintColor(.white)
         
         btn_users.setImageTintColor(.white)
         btn_video.setImageTintColor(.white)
         
         btn_video.visibilityh = .gone
-        
         lbl_confname.text = gConference.name
+        
+        commentBox.layer.cornerRadius = commentBox.frame.height / 2
+        noResult.text = "no_comment_".localized()
+        commentBox.setPlaceholder(string: "write_something_".localized())
+        commentBox.textContainerInset = UIEdgeInsets(top: 8, left: 8, bottom: 8, right: 8)
+        commentBox.delegate = self
+        sendButton.setImageTintColor(.white)
+        sendButton.visibilityh = .gone
         
         if gConference.group_id > 0{
             CHAT_ID = "\(gAdmin.idx)gr\(gConference.group_id)conf\(gConference.idx)"
             self.lbl_groupname.text = gConference.group_name
-        }else if gConference.cohort != ""{
-            CHAT_ID = "\(gAdmin.idx)\(gConference.cohort)conf\(gConference.idx)"
-            self.lbl_groupname.text = gConference.cohort
+        }else {
+            CHAT_ID = "\(gAdmin.idx)everyoneconf\(gConference.idx)"
+            self.lbl_groupname.text = "everyone".localized()
         }
         
         print("CHATID!!! \(CHAT_ID)")
@@ -82,37 +87,35 @@ class YouTubeConfViewController: BaseViewController, UITableViewDataSource, UITa
             view_player.loadWithVideoId(gConference.video_url, with: playerVars)
         }
         
-//        VoxeetUXKit.shared.appearMaximized = true
-//        VoxeetUXKit.shared.telecom = false
-//
-//        // Example of public variables to change the conference behavior.
-//        VoxeetSDK.shared.notification.push.type = .none
-//        VoxeetSDK.shared.conference.defaultBuiltInSpeaker = true
-//        VoxeetSDK.shared.conference.defaultVideo = true
-//
-//        // Conference delegates.
-//        VoxeetSDK.shared.conference.delegate = self
+        VoxeetUXKit.shared.appearMaximized = true
+        VoxeetUXKit.shared.telecom = false
+
+        // Example of public variables to change the conference behavior.
+        VoxeetSDK.shared.notification.push.type = .none
+        VoxeetSDK.shared.conference.defaultBuiltInSpeaker = true
+        VoxeetSDK.shared.conference.defaultVideo = true
+
+        // Conference delegates.
+        VoxeetSDK.shared.conference.delegate = self
         
         self.commentList.delegate = self
         self.commentList.dataSource = self
-        
         self.commentList.estimatedRowHeight = 170.0
-        self.commentList.rowHeight = UITableView.automaticDimension
-        
+        self.commentList.rowHeight = UITableView.automaticDimension        
         self.noResult.isHidden = false
         
-//        // Conference login
-//        let myParticipantInfo = VTParticipantInfo(externalID: String(thisUser.idx) + String(thisUser.idx), name: thisUser.name, avatarURL: thisUser.photo_url)
-//        UIApplication.shared.isNetworkActivityIndicatorVisible = true
-//
-//        // Connect a session with participant information.
-//        VoxeetSDK.shared.session.open(info: myParticipantInfo) { error in
-//           UIApplication.shared.isNetworkActivityIndicatorVisible = false
-//        }
+        // Conference login
+        let myParticipantInfo = VTParticipantInfo(externalID: String(thisUser.idx) + String(thisUser.idx), name: thisUser.name, avatarURL: thisUser.photo_url)
+        UIApplication.shared.isNetworkActivityIndicatorVisible = true
+
+        // Connect a session with participant information.
+        VoxeetSDK.shared.session.open(info: myParticipantInfo) { error in
+           UIApplication.shared.isNetworkActivityIndicatorVisible = false
+        }
         
         self.beParticipant(online: true)
-        
         openConference(member_id: thisUser.idx, conf_id: gConference.idx)
+        getOnlineUsers()
         
         // Move this viewcontroller to background by clicking on Home Button
         NotificationCenter.default.addObserver(
@@ -140,9 +143,32 @@ class YouTubeConfViewController: BaseViewController, UITableViewDataSource, UITa
         self.beParticipant(online: true)
     }
     
+    func textViewShouldBeginEditing(_ textView: UITextView) -> Bool {
+        if !self.isEmoji {
+            commentBox.inputView = nil
+            commentBox.keyboardType = .default
+            commentBox.reloadInputViews()
+        }
+        return true
+    }
+    
+    func textViewShouldEndEditing(_ textView: UITextView) -> Bool {
+        self.isEmoji = false
+        return true
+    }
+    
+    @objc func textViewDidChange(_ textView: UITextView) {
+        textView.checkPlaceholder()
+        if textView.text == ""{
+            sendButton.visibilityh = .gone
+        }else{
+            sendButton.visibilityh = .visible
+        }
+    }
+    
     func loadPicture(imageView:UIImageView, url:URL){
         let processor = DownsamplingImageProcessor(size: imageView.frame.size)
-            >> ResizingImageProcessor(referenceSize: imageView.frame.size, mode: .aspectFill)
+        ResizingImageProcessor(referenceSize: imageView.frame.size, mode: .aspectFill)
         imageView.kf.indicatorType = .activity
         imageView.kf.setImage(
             with: url,
@@ -162,6 +188,11 @@ class YouTubeConfViewController: BaseViewController, UITableViewDataSource, UITa
                 print("Job failed: \(error.localizedDescription)")
             }
         }
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        gYouTubeConfViewController = self
+        gRecentViewController = self
     }
     
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -200,7 +231,7 @@ class YouTubeConfViewController: BaseViewController, UITableViewDataSource, UITa
             cell.imageBox.isUserInteractionEnabled = true
 
             if comment.comment != ""{
-                cell.commentBox.text = comment.comment.decodeEmoji
+                cell.commentBox.text = self.processingEmoji(str:comment.comment)
                 cell.commentBox.visibility = .visible
             }else {
                 cell.commentBox.visibility = .gone
@@ -230,6 +261,10 @@ class YouTubeConfViewController: BaseViewController, UITableViewDataSource, UITa
                         }[0].cohort
                 }
             }
+            
+            cell.menuButton.setImageTintColor(.white)
+            cell.menuButton.tag = index
+            cell.menuButton.addTarget(self, action: #selector(self.openDropDownMenu), for: .touchUpInside)
                                 
             cell.commentBox.sizeToFit()
             cell.contentLayout.sizeToFit()
@@ -265,10 +300,9 @@ class YouTubeConfViewController: BaseViewController, UITableViewDataSource, UITa
             }
         }
     }
-    
-    
 
     @IBAction func back(_ sender: Any) {
+        view_player.pause()
         self.closeVideoConference()
     }
     
@@ -302,6 +336,7 @@ class YouTubeConfViewController: BaseViewController, UITableViewDataSource, UITa
     
     @IBAction func openCommentFrame(_ sender: Any) {
         let vc = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(identifier: "ConfCommentFrame")
+        vc.modalPresentationStyle = .fullScreen
         self.present(vc, animated: true, completion: nil)
     }
     
@@ -401,9 +436,13 @@ class YouTubeConfViewController: BaseViewController, UITableViewDataSource, UITa
     }
     
     func joinVideoConference(){
-        for user in gConfUsers{
-            if user.idx != thisUser.idx {
-                self.participants.append(VTParticipantInfo(externalID: String(user.idx) + String(user.idx), name: user.name, avatarURL: user.photo_url))
+        self.participants.removeAll()
+        for i in 0..<onlineUsers.count {
+            if i < 30 {
+                let user = onlineUsers[i]
+                if user.idx != thisUser.idx {
+                    self.participants.append(VTParticipantInfo(externalID: String(user.idx) + String(user.idx), name: user.name, avatarURL: user.photo_url))
+                }
             }
         }
         
@@ -443,18 +482,209 @@ class YouTubeConfViewController: BaseViewController, UITableViewDataSource, UITa
     }
     
     func closeVideoConference() {
-//        guard VoxeetSDK.shared.conference.current == nil else { return }
-//        UIApplication.shared.isNetworkActivityIndicatorVisible = true
-//        // Disconnect current session.
-//        VoxeetSDK.shared.session.close { error in
-//            UIApplication.shared.isNetworkActivityIndicatorVisible = false
-//            self.beParticipant(online: false)
-//            self.dismissViewController()
-//        }
+        guard VoxeetSDK.shared.conference.current == nil else { return }
+        UIApplication.shared.isNetworkActivityIndicatorVisible = true
+        // Disconnect current session.
+        VoxeetSDK.shared.session.close { error in
+            UIApplication.shared.isNetworkActivityIndicatorVisible = false
+            self.beParticipant(online: false)
+            self.dismissViewController()
+        }
         
         self.beParticipant(online: false)
         self.dismissViewController()
     }
+    
+    var onlineUsers = [User]()
+    func getOnlineUsers(){
+        self.onlineUsers.removeAll()
+        var ref:DatabaseReference!
+        ref = Database.database().reference(fromURL: ReqConst.FIREBASE_URL + "gmusers" + CHAT_ID)
+        ref.observe(.childAdded, with: {(snapshot) -> Void in
+            let subRef = ref.child(snapshot.key)
+            subRef.observe(.childAdded, with: {(snapshot) -> Void in
+                let value = snapshot.value as! [String: Any]
+                
+                let sender_id = value["sender_id"] as! String
+                let sender_name = value["sender_name"] as! String
+                let sender_email = value["sender_email"] as! String
+                let sender_photo = value["sender_photo"] as! String
+
+                print("\(sender_name)")
+                print("\(sender_id)")
+                print("\(sender_email)")
+                print("\(sender_photo)")
+
+                let user = User()
+                user.idx = Int64(sender_id)!
+                user.name = sender_name
+                user.email = sender_email
+                user.photo_url = sender_photo
+
+                if !self.onlineUsers.contains(where: {$0.idx == user.idx}) {
+                    self.onlineUsers.append(user)
+                }
+                
+            })
+        })
+        
+        ref.observe(.childRemoved, with: {(snapshot) -> Void in
+            print("Removed////////////////: \(snapshot.key)")
+            let userEmail = snapshot.key.replacingOccurrences(of: "ddoott", with: ".")
+            if self.onlineUsers.contains(where: {$0.email == userEmail}){
+                self.onlineUsers.remove(at: self.onlineUsers.firstIndex(where: {$0.email == userEmail})!)
+            }
+        })
+        
+    }
+    
+    @IBAction func openEmojis(_ sender: Any) {
+        self.isEmoji = true
+        let keyboardSettings = KeyboardSettings(bottomType: .categories)
+        let emojiView = EmojiView(keyboardSettings: keyboardSettings)
+        emojiView.translatesAutoresizingMaskIntoConstraints = false
+        emojiView.delegate = self
+        commentBox.inputView = emojiView
+        commentBox.reloadInputViews()
+        commentBox.becomeFirstResponder()
+    }
+    
+    // callback when tap a emoji on keyboard
+    func emojiViewDidSelectEmoji(_ emoji: String, emojiView: EmojiView) {
+        commentBox.insertText(emoji)
+    }
+
+    // callback when tap change keyboard button on keyboard
+    func emojiViewDidPressChangeKeyboardButton(_ emojiView: EmojiView) {
+        commentBox.inputView = nil
+        commentBox.keyboardType = .default
+        commentBox.reloadInputViews()
+    }
+        
+    // callback when tap delete button on keyboard
+    func emojiViewDidPressDeleteBackwardButton(_ emojiView: EmojiView) {
+        commentBox.deleteBackward()
+    }
+
+    // callback when tap dismiss button on keyboard
+    func emojiViewDidPressDismissKeyboardButton(_ emojiView: EmojiView) {
+        print("dismiss keyboard")
+        commentBox.resignFirstResponder()
+    }
+    
+    var editF:Bool = false
+    var indx:Int!
+    
+    
+    @objc func openDropDownMenu(sender:UIButton){
+        let index = sender.tag
+        let cell = sender.superview?.superviewOfClassType(CommentCell.self) as! CommentCell
+        
+        let dropDown = DropDown()
+        
+        let comment = comments[index]
+        
+        if comment.user.idx == thisUser.idx{
+            dropDown.anchorView = cell.menuButton
+            dropDown.dataSource = ["  " + "edit".localized(), "  " + "delete".localized()]
+            // Action triggered on selection
+            dropDown.selectionAction = { [unowned self] (idx: Int, item: String) in
+                print("Selected item: \(item) at index: \(idx)")
+                if idx == 0{
+                    self.commentBox.text = comment.comment
+                    self.commentBox.checkPlaceholder()
+                    self.commentBox.becomeFirstResponder()
+                    self.editF = true
+                    self.indx = index
+                }else if idx == 1{
+                    let alert = UIAlertController(title: "delete".localized().firstUppercased, message: "sure_delete_message".localized().firstUppercased, preferredStyle: .alert)
+                    let noAction = UIAlertAction(title: "no".localized().firstUppercased, style: .cancel, handler: {
+                        (action : UIAlertAction!) -> Void in })
+                    let yesAction = UIAlertAction(title: "yes".localized().firstUppercased, style: .destructive, handler: { alert -> Void in
+                        var ref:DatabaseReference!
+                        ref = Database.database().reference(fromURL: ReqConst.FIREBASE_URL + "gmmsg" + self.CHAT_ID).child(comment.key)
+                        ref.removeValue()
+                    })
+                    
+                    alert.addAction(yesAction)
+                    alert.addAction(noAction)
+                    
+                    self.present(alert, animated: true, completion: nil)
+                }
+            }
+        }else{
+            dropDown.anchorView = cell.menuButton
+            dropDown.dataSource = ["  " + "message".localized()]
+            // Action triggered on selection
+            dropDown.selectionAction = { [unowned self] (idx: Int, item: String) in
+                print("Selected item: \(item) at index: \(idx)")
+                if idx == 0{
+                    gUser = comment.user
+                    let vc = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(identifier: "HomeSendMessageViewController")
+                    self.present(vc, animated: true, completion: nil)
+                }
+            }
+        }
+        
+        DropDown.appearance().textColor = UIColor.black
+        DropDown.appearance().selectedTextColor = UIColor.white
+        DropDown.appearance().textFont = UIFont.boldSystemFont(ofSize: 13.0)
+        DropDown.appearance().backgroundColor = UIColor.white
+        DropDown.appearance().selectionBackgroundColor = UIColor.gray
+        DropDown.appearance().cellHeight = 40
+        
+        dropDown.separatorColor = UIColor.lightGray
+        dropDown.width = 100
+        
+        dropDown.show()
+        
+    }
+    
+    @IBAction func sendComment(_ sender: Any) {
+        if commentBox.text.trimmingCharacters(in: .whitespacesAndNewlines) == "" {
+            showToast(msg: "type_something_".localized().firstUppercased)
+            return
+        }
+        
+        if editF {
+            var ref:DatabaseReference!
+            let selComment = self.comments[self.indx]
+            ref = Database.database().reference(fromURL: ReqConst.FIREBASE_URL + "gmmsg" + self.CHAT_ID).child(selComment.key).child("message")
+            ref.setValue(self.commentBox.text)
+            editF = false
+            self.commentBox.text = ""
+            self.commentBox.checkPlaceholder()
+            self.commentBox.resignFirstResponder()
+            self.sendButton.visibilityh = .gone
+            return
+        }
+        
+        var ref:DatabaseReference!
+        ref = Database.database().reference(fromURL: ReqConst.FIREBASE_URL + "gmmsg" + CHAT_ID).childByAutoId()
+        let load:[String:AnyObject] =
+            [
+                "sender_id": String(thisUser.idx) as AnyObject,
+                "sender": thisUser.name as AnyObject,
+                "sender_email": thisUser.email as AnyObject,
+                "sender_photo": thisUser.photo_url as AnyObject,
+                "message": self.commentBox.text as AnyObject,
+                "image": "" as AnyObject,
+                "video": "" as AnyObject,
+                "lat": "" as AnyObject,
+                "lon": "" as AnyObject,
+                "time": String(Date().currentTimeMillis()) as AnyObject
+            ]
+        ref.setValue(load)
+        
+        self.commentBox.text = ""
+        self.commentBox.checkPlaceholder()
+        self.commentBox.resignFirstResponder()
+        self.sendButton.visibilityh = .gone
+    }
+    
+    
+    
+    
     
 }
 

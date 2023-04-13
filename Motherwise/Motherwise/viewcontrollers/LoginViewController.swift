@@ -58,6 +58,8 @@ class LoginViewController: BaseViewController {
             attributes: [NSAttributedString.Key.foregroundColor: UIColor.lightGray]
         )
         
+        UIApplication.shared.applicationIconBadgeNumber = 0
+        
         signupButton.visibility = .gone
         
         loginButton.setTitle("log_in".localized(), for: .normal)
@@ -132,7 +134,7 @@ class LoginViewController: BaseViewController {
                 gNote = "add_location".localized()
                 UserDefaults.standard.set(thisUser.email, forKey: "email")
                 UserDefaults.standard.set(thisUser.password, forKey: "password")
-                let vc = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "AddLocationViewController")
+                let vc = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "NewHomeViewController")
                 vc.modalPresentationStyle = .fullScreen
                 self.transitionVc(vc: vc, duration: 0.3, type: .fromRight)
             }else if result_code == "2" {

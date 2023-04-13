@@ -53,8 +53,8 @@ class ConfParticipantsViewController: BaseViewController, UITableViewDataSource,
         
         if gConference.group_id > 0{
             CHAT_ID = "\(gAdmin.idx)gr\(gConference.group_id)conf\(gConference.idx)"
-        }else if gConference.cohort != ""{
-            CHAT_ID = "\(gAdmin.idx)\(gConference.cohort)conf\(gConference.idx)"
+        }else {
+            CHAT_ID = "\(gAdmin.idx)everyoneconf\(gConference.idx)"
         }
         
         edt_search.addTarget(self, action: #selector(self.textFieldDidChange(_:)), for: UIControl.Event.editingChanged)
@@ -88,7 +88,7 @@ class ConfParticipantsViewController: BaseViewController, UITableViewDataSource,
     
     func loadPicture(imageView:UIImageView, url:URL){
         let processor = DownsamplingImageProcessor(size: imageView.frame.size)
-            >> ResizingImageProcessor(referenceSize: imageView.frame.size, mode: .aspectFill)
+        ResizingImageProcessor(referenceSize: imageView.frame.size, mode: .aspectFill)
         imageView.kf.indicatorType = .activity
         imageView.kf.setImage(
             with: url,
@@ -255,10 +255,10 @@ class ConfParticipantsViewController: BaseViewController, UITableViewDataSource,
                 let sender_email = value["sender_email"] as! String
                 let sender_photo = value["sender_photo"] as! String
 
-                print("\(sender_name)")
-                print("\(sender_id)")
-                print("\(sender_email)")
-                print("\(sender_photo)")
+                print("partic\(sender_name)")
+                print("partic\(sender_id)")
+                print("partic\(sender_email)")
+                print("partic\(sender_photo)")
 
                 let user = User()
                 user.idx = Int64(sender_id)!
@@ -268,8 +268,8 @@ class ConfParticipantsViewController: BaseViewController, UITableViewDataSource,
 
                 if !self.onlineUsers.contains(where: {$0.idx == user.idx}) {
                     self.onlineUsers.append(user)
-                    self.userList.reloadData()
                 }
+                self.refreshList(online: user)
                 print("Online Users////////////////: \(self.onlineUsers.count)")
                 
             })
@@ -284,6 +284,23 @@ class ConfParticipantsViewController: BaseViewController, UITableViewDataSource,
                 self.userList.reloadData()
             }
         })
+    }
+    
+    func refreshList(online:User) {
+        var ulist = [User]()
+        for user in users {
+            if user.idx == online.idx {
+                if user.idx > 1 { ulist.insert(user, at: 1) }
+                else { ulist.insert(user, at: 0) }
+            }else { ulist.append(user) }
+        }
+        users.removeAll()
+        searchUsers.removeAll()
+        for user in ulist {
+            users.append(user)
+            searchUsers.append(user)
+        }
+        self.userList.reloadData()
     }
 
 }

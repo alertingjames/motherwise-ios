@@ -8,6 +8,7 @@
 
 import UIKit
 import VoxeetSDK
+//import VoxeetUIKit
 
 class LiveParticipantCell: UICollectionViewCell {
     

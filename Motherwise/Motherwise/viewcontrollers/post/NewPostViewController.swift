@@ -35,6 +35,8 @@ class NewPostViewController: BaseViewController, UIPickerViewDelegate, UIPickerV
     @IBOutlet weak var linkViewH: NSLayoutConstraint!
     
     @IBOutlet weak var image_label: UILabel!
+    @IBOutlet weak var xxx: UILabel!
+    @IBOutlet weak var xxxTop: NSLayoutConstraint!
     
     var sliderImagesArray = NSMutableArray()
     var sliderImageFilesArray = NSMutableArray()
@@ -42,14 +44,7 @@ class NewPostViewController: BaseViewController, UIPickerViewDelegate, UIPickerV
     var picker:YPImagePicker!
     let thePicker = UIPickerView()
     
-    let categories = [String](arrayLiteral:
-                                "- " + "choose_category".localized() + " -",
-                                "positive_quotes".localized(),
-                                "inspiration".localized(),
-                              "shout_outs".localized(),
-                              "wellness".localized(),
-                              "activities_suggestions".localized(),
-                              "resource".localized())
+    var categories = [String]()
     
     var selectedTime:String = ""
     
@@ -64,6 +59,10 @@ class NewPostViewController: BaseViewController, UIPickerViewDelegate, UIPickerV
         gSelectedUsers.removeAll()
         
         lbl_title.text = "add_post".localized().uppercased()
+        
+        xxx.visibility = .gone
+        xxxTop.constant = 0
+        scheduleView.visibility = .gone
         
         setRoundShadowView(view: view_postname, corner: view_postname.frame.height / 2)
         setRoundShadowView(view: view_category, corner: view_category.frame.height / 2)
@@ -119,6 +118,23 @@ class NewPostViewController: BaseViewController, UIPickerViewDelegate, UIPickerV
         view_notify.addGestureRecognizer(tap)
         
         linkView.visibility = .gone
+        
+        if gRecentViewController == gComidaViewViewController {
+            let lang = UserDefaults.standard.string(forKey: "app_lang") ?? "en"
+            if lang == "es" {
+                self.categories = ["Recurso alimentario"]
+                self.edt_category.text = "Recurso alimentario"
+            }else {
+                self.categories = ["Food Resource"]
+                self.edt_category.text = "Food Resource"
+            }
+            self.categories.insert("- " + "choose_category".localized() + " -", at: 0)
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
+                self.thePicker.selectRow(1, inComponent: 0, animated: false)
+            }
+        } else {
+            getPostCategories()
+        }
         
     }
     
@@ -206,7 +222,7 @@ class NewPostViewController: BaseViewController, UIPickerViewDelegate, UIPickerV
         
     func loadPicture(imageView:UIImageView, url:URL){
         let processor = DownsamplingImageProcessor(size: imageView.frame.size)
-                >> ResizingImageProcessor(referenceSize: imageView.frame.size, mode: .aspectFill)
+        ResizingImageProcessor(referenceSize: imageView.frame.size, mode: .aspectFill)
         imageView.kf.indicatorType = .activity
         imageView.kf.setImage(
                 with: url,
@@ -270,7 +286,7 @@ class NewPostViewController: BaseViewController, UIPickerViewDelegate, UIPickerV
     }
     
     func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
-        if row > 0{
+        if row > 0 {
             edt_category.text = categories[row]
         }else{
             edt_category.text = ""
@@ -539,6 +555,23 @@ class NewPostViewController: BaseViewController, UIPickerViewDelegate, UIPickerV
         if let url = URL(string: linkprev.site_url) {
             UIApplication.shared.open(url)
         }
+    }
+    
+    func getPostCategories() {
+        self.showLoadingView()
+        APIs.getpostcategories(admin_id: thisUser.admin_id, handleCallback: {
+            us_categories, es_categories, result_code in
+            self.dismissLoadingView()
+            if result_code == "0" {
+                let lang = UserDefaults.standard.string(forKey: "app_lang") ?? "en"
+                if lang == "es" {
+                    self.categories = es_categories!.split(separator: ",").map { String($0) }
+                }else {
+                    self.categories = us_categories!.split(separator: ",").map { String($0) }
+                }
+                self.categories.insert("- " + "choose_category".localized() + " -", at: 0)
+            }
+        })
     }
     
 }

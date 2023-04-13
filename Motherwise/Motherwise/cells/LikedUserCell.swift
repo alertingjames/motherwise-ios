@@ -15,7 +15,7 @@ class LikedUserCell: UITableViewCell {
     @IBOutlet weak var userName: UILabel!
     @IBOutlet weak var userCohort: UILabel!
     @IBOutlet weak var menuButton: UIButton!
-    
+    @IBOutlet weak var feelingIcon: UIImageView!
 
     override func awakeFromNib() {
         super.awakeFromNib()

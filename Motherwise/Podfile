@@ -1,5 +1,5 @@
 # Uncomment the next line to define a global platform for your project
-# platform :ios, '9.0'
+ platform :ios, '12.0'
 
 target 'Motherwise' do
   # Comment the next line if you don't want to use dynamic frameworks
@@ -18,12 +18,11 @@ target 'Motherwise' do
 
 pod 'Alamofire', '~> 4.0'
 pod 'SwiftyJSON'
-pod 'Firebase/Core'
-pod 'FirebaseMessaging'
+pod 'FirebaseCore'
+pod 'Firebase/Messaging'
 pod 'Firebase/Database'
 pod 'Firebase/Analytics'
 pod 'Firebase/Storage'
-pod 'SQLite'
 pod 'IQKeyboardManagerSwift'
 pod 'Toast-Swift'
 pod 'Kingfisher'
@@ -46,6 +45,10 @@ pod 'YoutubePlayerView'
 pod 'ASPVideoPlayer'
 pod 'SDWebImage', '~> 5.0'
 pod 'SJSegmentedScrollView'
+#pod 'VoxeetSDK'
 pod 'VoxeetUXKit', '~> 1.0'
+pod 'Emoji-swift'
+pod 'Smile'
+pod 'ISEmojiView'
 
 end

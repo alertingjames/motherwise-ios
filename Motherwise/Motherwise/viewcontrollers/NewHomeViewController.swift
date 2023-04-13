@@ -21,6 +21,9 @@ import DynamicBlurView
 import GSImageViewerController
 import AudioToolbox
 import SDWebImage
+//import Reactions
+import Smile
+import Emoji
 
 class NewHomeViewController: BaseViewController, UITableViewDataSource, UITableViewDelegate {
     
@@ -38,6 +41,7 @@ class NewHomeViewController: BaseViewController, UITableViewDataSource, UITableV
     @IBOutlet weak var noResult: UILabel!
     @IBOutlet weak var descBox: MarqueeLabel!
     @IBOutlet weak var newPostButton: UIButton!
+    @IBOutlet weak var newPostButtonW: NSLayoutConstraint!
     
     let icLeft = UIImage(named: "ic_left_w")
     let icNavigation = UIImage(named: "ic_nav_menu_w")
@@ -48,6 +52,7 @@ class NewHomeViewController: BaseViewController, UITableViewDataSource, UITableV
     var menu_vc:MainMenu!
     var dark_background:DarkBackground!
     var user_buttons:HomeUserMenu!
+    var profile_dialog: UserProfileFrame!
     var isNotified:Bool = false
     var posts = [Post]()
     var searchPosts = [Post]()
@@ -93,12 +98,14 @@ class NewHomeViewController: BaseViewController, UITableViewDataSource, UITableV
         
         menu_vc = self.storyboard!.instantiateViewController(withIdentifier: "MainMenu") as? MainMenu
         dark_background = self.storyboard!.instantiateViewController(withIdentifier: "DarkBackground") as? DarkBackground
-        user_buttons = self.storyboard!.instantiateViewController(withIdentifier: "HomeUserMenu") as! HomeUserMenu
+        user_buttons = (self.storyboard!.instantiateViewController(withIdentifier: "HomeUserMenu") as! HomeUserMenu)
+        profile_dialog = (UIStoryboard(name: "Frames", bundle: nil).instantiateViewController(withIdentifier: "UserProfileFrame") as! UserProfileFrame)
         
         self.menu_vc.view.frame = CGRect(x: -UIScreen.main.bounds.width, y: 0, width: UIScreen.main.bounds.width, height: UIScreen.main.bounds.height)
         self.dark_background.view.frame = CGRect(x: 0, y: 0, width: UIScreen.main.bounds.width, height: UIScreen.main.bounds.height)
         
-        newPostButton.layer.cornerRadius = newPostButton.frame.height / 2
+        newPostButton.roundCorners(corners: [.topLeft, .bottomLeft], radius: newPostButton.frame.height / 2)
+        newPostButton.titleEdgeInsets = UIEdgeInsets(top: 10, left: 5, bottom: 10, right: 10)
         
         gMainMenu = menu_vc
         
@@ -192,8 +199,13 @@ class NewHomeViewController: BaseViewController, UITableViewDataSource, UITableV
         edt_search.attributedPlaceholder = NSAttributedString(string: "search_".localized(),
             attributes: attrs)
         
+        newPostButton.setTitle(" " + "create_post".localized(), for: .normal)
+        let lang = UserDefaults.standard.string(forKey: "app_lang") ?? "en"
+        if lang == "es" {newPostButtonW.constant = 170}
+        else {newPostButtonW.constant = 130}
+        
         self.getPosts(member_id: thisUser.idx)
-        self.postList.setContentOffset(.zero, animated: true)
+//        self.postList.setContentOffset(.zero, animated: true)
     }
     
     @objc func tapPanel(_ sender: UITapGestureRecognizer? = nil) {
@@ -276,7 +288,7 @@ class NewHomeViewController: BaseViewController, UITableViewDataSource, UITableV
     
     func loadPicture(imageView:UIImageView, url:URL){
         let processor = DownsamplingImageProcessor(size: imageView.frame.size)
-            >> ResizingImageProcessor(referenceSize: imageView.frame.size, mode: .aspectFill)
+        ResizingImageProcessor(referenceSize: imageView.frame.size, mode: .aspectFill)
         imageView.kf.indicatorType = .activity
         imageView.kf.setImage(
             with: url,
@@ -292,7 +304,6 @@ class NewHomeViewController: BaseViewController, UITableViewDataSource, UITableV
             switch result {
             case .success(let value):
                 imageView.layer.cornerRadius = imageView.frame.width/2
-                print("Task done for: \(value.source.url?.absoluteString ?? "")")
             case .failure(let error):
                 print("Job failed: \(error.localizedDescription)")
             }
@@ -301,7 +312,7 @@ class NewHomeViewController: BaseViewController, UITableViewDataSource, UITableV
     
     func loadLinkPicture(imageView:UIImageView, url:URL){
         let processor = DownsamplingImageProcessor(size: imageView.frame.size)
-            >> ResizingImageProcessor(referenceSize: imageView.frame.size, mode: .aspectFill)
+        ResizingImageProcessor(referenceSize: imageView.frame.size, mode: .aspectFill)
         imageView.kf.indicatorType = .activity
         imageView.kf.setImage(
             with: url,
@@ -343,20 +354,18 @@ class NewHomeViewController: BaseViewController, UITableViewDataSource, UITableV
         cell.backgroundColor = UIColor.clear
                 
         let index:Int = indexPath.row
-        let post = self.posts[index]
                 
         if posts.indices.contains(index) {
+            let post = self.posts[index]
             kkk += 1
-            
-            if post.picture_url != ""{
+
+            if post.picture_url != "" {
                 cell.postImageHeight.constant = 250
                 cell.img_post_picture.visibility = .visible
                 if kkk > 1 {
                     cell.img_post_picture.sd_setImage(with: URL(string: post.picture_url)!, placeholderImage: nil, options: [], completed: { (downloadedImage, error, cache, url) in
-                        print(downloadedImage?.size.width)//prints width of image
-                        print(downloadedImage?.size.height)//prints height of image
                         do {
-                            cell.postImageHeight.constant = try! cell.img_post_picture.frame.size.width * (downloadedImage?.size.height)! / (downloadedImage?.size.width)!
+                            cell.postImageHeight.constant = try! cell.img_post_picture.frame.size.width * (downloadedImage?.size.height ?? 0) / (downloadedImage?.size.width ?? self.screenWidth)
                         }catch {}
                     })
                 }else {
@@ -366,34 +375,39 @@ class NewHomeViewController: BaseViewController, UITableViewDataSource, UITableV
                 cell.postImageHeight.constant = 0
                 cell.img_post_picture.visibility = .gone
             }
-            
-            cell.img_post_picture.sizeToFit()
-            
-            let tapGesture = UITapGestureRecognizer(target: self, action: #selector(imageTapped(gesture:)))
 
+            cell.img_post_picture.sizeToFit()
+
+            let tapGesture = UITapGestureRecognizer(target: self, action: #selector(openDetail(gesture:)))
             cell.img_post_picture.tag = index
-            cell.img_post_picture.addGestureRecognizer(tapGesture)
             cell.img_post_picture.isUserInteractionEnabled = true
-            
+            cell.img_post_picture.addGestureRecognizer(tapGesture)
+
             if post.user.photo_url != ""{
                 loadPicture(imageView: cell.img_poster, url: URL(string: post.user.photo_url)!)
             }
-            
             cell.img_poster.layer.cornerRadius = cell.img_poster.frame.width / 2
-                    
+            var tap = UITapGestureRecognizer(target: self, action: #selector(tappedUser))
+            cell.img_poster.tag = index
+            cell.img_poster.addGestureRecognizer(tap)
+
             cell.lbl_poster_name.text = post.user.name
+            tap = UITapGestureRecognizer(target: self, action: #selector(tappedUser))
+            cell.lbl_poster_name.tag = index
+            cell.lbl_poster_name.addGestureRecognizer(tap)
+            
             cell.lbl_cohort.text = post.user.cohort
-            cell.lbl_post_title.text = post.title.decodeEmoji
+            cell.lbl_post_title.text = self.processingEmoji(str:post.title)
             cell.lbl_category.text = post.category
             cell.lbl_posted_time.text = post.posted_time
             if posts[index].status == "updated" {
                 cell.lbl_posted_time.text = "updated_at".localized() + " " + post.posted_time
             }
-            
-            cell.txv_desc.text = post.content.decodeEmoji
+
+            cell.txv_desc.text = self.processingEmoji(str:post.content)
             cell.txv_desc.textContainerInset = UIEdgeInsets(top: 8, left: 5, bottom: 8, right: 5)
             cell.txv_desc.isScrollEnabled = false
-            
+
             if post.previews.count > 0 {
                 cell.linkView.visibility = .visible
                 cell.stackView.arrangedSubviews
@@ -431,43 +445,63 @@ class NewHomeViewController: BaseViewController, UITableViewDataSource, UITableV
             }
             cell.linkView.sizeToFit()
             
-            cell.lbl_likes.text = String(post.likes)
-
-            cell.lbl_comments.text = String(post.comments)
+            // Comments
+            if post.comment_list.count > 0 {
+                cell.commentsView.visibility = .visible
+                cell.commentsStackView.arrangedSubviews
+                    .filter({ $0 is PostCommentView})
+                    .forEach({ $0.removeFromSuperview() })
+                for c in post.comment_list {
+                    let postCommentView = (Bundle.main.loadNibNamed("PostCommentView", owner: self, options: nil))?[0] as! PostCommentView
+                    postCommentView.commentedUserNameBox.text = c.user.name
+                    postCommentView.commentedUserPictureBox.layer.cornerRadius = postCommentView.commentedUserPictureBox.frame.width / 2
+                    if c.user.photo_url.count > 0 {
+                        loadPicture(imageView: postCommentView.commentedUserPictureBox, url: URL(string: c.user.photo_url)!)
+                    }else {
+                        postCommentView.commentedUserPictureBox.image = UIImage(named: "ic_user.png")
+                    }
+                    postCommentView.bubbleView.roundCorners(corners: [.topRight, .bottomLeft, .bottomRight], radius: 15)
+                    postCommentView.bubbleView.textContainerInset = UIEdgeInsets(top: 9, left: 16, bottom: 9, right: 16)
+                    postCommentView.bubbleView.backgroundColor = UIColor(rgb: 0x5E5E5E, alpha: 1.0)
+                    postCommentView.bubbleView.text = self.processingEmoji(str:c.comment)
+                    cell.commentsStackView.addArrangedSubview(postCommentView)
+                    cell.commentsView.layoutIfNeeded()
+                }
+            }else {
+                cell.commentsView.visibility = .gone
+//                cell.linkViewH.constant = 0
+            }
+            cell.commentsView.sizeToFit()
             
-            if post.pictures > 1{
+            self.loadReaction(cell: cell, post: post, index: index)
+            
+            cell.lbl_comments.text = String(post.comments)
+
+            if post.pictures > 1 {
                 cell.lbl_pics.isHidden = false
                 cell.lbl_pics.text = "+" + String(post.pictures - 1)
             }else{
                 cell.lbl_pics.isHidden = true
             }
-            
-            if post.isLiked {
-                cell.likeButton.setImage(UIImage(named: "ic_liked"), for: .normal)
-            }else{
-                cell.likeButton.setImage(UIImage(named: "ic_like"), for: .normal)
-            }
-            
+
             cell.menuButton.setImageTintColor(UIColor(rgb: 0xffffff, alpha: 0.8))
-            cell.detailButton.setImageTintColor(UIColor.white)
-            cell.likeButton.setImageTintColor(.white)
             cell.commentButton.setImageTintColor(.white)
-            
+
             setRoundShadowView(view: cell.view_content, corner: 5.0)
-            
-            cell.likeButton.tag = index
-            cell.likeButton.addTarget(self, action: #selector(self.toggleLike), for: .touchUpInside)
-            
+
             cell.commentButton.tag = index
             cell.commentButton.addTarget(self, action: #selector(self.openCommentBox), for: .touchUpInside)
-            
+
             cell.menuButton.tag = index
             cell.menuButton.addTarget(self, action: #selector(self.openDropDownMenu), for: .touchUpInside)
-            
-            cell.detailButton.tag = index
-            cell.detailButton.addTarget(self, action: #selector(self.openDetail), for: .touchUpInside)
-                    
+
+            cell.txv_desc.tag = index
+            cell.txv_desc.isUserInteractionEnabled = true
+            tap = UITapGestureRecognizer(target: self, action: #selector(self.openDetail(gesture:)))
+            cell.txv_desc.addGestureRecognizer(tap)
+
             cell.txv_desc.sizeToFit()
+            
             cell.view_content.sizeToFit()
             cell.view_content.layoutIfNeeded()
                 
@@ -477,10 +511,36 @@ class NewHomeViewController: BaseViewController, UITableViewDataSource, UITableV
         
     }
     
+    @objc func tappedUser(_ sender:UITapGestureRecognizer? = nil) {
+        if self.loadingView.isAnimating{
+            return
+        }
+        if let tag = sender?.view?.tag {
+            print(tag)
+            gUser = self.posts[tag].user
+            self.profile_dialog.view.frame = CGRect(x: 0, y: 0, width: self.screenWidth, height: self.screenHeight)
+            if gUser.photo_url != "" {
+                self.profile_dialog.pictureBox.visibility = .visible
+                loadPicture(imageView:self.profile_dialog.pictureBox, url: URL(string: gUser.photo_url)!)
+            }else{
+                self.profile_dialog.pictureBox.visibility = .gone
+            }
+            self.profile_dialog.nameBox.text = gUser.name
+            self.profile_dialog.groupBox.text = gUser.cohort
+            self.profile_dialog.group_name = gUser.cohort
+            self.profile_dialog.cityBox.text = gUser.city
+            self.profile_dialog.buttonView.alpha = 0
+            UIView.animate(withDuration: 1.2) {
+                self.profile_dialog.buttonView.alpha = 1
+                self.addChild(self.profile_dialog)
+                self.view.addSubview(self.profile_dialog.view)
+            }
+        }
+    }
+    
     @objc func imageTapped(gesture: UIGestureRecognizer) {
         // if the tapped view is a UIImageView then set it to imageview
         if (gesture.view as? UIImageView) != nil {
-            print("Image Tapped")
             let imgView = gesture.view as! UIImageView
             let index = imgView.tag
             let post = posts[index]
@@ -503,13 +563,100 @@ class NewHomeViewController: BaseViewController, UITableViewDataSource, UITableV
         }
     }
     
-    @objc func toggleLike(sender:UIButton){
-        let index = sender.tag
-        let post = posts[index]
-        if post.idx > 0 && post.user.idx != thisUser.idx {
-            let cell = sender.superview?.superviewOfClassType(PostCell.self) as! PostCell
-            likePost(member_id: thisUser.idx, post: post, button:sender, likeslabel: cell.lbl_likes!)
+    func loadReaction(cell:PostCell, post:Post, index:Int) {
+        cell.reactionButton.reactionSelector = ReactionSelector()
+        cell.reactionButton.config           = ReactionButtonConfig() {
+          $0.iconMarging      = 8
+          $0.spacing          = 4
+          $0.font             = UIFont(name: "HelveticaNeue", size: 14)
+          $0.neutralTintColor = .white
+          $0.alignment        = .left
         }
+        
+        if post.my_feeling.lowercased() == "like" {
+            cell.reactionButton.reaction = Reaction.facebook.like
+            cell.reactionButton.isSelected = true
+        }
+        else if post.my_feeling.lowercased() == "love" { cell.reactionButton.reaction = Reaction.facebook.love }
+        else if post.my_feeling.lowercased() == "haha" { cell.reactionButton.reaction = Reaction.facebook.haha }
+        else if post.my_feeling.lowercased() == "wow" { cell.reactionButton.reaction = Reaction.facebook.wow }
+        else if post.my_feeling.lowercased() == "sad" { cell.reactionButton.reaction = Reaction.facebook.sad }
+        else if post.my_feeling.lowercased() == "angry" { cell.reactionButton.reaction = Reaction.facebook.angry }
+        
+        var icons = [Reaction]()
+        if post.likes > 0 { icons.append(Reaction.facebook.like) }
+        if post.loves > 0 { icons.append(Reaction.facebook.love) }
+        if post.hahas > 0 { icons.append(Reaction.facebook.haha) }
+        if post.wows > 0 { icons.append(Reaction.facebook.wow) }
+        if post.sads > 0 { icons.append(Reaction.facebook.sad) }
+        if post.angrys > 0 { icons.append(Reaction.facebook.angry) }
+        
+        cell.reactionSummary.reactions = icons
+        cell.reactionSummary.setDefaultText(withTotalNumberOfPeople: post.reactions, includingYou: false)
+        cell.reactionSummary.config    = ReactionSummaryConfig {
+          $0.spacing      = 8
+          $0.iconMarging  = 2
+          $0.font         = UIFont(name: "HelveticaNeue", size: 14)
+          $0.textColor    = .white
+          $0.alignment    = .left
+          $0.isAggregated = true
+        }
+        
+        cell.reactionSummary.tag = index
+        cell.reactionSummary.addTarget(self, action: #selector(toLikes(sender:)), for: .touchUpInside)
+        
+        cell.reactionButton.tag = index
+        cell.reactionButton.addTarget(self, action: #selector(popupReactionMenu(sender:)), for: .touchUpInside)
+        
+        cell.reactionButton.reactionSelector!.tag = index
+        cell.reactionButton.reactionSelector?.addTarget(self, action: #selector(reactionDidChanged(sender:)), for: .valueChanged)
+    }
+    
+    var selectedCell:PostCell!
+    @objc func popupReactionMenu(sender:ReactionButton) {
+        let cell = sender.superview?.superviewOfClassType(PostCell.self) as! PostCell
+        selectedCell = cell
+        print("selected cell: \(selectedCell == nil)")
+        let reactionButton = sender as! ReactionButton
+        let index = reactionButton.tag
+        print("post_id: \(posts[index].idx)")
+        print("my feeling: \(posts[index].my_feeling)")
+        if reactionButton.isSelected == true {
+            reactionButton.presentReactionSelector()
+        }else {
+            print("unselected")
+            reactionButton.reaction = .facebook.like
+            reactPost(cell:selectedCell, index:index, member_id: thisUser.idx, post_id: posts[index].idx, feeling: "")
+        }
+    }
+    
+    @objc func reactionDidChanged(sender: AnyObject) {
+        let select = sender as! ReactionSelector
+        let index = select.tag
+        let feeling = select.selectedReaction?.title
+        print("feeling: \(feeling)")
+        print("post_id: \(posts[index].idx)")
+        reactPost(cell:selectedCell, index:index, member_id: thisUser.idx, post_id: posts[index].idx, feeling: feeling!.lowercased())
+    }
+    
+    func reactPost(cell:PostCell, index:Int, member_id:Int64, post_id:Int64, feeling:String) {
+        APIs.reactPost(member_id: member_id, post_id: post_id, feeling: feeling, handleCallback: {
+            post, result_code in
+            if result_code == "0" {
+                var fposts = self.posts.filter({post in return post.idx == post_id})
+                if fposts.count > 0 {
+                    fposts[0] = post!
+                    self.loadReaction(cell: self.selectedCell, post: post!, index: index)
+                }
+            }
+        })
+    }
+    
+    @objc func toLikes(sender:AnyObject) {
+        let index = (sender as! ReactionSummary).tag
+        gPost = posts[index]
+        let vc = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(identifier: "LikesViewController")
+        self.present(vc, animated: true, completion: nil)
     }
     
     func likePost(member_id: Int64, post: Post, button:UIButton, likeslabel:UILabel){
@@ -544,7 +691,9 @@ class NewHomeViewController: BaseViewController, UITableViewDataSource, UITableV
         let post = posts[index]
         if post.idx > 0 && post.user.idx != thisUser.idx {
             gPost = post
-            let vc = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(identifier: "CommentViewController")
+//            let vc = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(identifier: "PostDetailViewController")
+            let vc = UIStoryboard(name: "PostDetail", bundle: nil).instantiateViewController(identifier: "PostDetailVC")
+            vc.modalPresentationStyle = .fullScreen
             self.present(vc, animated: true, completion: nil)
         }
     }
@@ -667,34 +816,30 @@ class NewHomeViewController: BaseViewController, UITableViewDataSource, UITableV
         self.showLoadingView()
         APIs.getPosts(member_id: member_id, handleCallback: {
             posts, users, result_code in
+            self.dismissLoadingView()
             print(result_code)
             if result_code == "0"{
-                
                 self.posts = posts!
                 self.searchPosts = posts!
                 self.users = users!
                 
                 gUsers = users!
+                self.noResult.isHidden = !self.posts.isEmpty
                 
-                if self.posts.count == 0 {
-                    self.noResult.isHidden = false
-                }
-                
-                self.dismissLoadingView()
-                
-                let section = 0
-                self.postList.reloadSections([section], with: .automatic)
-
+//                let section = 0
+//                self.postList.reloadSections([section], with: .automatic)
+                self.postList.reloadData()
             }
             else{
                 self.dismissLoadingView()
                 if result_code == "1" {
                     self.logout()
                 } else {
-                    self.showToast(msg: "Something wrong!")
+                    self.showToast(msg: "something_wrong".localized())
                 }
             }
         })
+        
     }
     
     
@@ -747,6 +892,7 @@ class NewHomeViewController: BaseViewController, UITableViewDataSource, UITableV
     }
     
     var eee = false
+    var ggg = false
     
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
         let height = scrollView.frame.size.height
@@ -757,6 +903,16 @@ class NewHomeViewController: BaseViewController, UITableViewDataSource, UITableV
             print("SeaR COUNT////// \(self.searchPosts.count)")
             if !self.loadingView.isAnimating && !self.eee {
                 refreshPosts(member_id: thisUser.idx, num: Int64(self.searchPosts.count))
+            }
+        }else {
+            if scrollView.contentOffset.y <= 0 {
+                if !ggg {
+                    print("top!")
+                    self.getPosts(member_id: thisUser.idx)
+                    ggg = true
+                }
+            }else {
+                ggg = false
             }
         }
     }
@@ -773,7 +929,7 @@ class NewHomeViewController: BaseViewController, UITableViewDataSource, UITableV
                     self.posts = self.posts + posts!
                     self.searchPosts = self.searchPosts + posts!
                 }
-                if posts!.count < 10 { self.eee = true }
+                if posts!.count == 0 { self.eee = true }
                 
                 self.dismissLoadingView()
                 
@@ -784,10 +940,11 @@ class NewHomeViewController: BaseViewController, UITableViewDataSource, UITableV
     }
     
     
-    @objc func openDetail(sender:UIButton){
-        let index = sender.tag
+    @objc func openDetail(gesture:UITapGestureRecognizer){
+        let index = gesture.view!.tag
         gPost = posts[index]
-        let vc = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(identifier: "PostDetailViewController")
+//        let vc = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(identifier: "PostDetailViewController")
+        let vc = UIStoryboard(name: "PostDetail", bundle: nil).instantiateViewController(identifier: "PostDetailVC")
         vc.modalPresentationStyle = .fullScreen
         self.present(vc, animated: true, completion: nil)
     }
@@ -876,11 +1033,11 @@ class NewHomeViewController: BaseViewController, UITableViewDataSource, UITableV
                 }
                 
                 print("Notified Users////////////////: \(self.notifiedUsers.count)")
-                if self.notifiedUsers.count > 0{
+                if self.notifiedUsers.count > 0 {
                     self.view_noticount.visibilityh = .visible
                     self.lbl_noticount.text = String(self.notifiedUsers.count)
                 }
-                
+                UIApplication.shared.applicationIconBadgeNumber = self.count
             })
         })
         
@@ -897,6 +1054,7 @@ class NewHomeViewController: BaseViewController, UITableViewDataSource, UITableV
             }else{
                 self.view_noticount.visibilityh = .gone
             }
+            UIApplication.shared.applicationIconBadgeNumber = self.count
         })
     }
     
@@ -937,6 +1095,7 @@ class NewHomeViewController: BaseViewController, UITableViewDataSource, UITableV
                 self.view_noticount.visibilityh = .visible
                 self.lbl_noticount.text = String(self.notifiedUsers.count)
             }
+            UIApplication.shared.applicationIconBadgeNumber = self.notifiedUsers.count
         })
         
         ref.observe(.childRemoved, with: {(snapshot) -> Void in
@@ -952,6 +1111,7 @@ class NewHomeViewController: BaseViewController, UITableViewDataSource, UITableV
             }else{
                 self.view_noticount.visibilityh = .gone
             }
+            UIApplication.shared.applicationIconBadgeNumber = self.notifiedUsers.count
         })
     }
     
@@ -1006,11 +1166,11 @@ class NewHomeViewController: BaseViewController, UITableViewDataSource, UITableV
                 }
                     
                 print("Notified Users////////////////: \(self.notifiedUsers.count)")
-                if self.notifiedUsers.count > 0{
+                if self.notifiedUsers.count > 0 {
                     self.view_noticount.visibilityh = .visible
                     self.lbl_noticount.text = String(self.notifiedUsers.count)
                 }
-                
+                UIApplication.shared.applicationIconBadgeNumber = self.notifiedUsers.count
             })
                 
         })
@@ -1028,6 +1188,7 @@ class NewHomeViewController: BaseViewController, UITableViewDataSource, UITableV
             }else{
                 self.view_noticount.visibilityh = .gone
             }
+            UIApplication.shared.applicationIconBadgeNumber = self.notifiedUsers.count
         })
             
     }
@@ -1074,7 +1235,6 @@ class NewHomeViewController: BaseViewController, UITableViewDataSource, UITableV
     
 
 }
-
 
 
 

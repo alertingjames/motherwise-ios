@@ -7,7 +7,25 @@
 		<key>Motherwise.xcscheme_^#shared#^_</key>
 		<dict>
 			<key>orderHint</key>
-			<integer>52</integer>
+			<integer>0</integer>
+		</dict>
+	</dict>
+	<key>SuppressBuildableAutocreation</key>
+	<dict>
+		<key>655D75042503BADB00E1AE23</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>655D751D2503BADC00E1AE23</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>655D75282503BADC00E1AE23</key>
+		<dict>
+			<key>primary</key>
+			<true/>
 		</dict>
 	</dict>
 </dict>

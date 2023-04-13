@@ -1,4 +1,4 @@
-"done" = "hecho";
+"done" = "Done";
 "phone" = "Phone";
 "rating" = "Rating";
 "address" = "Address";
@@ -109,6 +109,10 @@
 "live" = "Live";
 "yes" = "Yes";
 "no" = "No";
+"videos" = "Workshop Videos";
+"enjoy_watching" = "Enjoy watching it";
+
+"everyone" = "Everyone";
 "wait_" = "Please wait...";
 "start_at" = "Start At";
 "created_at" = "Created At";
@@ -202,7 +206,8 @@
 "read_terms" = "Please read the Terms & Conditions.";
 "login_success" = "Successfully logged in";
 "add_location" = "Please add your location";
-
+"create_post" = "Create Post";
+"city" = "City";
 
 "jan" = "jan";
 "feb" = "feb";
@@ -250,3 +255,19 @@
 "search_nearby_" = "Search for nearby places...";
 
 "langxxx" = "";
+
+
+"write_comment_on_this_post" = "Write your comment on this post...";
+"comment_on_comment" = "Comment on Comment";
+"comida_connection" = "Comida Connection";
+"recipes" = "Recipes";
+"food_resources" = "Food Resources";
+"meat" = "Meat";
+"vegetarian" = "Vegetarian";
+"light_bites" = "Light Bites";
+"sweet_tooth" = "Sweet Tooth";
+"meat_recipes" = "Meat Recipes";
+"vegetarian_recipes" = "Vegetarian Recipes";
+"light_bites_recipes" = "Light Bites Recipes";
+"sweet_tooth_recipes" = "Sweet Tooth Recipes";
+"resources_in_community" = "Resources In Community";
